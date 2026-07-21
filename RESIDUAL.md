@@ -1,72 +1,98 @@
-# Residual tracker (Systems Lean only)
+# Residual -- coordinator (Systems Lean)
 
-Living open work for the **Systems Lean** project (this repository). Short and product-first.
-Do **not** import wave histories from other trees.
+Project-level residual and join board. **Sides own their own files:**
 
-**Status vocabulary:** `open` * `in progress` * `done` * `blocked` * `wontfix`
-
-Green docs or green submodules != residual closed.
-
----
-
-## Hold (do not start until forked chats take ownership)
-
-The **hard meet-in-the-middle / Slake design+implementation work** is intentionally **not started** in the foundation chat so either a research fork or a primary implementor chat can own it cleanly.
-
-When a chat claims a role, move items from Hold -> Open (or In progress) in this file.
-
-| Held work | Suggested owner |
-|-----------|-----------------|
-| Multiplicity correspondence table (imperfect edges written down) | Research or primary |
-| Tiny dual examples (Idris 2 + Lean) + TCB notes | Research or primary |
-| Shared IR sketch (design on disk) | Research -> primary |
-| LLVM + Rust interop design note (concrete "without classic FFI") | Research -> primary |
-| CompCert product-path honesty (build `ccomp` only when claiming PROVABLY) | Primary |
-| Slake compiler skeleton under `src/systems/` (not `ref/`) | Primary |
-| Wire `just build` freestanding compile once units exist | Primary |
-| Populate `out/freestanding-c` from freestanding emit + subtree release | Primary |
-| `out/llvm-ir` pipeline (after self-hosted Systems Lean / Slake) | Deferred |
-
----
-
-## Done
-
-| Item | Notes |
+| File | Owner |
 |------|--------|
-| Git init + Nix-oriented `.gitignore` | Root |
-| Submodule `ref/Idris2` | Upstream Idris 2 |
-| Submodule `ref/lean4` | Upstream Lean 4 |
-| Submodule `ref/CompCert` | AbsInt CompCert (`ccomp` source; not built/PROVABLY claimed) |
-| Submodule `ref/rust` | rust-lang/rust (layout/ABI + codegen_llvm reference; shallow; no nested LLVM required) |
-| Project charter docs | `doc/goals.md`, `vocabulary.md`, `architecture.md`, `divergence.md` |
-| Agent hygiene pins | `AGENTS.md`, `doc/SESSION-HANDOFF.md`, `doc/research/README.md` |
-| Entry maps | `doc/idris-entry.md`, `doc/lean-entry.md`, `doc/compcert-entry.md`, `doc/rust-entry.md` |
-| License | `UNLICENSE.md` (our work) + `LICENSES.md` (public-domain note + `ref/` license inventory) |
-| ASCII hygiene | `doc/ascii-symbol-map.md` + `script/check-source-hygiene.py`; Nix `checks.source-hygiene`; pre-commit chain |
-| Nix foundation | `flake.nix`, `.envrc` |
-| just + check-all + CI | `justfile`, `script/check-all.sh`, `.github/workflows/ci.yml` |
-| Workspaces | `src/idris2/`, `src/lean4/`, `src/systems/`, `out/freestanding-c/`, `out/llvm-ir/` (deferred) |
-| RC / no-GC freestanding policy | `src/systems/README.md`, `AGENTS.md` |
+| `RESIDUAL-idris.md` | Idris-side fork |
+| `RESIDUAL-lean.md` | Lean-side fork |
+| `RESIDUAL.md` (this file) | Coordinator |
+
+**Status vocabulary:** `open` | `in progress` | `done` | `blocked` | `wontfix`
+
+Green `just check` != residual closed.
+
+Language: **Idris side** / **Lean side** / **coordinator** -- never "pole".
 
 ---
 
-## Open (foundation only)
+## Join done
 
-1. **Initial signed commit** -- stage docs + all `ref/*` submodules; human runs GPG-signed commit on a real TTY.
+| Item | Evidence |
+|------|----------|
+| Dual MULT maps (MULT-0 / MULT-1 / MULT-OMEGA) | `src/idris2/multiplicity-map.md`, `src/lean4/multiplicity-map.md` |
+| ConsumeToken dual (JOIN-ALG) | `src/idris2/examples/ConsumeToken.idr`, `src/lean4/examples/ConsumeToken.lean` |
+| Both JOIN files | `src/idris2/JOIN.md`, `src/lean4/JOIN.md` |
+| Greppable imperfect edges merged into divergence | `doc/divergence.md` section **Greppable imperfect edges (dual pair)** (EDGE-* / ERASE-* / RUNTIME-* + JOIN-ALG) |
+
+Side forks should **not** invent a second dual example or new map residual unless the human asks. Coordinator owns divergence merge (done this slice).
 
 ---
 
-## Explicitly out of residual (default)
+## Open (high-value next)
 
-- Racing residual mills in other trees
-- Day-one full Idris 2 or Lean 4 surface parity
-- Forging freestanding / PROVABLY / host residual_free tokens
-- Renaming upstream under `ref/`
-- Recursive init of rust's nested LLVM world unless the human asks
-- Starting held hard work from a chat that has not claimed implementor/research role
+| Priority | Work | Owner / notes |
+|----------|------|----------------|
+| 1 | **Shared intermediate-representation (IR) sketch** | Coordinator / systems path. Unblocked by dual pair + JOIN. Prefer durable note under `doc/` (or research with Kind honesty) so both language forks can stop inventing map work. Feeds Slake later. |
+| 2 | **Slake skeleton under `src/systems/`** | Only after IR honesty lands. Do not start freestanding emit body before that. |
+| 3 | Optional toolchains in shell (Lake / `idris2`) | L-LAKE, idris2 check when available -- do **not** break `just check` without tools |
+
+**Highest-value unblocker for parallelization:** IR sketch (coordinator). Systems freestanding hold stays closed until IR lands.
+
+---
+
+## Hold / deferred / blocked
+
+| Item | Status | Why |
+|------|--------|-----|
+| `out/llvm-ir` pipeline | Hold | Deferred until self-hosted Systems Lean / Slake |
+| CompCert PROVABLY path | Hold | Needs real `ccomp` + evidence matrix; never forge |
+| Second ConsumeToken-class dual | Hold | Dual pair already exists; invent only on human request |
+| Freestanding product residual free | Not claimed | Host elaborator residual != product residual; honesty required |
+| Wire `just build` freestanding compile | Hold | After units exist under systems |
+| Populate `out/freestanding-c` | Hold | After emit exists |
+
+---
+
+## Project hold ladder (after dual pair)
+
+| Priority | Work | When |
+|----------|------|------|
+| 1 | Shared intermediate-representation sketch | **Now unblocked** (dual pair + both JOIN + divergence edges done) |
+| 2 | Slake skeleton under `src/systems/` | After IR honesty |
+| 3 | Wire `just build` freestanding compile | Units exist |
+| 4 | Populate `out/freestanding-c` | Emit exists |
+| 5 | CompCert PROVABLY path | Real `ccomp` + matrix |
+| 6 | `out/llvm-ir` | Deferred until self-hosted Systems Lean / Slake |
+
+---
+
+## Join status (auto-refreshed by `just progress` / `just watch`)
+
+See live meter: `doc/PROGRESS.md` (generated). Do not hand-edit percentage tables there; edit evidence (side files + side residuals) instead.
+
+---
+
+## Foundation done
+
+Tooling, charter, submodules, fork prompts, hygiene, Nix, just -- see `AGENTS.md`.
+
+---
+
+## Coordinator actions
+
+- Read both side residuals + `doc/PROGRESS.md`.
+- Write short directives in `doc/fork-guidance-idris.md` and `doc/fork-guidance-lean.md` (forks re-read each loop).
+- Run `just watch` (300s loop) or `just progress` (once) while forks run.
+- Do not race side trees unless reassigned.
+- Own greppable edge merge into `doc/divergence.md` (done for dual pair).
 
 ---
 
 ## Isolation
 
-This repository **is** Systems Lean. Unless the human is **absolutely desperate** for a specific off-repo solution and says so: implement here, reference `ref/*` only.
+This repository **is** Systems Lean. Off-repo only if the human is desperate for a named fix.
+
+## Watcher
+
+Next implement prompt: root **`WATCHER.md`** (`WATCHER_BEGIN` ... `WATCHER_END`). This file is the status ledger only.

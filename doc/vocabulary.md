@@ -16,6 +16,7 @@ Stable terms for **Systems Lean**. Prefer plain English. Do not invent fashion n
 | **Systems Lean** | **This project.** Also the language: Lean 4 with linear/affine ownership and QTT multiplicities **0 / 1 / omega**, aimed at freestanding systems products. Implemented **in this repository**, in isolation |
 | **Slake** | The **compiler** product of Systems Lean: usable superset surface of Idris 2 and Lean 4 cores; freestanding backends |
 | **Meet-in-the-middle** | Build correspondence from Idris 2 and Lean 4 toward a shared core, then consummate it in the Slake compiler -- not a third mystery language full of brands |
+| **Idris side / Lean side** | The two ends of the bridge: novel work under `src/idris2/` and `src/lean4/`. Prefer this wording; do not say "pole" |
 | **Curry-Howard** | Programs and proofs inhabit a typed universe; extract makes that correspondence pay rent as systems software. Extract correctness remains a separate claim |
 | **QTT** | Quantitative Type Theory: binder multiplicities **0** (erased), **1** (use once), **omega** (unrestricted) |
 | **Linear / affine** | Exact-once or at-most-once resource discipline on product-relevant values |
@@ -29,8 +30,8 @@ Stable terms for **Systems Lean**. Prefer plain English. Do not invent fashion n
 | **CompCert / ccomp** | Verified C compiler reference; product C path may target it; PROVABLY only with real resolved evidence |
 | **Rust layout reference** | `ref/rust` (rustc_abi / codegen) defines layout-compatible interop; LLVM IR alone is not enough |
 | **iso** | Optional **directory / checkout nickname** only (e.g. path `.../iso`). Not the product name. Prefer **Systems Lean** in prose |
-| **src/idris2/** | Novel Idris pole workspace (isomorphism); not `ref/Idris2` |
-| **src/lean4/** | Novel Lean 4 pole workspace; not `ref/lean4` |
+| **src/idris2/** | Novel Idris-side workspace (isomorphism); not `ref/Idris2` |
+| **src/lean4/** | Novel Lean-side workspace; not `ref/lean4` |
 | **src/systems/** | Freestanding Systems Lean + Slake host; min 0/1/omega; no product GC (garbage collection) |
 | **out/freestanding-c/** | Runtimeless freestanding product C for external consumers |
 | **out/llvm-ir/** | LLVM IR for Rust-native link; **deferred** until self-hosted Systems Lean / Slake |
@@ -79,6 +80,12 @@ Work on **Systems Lean** and **Slake** **in this repository**, against `ref/*` a
 
 Do **not** treat other trees as the default workplace for Systems Lean residual unless the human is **absolutely desperate** for a specific solution and says so. Isolation is the default. This repo **is** the project.
 
-## ASCII
+## Encoding
 
-Novel work: ASCII only. Map: `doc/ascii-symbol-map.md`. Enforce: `AGENTS.md` (ASCII + Nix).
+This file may use Unicode. Most other novel paths must be ASCII (map: `doc/ascii-symbol-map.md`). See `AGENTS.md`.
+
+| Prefer full phrase | Avoid bare short form |
+|--------------------|------------------------|
+| trusted computing base | TCB |
+| Quantitative Type Theory | QTT without expansion on first use |
+| garbage collection | GC without expansion on first use |

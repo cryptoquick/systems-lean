@@ -14,7 +14,7 @@ Related: [goals.md](goals.md), [divergence.md](divergence.md), [vocabulary.md](v
   (QTT core, linear)                 (kernel, elab, proofs)
          \                                /
           \     correspondence maps      /
-           \    (erasure, mult, TCB)    /
+           \    (erasure, mult, trusted computing base)    /
             v                          v
          Shared core story  ->  later shared IR
                     |
@@ -28,9 +28,9 @@ Related: [goals.md](goals.md), [divergence.md](divergence.md), [vocabulary.md](v
                             interop design bar)
 ```
 
-### Poles
+### Sides
 
-| Pole | Role |
+| Side | Role |
 |------|------|
 | **Idris 2** (`ref/Idris2`) | Native QTT, linear resources, TT/TTImp/compiler pipeline, RefC as C-ish path with RC residual |
 | **Lean 4** (`ref/lean4`) | Kernel, elaborator, proof ecosystem; classic AOT is not freestanding |
@@ -41,12 +41,12 @@ Related: [goals.md](goals.md), [divergence.md](divergence.md), [vocabulary.md](v
 
 The correspondence is consummated when Slake:
 
-1. Accepts a surface that covers the useful cores of both poles (phased).
+1. Accepts a surface that covers the useful cores of both sides (phased).
 2. Type-checks under QTT + linear/affine discipline.
 3. Emits freestanding products under dual residual honesty.
-4. Targets CompCert-oriented C and LLVM IR with stated TCBs.
+4. Targets CompCert-oriented C and LLVM IR with stated trusted computing bases.
 
-Curry-Howard is operational: well-typed terms are programs and/or proofs; extract is how systems software is produced. **Backend TCB and interop ABI are separate claims.**
+Curry-Howard is operational: well-typed terms are programs and/or proofs; extract is how systems software is produced. **Backend trusted computing base and interop ABI are separate claims.**
 
 ---
 
@@ -82,15 +82,15 @@ Product sources for Slake will live in this repository (e.g. `src/` or `compiler
 
 ---
 
-## Dual poles (forks)
+## Dual sides (forks)
 
-| Pole | Novel tree | Upstream ref |
+| Side | Novel tree | Upstream ref |
 |------|------------|--------------|
 | Idris | `src/idris2/` | `ref/Idris2` |
 | Lean | `src/lean4/` | `ref/lean4` |
 | Synthesis | `src/systems/` (Slake / freestanding) | -- |
 
-Keep **native Idris** and **native Lean** duals; map them. Do not collapse both poles into Lean-only models of Idris without an explicit goal change. Formal map theorems may later live on the Lean side once the informal map is honest.
+Keep **native Idris** and **native Lean** duals; map them. Do not collapse both sides into Lean-only models of Idris without an explicit goal change. Formal map theorems may later live on the Lean side once the informal map is honest.
 
 ## Isolation and references
 
@@ -98,7 +98,7 @@ Keep **native Idris** and **native Lean** duals; map them. Do not collapse both 
 |------|------|
 | `ref/Idris2` | Upstream Idris 2 -- read-only reference |
 | `ref/lean4` | Upstream Lean 4 -- read-only reference |
-| `src/idris2/`, `src/lean4/`, `src/systems/` | Novel poles + freestanding synthesis |
+| `src/idris2/`, `src/lean4/`, `src/systems/` | Novel sides + freestanding synthesis |
 
 Other residual mills are **not** part of the architecture diagram. This repository is Systems Lean; work here in isolation unless a human explicitly escalates.
 

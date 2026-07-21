@@ -10,7 +10,8 @@ Global rules in `~/.grok/AGENTS.md` still apply (subagents, multi-chat, GPG). Th
 
 1. **This file** (`AGENTS.md`) -- policy + **Repository structure**
 2. `doc/SESSION-HANDOFF.md`
-3. `RESIDUAL.md`
+3. `RESIDUAL.md` (status) and `WATCHER.md` (next implement prompt)
+
 4. `doc/goals.md` and `doc/vocabulary.md` if the goal is unclear
 5. `doc/architecture.md` / `doc/divergence.md` for technical framing
 6. Entry maps when touching refs: `doc/idris-entry.md`, `doc/lean-entry.md`, `doc/compcert-entry.md`, `doc/rust-entry.md`
@@ -64,11 +65,12 @@ Talk in plain English. Prefer file paths and durable terms over wave numbers and
 
 Write **thoughtful, concise, natural language**. This is not a jargon dump or acronym soup.
 
-- Prefer full words. Avoid lazy abbreviations and undefined slang.
-- When a short form is still useful, expand it in parentheses on use (and after compaction, re-expand): Quantitative Type Theory (often written QTT), trusted computing base, application binary interface, intermediate representation, foreign function interface, ahead-of-time, garbage collection.
-- If a word is ambiguous, unpack what you mean **here** in a short parenthetical.
-- ASCII only in novel prose (see ASCII-only rule).
+- Prefer full words. Do not invent or drop in obscure short forms (e.g. never bare **TCB** -- write **trusted computing base**).
+- **First use of any acronym or short form in a reply or durable doc:** unpack in parentheses. Example: Quantitative Type Theory (QTT), garbage collection (GC). After compaction, treat the next use as a new first use.
+- If a word is jargon or has multiple meanings, unpack what you mean **here** in a short parenthetical.
+- Avoid project-internal slang that needs a glossary to parse. Example: do **not** say **pole** for a language side of the bridge -- say **Idris side** / **Lean side** (or "fork for Idris work" / "fork for Lean work").
 - The human may be terser; **agents must not** mirror unexplained shorthand.
+- Prose encoding: see ASCII and Unicode rule (allowlist vs strict).
 
 ---
 
@@ -116,17 +118,22 @@ Examples of pins worth making:
 
 Do **not** wait to be told "document that." Do **not** only fix the immediate file and forget the preference. The goal is fewer repeat mistakes and better agent UX after compaction.
 
-### Residual implement loop (environment auto-continue)
+### Residual implement loop / watcher (environment auto-continue)
 
-Hunter's environment can **auto-run residual implement-loop statements** from the end of an agent turn.
+Hunter's environment can **auto-run** residual implement instructions when they appear in a fixed, greppable place.
+
+**Canonical on-disk watcher:** root file `WATCHER.md`
+- Update the fenced block between `WATCHER_BEGIN` and `WATCHER_END` after every durable slice.
+- Put the **same** text as the **final section** of the chat reply.
 
 When you finish a planned slice:
 
-1. If residual work is **clear, low-ambiguity, and needs no human input**, end with an explicit **next residual implement loop** (concrete steps / acceptance) so the harness can continue -- then do that work yourself in the same session when you are allowed to act.
-2. If something is **blocked or ambiguous**, state what is unclear (options + recommendation) and **do not** invent a fake green residual loop.
+1. If residual work is **clear and needs no human input**, write the next `/implement --effort 1 ...` prompt into `WATCHER.md` **and** end the reply with that prompt so the harness can continue.
+2. If **blocked or ambiguous**, put a short blocked note in `WATCHER.md` (what is unclear); do not invent fake work.
 3. Never use the loop to race git, forge freestanding/PROVABLY claims, or start deferred tracks (e.g. `out/llvm-ir` before self-host).
+4. Keep `RESIDUAL.md` as the status ledger; `WATCHER.md` is only the **next action** the watcher runs.
 
-### Dual forks (Idris pole / Lean pole)
+### Dual forks (Idris side / Lean side)
 
 Two research/implement forks are expected:
 
@@ -134,9 +141,19 @@ Two research/implement forks are expected:
 |------|-----------|--------------|
 | Idris side | `src/idris2/` | `doc/fork-idris.md` |
 | Lean side | `src/lean4/` | `doc/fork-lean.md` |
-| Coordinator | tooling, join, residual honesty | `doc/fork-coordinator.md` (this chat by default) |
+| Coordinator | tooling, join, residual honesty, `just watch` | `doc/fork-coordinator.md` (this chat by default) |
 
-**Do not** implement both poles only as Lean models of Idris unless the human redefines the goal. Honest meet-in-the-middle needs **real Idris sources** plus **real Lean sources**, then a stated map (later formalized, often in Lean). Freestanding synthesis: `src/systems/` (Slake).
+**Residuals (separate files):**
+
+| File | Owner |
+|------|--------|
+| `RESIDUAL-idris.md` | Idris-side fork |
+| `RESIDUAL-lean.md` | Lean-side fork |
+| `RESIDUAL.md` | Coordinator join board |
+
+**Progress / watch:** `just progress` writes `doc/PROGRESS.md` (evidence-weighted %). `just watch` loops every 300s, refreshes meter, appends `doc/progress-log.md`, updates status snapshots in `doc/fork-guidance-*.md` for fork steering.
+
+**Do not** implement both sides only as Lean models of Idris unless the human redefines the goal. Honest meet-in-the-middle needs **real Idris sources** plus **real Lean sources**, then a stated map (later formalized, often in Lean). Freestanding synthesis: `src/systems/` (Slake).
 
 ---
 
@@ -169,34 +186,76 @@ Both are required. Neither replaces the other (scientific method: theory + exper
 
 ---
 
-## Subagents and context
+## Subagents and token efficiency (strategic max, not wasteful)
 
-Follow global strategic parallelism (`~/.grok/AGENTS.md`):
+**Goal: token efficiency under attention limits.** Maximal **strategic** use of parallel subagents -- not maximal spawn count, not parent solo on deep work, not thrash.
 
-- Parent coordinates; children do heavy explore/edit loops
-- Join via short on-disk artifacts; keep parent near soft context budget
-- Cap concurrency; `resume_from` for fix rounds
-- After compaction: reseed from handoff + residual, not from zero exploration if artifacts exist
+### Context economics (plan against these)
+
+- **Attention dilution:** parent quality drops as context fills -- often well before the hard cap. Parent is a **coordinator budget**, not a tool-output warehouse.
+- **Soft quality band:** keep the parent near **~40%** of its effective context when you can.
+- **Cost knee:** treat **~200k** parent tokens as a soft ceiling where further tokens get expensive (often ~**2x**). Hard ceiling may be higher (e.g. **500k**); do **not** treat "room left" as "fill it."
+- **Child isolation is the win:** each subagent has a fresh context. Heavy read/search/edit loops belong in children; parent holds goals, artifact paths, and short join results.
+
+### Maximal strategic use
+
+| Pattern | When | Parent keeps |
+|---------|------|----------------|
+| Parallel **explore** (read-only) | Disjoint dirs/files | Bullet map + paths only |
+| Independent research | Live contract vs local inventory | One-line results each |
+| Implementer + true-independent background | Scopes do not race | Exit codes + log paths |
+
+Rules of thumb:
+
+1. **Spawn for depth, not ceremony.** Many greps/reads/edits -> child. 1-2 lookups -> parent.
+2. **Join on disk.** Children write short summary files; parent reads those, not full transcripts or whole hot modules "to be sure."
+3. **Tight prompts.** Self-contained: goal, paths, acceptance, hard non-claims, output path. No parent history dump.
+4. **Short returns.** Verdict, files, residual bullets -- not novels.
+5. **One wait for many.** Launch independent children together; multi-id wait. Do not serialize independent explores.
+6. **`resume_from` for rounds.** Fix/re-review resumes the same agent when possible.
+7. **Right type.** Prefer explore/plan (read-only) for mapping; general-purpose only when writes are required.
+8. **Cap concurrency** (~2-4 typical). Raise only with clean disjoint scopes.
+9. **Right-size effort.** effort=1 is the token-efficient default; escalate only when risk justifies multi-reviewer cost.
+
+### Anti-patterns (waste)
+
+- Spawning for pure status ("is the file there?")
+- Fan-out of N identical explores over the same scope
+- Parallelizing a serial dependency
+- Parent re-implementing or re-grepping after a child finished
+- Stuffing the parent with raw logs when path + exit + short tail would do
+- Nested spawn fantasies (children cannot spawn children in this host)
+- Gate-only mills with no new named delta
+
+### After compaction
+
+Reseed from `RESIDUAL.md`, handoff, and on-disk summaries. Prefer `resume_from` when the host still has the child id. Soft ~40% / ~200k knee still apply to the **new** parent window.
+
+Fork prompts embed the same implement-loop design: `doc/fork-idris.md`, `doc/fork-lean.md`.
 
 ---
 
-## ASCII-only (hard rule)
+## ASCII and Unicode (hard rule)
 
-This is an **ASCII repository** for novel work: printable ASCII + no trailing whitespace.
+**How the check scrubs:** `script/check-source-hygiene.py` walks novel files (or staged/`git ls-files`), UTF-8 decodes each text file, and fails any character outside tab/LF/CR and printable ASCII (0x20-0x7E). Trailing spaces/tabs on lines also fail. Upstream `ref/**` is not scanned for this policy.
 
-**Only exception:** `doc/ascii-symbol-map.md` -- the glossary that maps Unicode symbols to our ASCII spellings. Everywhere else we author: no smart quotes, dashes, Greek, box-drawing, etc. `ref/**` (upstream) is exempt from rewrite.
+| Path | Unicode? |
+|------|----------|
+| `doc/ascii-symbol-map.md` | **Yes** -- glossary of Unicode -> ASCII spellings (source of map for `--fix`) |
+| `README.md` | **Yes** -- human-facing overview may use Unicode |
+| `doc/vocabulary.md` | **Yes** -- term table may use Unicode |
+| All other novel work | **No** -- ASCII only; use map spellings (`--`, `"..."`, `omega`, `->`, ...) |
+| `ref/**` | Upstream; not rewritten |
 
 ```bash
-just                    # list tasks
-just check              # full suite = CI = script/check-all.sh
-just pre-commit         # staged suite (git hook)
-just build              # freestanding src/systems/ (Slake host)
-just out-freestanding-c     # refresh out/freestanding-c
-just out-llvm-ir            # deferred (see out/llvm-ir/README.md)
-./script/check-source-hygiene.sh --fix
+just check                                    # full suite
+./script/check-source-hygiene.sh --walk       # local tree
+./script/check-source-hygiene.sh --fix       # rewrite known Unicode off allowlist + strip trailing WS
+./script/check-source-hygiene.sh --staged     # pre-commit
 ```
 
-No success claim on novel edits without green `just check` (or staged pre-commit) unless only editing the symbol map.
+No success claim on novel edits without green hygiene (allowlist files still must have no trailing whitespace).
+
 
 ## Repository structure (evolving detail)
 
@@ -205,8 +264,8 @@ Keep this map current when dirs move. README has a short tree; **this section is
 ```
 .
 +-- src/                      # ALL novel product sources
-|   +-- idris2/               # Idris 2 pole -- isomorphism, dual examples, QTT (Quantitative Type Theory) maps
-|   +-- lean4/                # Lean 4 pole -- novel Lean-facing bridge work (not freestanding product)
+|   +-- idris2/               # Idris 2 side -- isomorphism, dual examples, QTT (Quantitative Type Theory) maps
+|   +-- lean4/                # Lean 4 side -- novel Lean-facing bridge work (not freestanding product)
 |   +-- systems/              # Freestanding Systems Lean + Slake compiler host synthesis
 +-- out/
 |   +-- freestanding-c/       # Runtimeless freestanding product C (release)
@@ -227,8 +286,8 @@ Keep this map current when dirs move. README has a short tree; **this section is
 
 | Path | Write? | Role |
 |------|--------|------|
-| `src/idris2/` | yes | Idris pole novel work; never edit `ref/Idris2` as product |
-| `src/lean4/` | yes | Lean pole novel work; never edit `ref/lean4` as product |
+| `src/idris2/` | yes | Idris side novel work; never edit `ref/Idris2` as product |
+| `src/lean4/` | yes | Lean side novel work; never edit `ref/lean4` as product |
 | `src/systems/` | yes | Freestanding product + Slake; min mults; no product GC (garbage collection) |
 | `out/freestanding-c/` | emit | Runtimeless freestanding C (`just out-freestanding-c`) |
 | `out/llvm-ir/` | deferred | LLVM IR for Rust-native link; after self-hosted Systems Lean / Slake |

@@ -1,14 +1,26 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Unlicense
-"""ASCII-only hygiene for Systems Lean novel work.
+"""Source hygiene for Systems Lean novel work.
 
-Hard rule: outside ref/ and the symbol map file, only printable ASCII
-(+ tab/LF/CR). Trailing whitespace is also forbidden.
+Hard rules:
+  - No trailing whitespace on novel files.
+  - Printable ASCII only (tab/LF/CR + 0x20-0x7E), except allowlisted paths
+    that may contain Unicode prose/symbols:
+      * doc/ascii-symbol-map.md  (Unicode -> ASCII glossary; required)
+      * README.md                (human-facing overview; Unicode OK)
+      * doc/vocabulary.md        (term table; Unicode OK)
+  - ref/** is upstream and not scanned for ASCII policy.
+
+How scrubbing works: each novel text file is UTF-8 decoded, then every
+character is checked. If ord(ch) is outside tab/LF/CR and 0x20-0x7E, the
+file fails unless it is on the allowlist. --fix rewrites known Unicode
+via the symbol map (not applied to allowlisted prose files).
 
 Usage:
-  script/check-source-hygiene.py           # all novel files
+  script/check-source-hygiene.py           # git ls-files novel set
+  script/check-source-hygiene.py --walk    # filesystem walk (local + Nix)
   script/check-source-hygiene.py --staged  # git index only
-  script/check-source-hygiene.py --fix    # rewrite known symbols via map, then check
+  script/check-source-hygiene.py --fix    # map rewrite + strip trailing WS
 """
 
 from __future__ import annotations
@@ -22,6 +34,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MAP_REL = Path("doc/ascii-symbol-map.md")
 MAP_PATH = ROOT / MAP_REL
+
+# Novel paths allowed to contain non-ASCII (still no trailing whitespace).
+UNICODE_OK = frozenset(
+    {
+        "doc/ascii-symbol-map.md",
+        "README.md",
+        "doc/vocabulary.md",
+    }
+)
 
 # Allowed control chars in text files
 ALLOWED_CTRL = {0x09, 0x0A, 0x0D}  # tab, LF, CR
@@ -73,6 +94,10 @@ def is_under_ref(rel: Path) -> bool:
 
 def is_map_file(rel: Path) -> bool:
     return rel.as_posix() == MAP_REL.as_posix()
+
+
+def unicode_allowed(rel: Path) -> bool:
+    return rel.as_posix() in UNICODE_OK
 
 
 def list_files(staged: bool, walk: bool) -> list[Path]:
@@ -168,7 +193,10 @@ def main() -> int:
         return 2
 
     mapping = load_map()
-    files = list_files(args.staged, args.walk)
+    # Prefer filesystem walk unless --staged: untracked novel files must still fail/fix.
+    # Nix pure checks also pass --walk explicitly.
+    use_walk = args.walk or not args.staged
+    files = list_files(args.staged, use_walk)
     rc = 0
     checked = 0
 
@@ -178,34 +206,19 @@ def main() -> int:
         path = ROOT / rel
         if not path.is_file():
             continue
-        if is_map_file(rel):
-            # still forbid trailing whitespace on map file
-            data = path.read_bytes()
-            try:
-                text = data.decode("utf-8")
-            except UnicodeDecodeError as e:
-                print(f"{rel}: symbol map must be UTF-8 ({e})", file=sys.stderr)
-                rc = 1
-                continue
-            for ln in trailing_ws_lines(text):
-                print(f"{rel}:{ln}: trailing whitespace", file=sys.stderr)
-                rc = 1
-            checked += 1
-            continue
-
         data = path.read_bytes()
         if is_probably_binary(data):
             continue
         try:
             text = data.decode("utf-8")
         except UnicodeDecodeError:
-            print(f"{rel}: not valid UTF-8 (and not pure ASCII)", file=sys.stderr)
+            print(f"{rel}: not valid UTF-8", file=sys.stderr)
             rc = 1
             continue
 
+        # --fix: strip trailing WS always; apply Unicode->ASCII map only off allowlist
         if args.fix:
-            fixed = apply_map(text, mapping)
-            # strip trailing spaces/tabs on each line; keep final newline style simple
+            fixed = text if unicode_allowed(rel) else apply_map(text, mapping)
             lines = fixed.splitlines()
             stripped = [ln.rstrip(" \t") for ln in lines]
             fixed2 = "\n".join(stripped)
@@ -220,29 +233,37 @@ def main() -> int:
             print(f"{rel}:{ln}: trailing whitespace", file=sys.stderr)
             rc = 1
 
-        bad = scan_text(text)
-        if bad:
-            # group by char
-            shown = 0
-            for line, col, ch, o in bad:
-                hint = mapping.get(ch)
-                extra = f" -> ASCII {hint!r}" if hint else " (no map entry; delete or extend doc/ascii-symbol-map.md)"
-                print(
-                    f"{rel}:{line}:{col}: non-ASCII U+{o:04X} {ch!r}{extra}",
-                    file=sys.stderr,
-                )
-                shown += 1
-                if shown >= 40:
-                    print(f"{rel}: ... more non-ASCII omitted", file=sys.stderr)
-                    break
-            rc = 1
+        if not unicode_allowed(rel):
+            bad = scan_text(text)
+            if bad:
+                shown = 0
+                for line, col, ch, o in bad:
+                    hint = mapping.get(ch)
+                    extra = (
+                        f" -> ASCII {hint!r}"
+                        if hint
+                        else " (no map entry; delete, rewrite, or extend doc/ascii-symbol-map.md)"
+                    )
+                    print(
+                        f"{rel}:{line}:{col}: non-ASCII U+{o:04X} {ch!r}{extra}",
+                        file=sys.stderr,
+                    )
+                    shown += 1
+                    if shown >= 40:
+                        print(f"{rel}: ... more non-ASCII omitted", file=sys.stderr)
+                        break
+                rc = 1
         checked += 1
 
     if rc == 0:
-        print(f"source-hygiene OK ({checked} novel files; ASCII + no trailing whitespace)")
+        print(
+            f"source-hygiene OK ({checked} novel files; "
+            f"ASCII except allowlist README.md/doc/vocabulary.md/doc/ascii-symbol-map.md; "
+            f"no trailing whitespace)"
+        )
     else:
         print(
-            "source-hygiene FAILED: use ASCII only (see doc/ascii-symbol-map.md); "
+            "source-hygiene FAILED: trailing whitespace and/or non-ASCII outside allowlist; "
             "try: script/check-source-hygiene.py --fix",
             file=sys.stderr,
         )

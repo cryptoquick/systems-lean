@@ -18,12 +18,12 @@ Notes here survive compaction. They do **not** automatically become residual imp
 
 2. Do **not** invent residual tracker items from a research note unless the human asks.
 3. Prefer plain English. Define technical terms once; no ephemeral wave vocabulary as the main language.
-4. Primary implementor may ignore research notes unless stuck on correspondence / TCB honesty.
+4. Primary implementor may ignore research notes unless stuck on correspondence / trusted computing base honesty.
 
 ## What belongs here
 
 - Correspondence deep-dives (Idris vs Lean erasure edges)
-- Backend TCB essays
+- Backend trusted computing base essays
 - "What someone claimed on the internet vs what upstream actually is"
 - Design alternatives rejected with reasons
 

@@ -10,7 +10,7 @@ The freestanding compiler product of this project is **Slake**.
 
 **Slake** is a compiler written in **Systems Lean**. Focus: freestanding **runtimeless** C (`out/freestanding-c`) with memory safety from **linear types**, **no garbage collection** on the product wire, and only the **minimum** Quantitative Type Theory multiplicities (0 / 1 / omega) needed for that path.
 
-Meet-in-the-middle Idris 2 and Lean 4 correspondence feeds Slake -- poles live under `src/idris2/` and `src/lean4/`. LLVM intermediate representation for Rust-native link is **deferred** until self-host (`out/llvm-ir`).
+Meet-in-the-middle Idris 2 and Lean 4 correspondence feeds Slake -- sides live under `src/idris2/` and `src/lean4/`. LLVM intermediate representation for Rust-native link is **deferred** until self-host (`out/llvm-ir`).
 
 Tooling: idiomatic **Nix flakes** + `just`. Spec and proof stay separated; red/green tests stay required. Policy detail: [AGENTS.md](AGENTS.md), [doc/goals.md](doc/goals.md).
 
@@ -21,7 +21,7 @@ Tooling: idiomatic **Nix flakes** + `just`. Spec and proof stay separated; red/g
 | [doc/goals.md](doc/goals.md) | Full goals, non-goals, honesty ladder |
 | [doc/vocabulary.md](doc/vocabulary.md) | Stable terms (project = Systems Lean; Slake = **compiler**) |
 | [doc/architecture.md](doc/architecture.md) | Meet-in-the-middle sketch |
-| [doc/divergence.md](doc/divergence.md) | Honest differences and TCBs |
+| [doc/divergence.md](doc/divergence.md) | Honest differences and trusted computing bases |
 | [AGENTS.md](AGENTS.md) | Agent hygiene and isolation |
 | [RESIDUAL.md](RESIDUAL.md) | Living open work for **this** project |
 
@@ -29,8 +29,8 @@ Tooling: idiomatic **Nix flakes** + `just`. Spec and proof stay separated; red/g
 
 | Path | Upstream | Role |
 |------|----------|------|
-| `ref/Idris2` | [Idris2](https://github.com/idris-lang/Idris2) | QTT / linear pole |
-| `ref/lean4` | [Lean 4](https://github.com/leanprover/lean4) | Kernel / elaborator / proof pole |
+| `ref/Idris2` | [Idris2](https://github.com/idris-lang/Idris2) | QTT / linear side |
+| `ref/lean4` | [Lean 4](https://github.com/leanprover/lean4) | Kernel / elaborator / proof side |
 | `ref/CompCert` | [AbsInt CompCert](https://github.com/AbsInt/CompCert) | `ccomp` source for CompCert-oriented C path |
 | `ref/rust` | [rust-lang/rust](https://github.com/rust-lang/rust) | Type layout / ABI + LLVM codegen reference (not llvm-project alone) |
 
@@ -47,8 +47,8 @@ Work **here**. This repository **is** Systems Lean. Do not default to other tree
 ```
 .
 +-- src/                 # Novel product work (not upstream)
-|   +-- idris2/          # Idris pole -- isomorphism / QTT (Quantitative Type Theory) side
-|   +-- lean4/           # Lean 4 pole -- kernel/elaborator-facing novel work
+|   +-- idris2/          # Idris side -- isomorphism / QTT (Quantitative Type Theory) side
+|   +-- lean4/           # Lean 4 side -- kernel/elaborator-facing novel work
 |   +-- systems/         # Freestanding Systems Lean + Slake host (min 0/1/omega; no product GC)
 +-- out/
 |   +-- freestanding-c/  # Runtimeless freestanding product C (release)
@@ -63,18 +63,22 @@ Work **here**. This repository **is** Systems Lean. Do not default to other tree
 ```
 
 Full evolving map: [AGENTS.md](AGENTS.md). Product code never under `ref/`.
-Pole forks: [doc/fork-idris.md](doc/fork-idris.md), [doc/fork-lean.md](doc/fork-lean.md). Coordinator: [doc/fork-coordinator.md](doc/fork-coordinator.md).
+Forks: [doc/fork-idris.md](doc/fork-idris.md), [doc/fork-lean.md](doc/fork-lean.md). Coordinator: [doc/fork-coordinator.md](doc/fork-coordinator.md).
+Next autonomous implement instructions: [WATCHER.md](WATCHER.md) (`WATCHER_BEGIN` ... `WATCHER_END`).
 
 ## Tooling
 
 ```bash
 just              # list
 just check        # CI-identical full suite
+just progress     # % meter -> doc/PROGRESS.md
+just watch        # every 300s: progress + fork guidance snapshots
 just build        # freestanding src/systems/
 just out-freestanding-c  # release freestanding C
 just out-llvm-ir         # deferred (see out/llvm-ir/README.md)
 ```
 
+Side residuals: `RESIDUAL-idris.md`, `RESIDUAL-lean.md`. Coordinator: `RESIDUAL.md`.
 ASCII map: [doc/ascii-symbol-map.md](doc/ascii-symbol-map.md). Policy: [AGENTS.md](AGENTS.md).
 
 ## License

@@ -22,7 +22,7 @@ Day-to-day work serves **Systems Lean** and the **Slake** compiler. The freestan
 | **Memory safety** | From types: linear/affine discipline and related checks -- not from a garbage collector |
 | **LLVM / Rust path** | Real design bar, but **deferred** until self-hosted Systems Lean / Slake (`out/llvm-ir`) |
 
-Bridge poles (`src/idris2/`, `src/lean4/`) exist to feed an honest map into Slake -- not as a substitute for freestanding product work.
+Bridge sides (`src/idris2/`, `src/lean4/`) exist to feed an honest map into Slake -- not as a substitute for freestanding product work.
 
 ---
 
@@ -40,7 +40,7 @@ Idris 2 and Lean 4 both inhabit dependent type theory, but they do not share one
 
 ## North-star goals
 
-1. **Meet in the middle.** Map Idris 2 and Lean 4 toward a shared core (erasure, multiplicity, linearity, extract TCB honesty). Consummate that core in Slake -- not a third fashion language.
+1. **Meet in the middle.** Map Idris 2 and Lean 4 toward a shared core (erasure, multiplicity, linearity, extract trusted computing base honesty). Consummate that core in Slake -- not a third fashion language.
 2. **Superset surface (phased).** Cover the *useful cores* of both languages with progressive gates. Day-one full upstream parity is not required and not claimed.
 3. **Minimum multiplicities only.** Quantitative Type Theory grades **0 / 1 / omega** -- only what freestanding Slake needs; no multiplicity zoo.
 4. **Linear/affine memory safety.** Safety on the product wire comes from ownership discipline and checks, **not** garbage collection.

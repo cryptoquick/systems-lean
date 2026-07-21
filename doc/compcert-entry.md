@@ -33,7 +33,7 @@ Building CompCert is optional for foundation docs; required before PROVABLY clai
 
 ## What Systems Lean uses this for
 
-- Backend TCB honesty for the CompCert-oriented C path
+- Backend trusted computing base honesty for the CompCert-oriented C path
 - Later: seal freestanding product C with real `ccomp`
 
 Not for shipping CompCert as a product of this repo.

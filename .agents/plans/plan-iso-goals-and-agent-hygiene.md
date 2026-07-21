@@ -23,10 +23,10 @@ This is the real project charter plan -- not a sketch for later. Everything belo
 | **Idris 2** | Native **QTT** (multiplicities 0 / 1 / unrestricted), linear resources, core TT + LinearCheck, RefC as *closest* C path (still RC -- honest residual) |
 | **Lean 4** | Production kernel/elaborator, proof culture, Mathlib-scale ecosystem; classic AOT still **managed-runtime** residual |
 | **Systems Lean** (sister tree) | Lean 4 **plus** linear/affine ownership + QTT 0/1/omega + **freestanding** extract (no Lean object runtime on product wire) + CompCert dogfood/PROVABLY machinery |
-| **Middle** | Shared core story: erasure, multiplicity, linearity, extract TCB honesty -- maps both poles can target; **not** a third fashion language |
+| **Middle** | Shared core story: erasure, multiplicity, linearity, extract trusted computing base honesty -- maps both poles can target; **not** a third fashion language |
 | **Consummation** | Compiler binary **Slake** that typechecks under that core and pays rent with freestanding products |
 
-Curry-Howard is not a slogan here: programs and proofs inhabit a typed universe under QTT; extract is how that correspondence becomes systems software. **Extract correctness, backend TCB, and interop ABI remain separate claims** with separate evidence.
+Curry-Howard is not a slogan here: programs and proofs inhabit a typed universe under QTT; extract is how that correspondence becomes systems software. **Extract correctness, backend trusted computing base, and interop ABI remain separate claims** with separate evidence.
 
 ### Why this repo (`iso`) exists
 
@@ -47,7 +47,7 @@ Curry-Howard is not a slogan here: programs and proofs inhabit a typed universe 
 |------|---------------|---------------------|
 | **Systems Lean** | Lean 4 configured for systems: freestanding extract, linear/affine, QTT 0/1/omega | "Just another Lean dialect name of the week" |
 | **Freestanding** | Closed subset + fail-closed codegen + **no** Lean managed runtime on the **product** wire | Classic Lean AOT; Idris RefC (still RC) |
-| **Host** | Full Lean (tactics, Prop, RC) for proofs and tooling | Product embed TCB |
+| **Host** | Full Lean (tactics, Prop, RC) for proofs and tooling | Product embed trusted computing base |
 | **Dual residual honesty** | Product residual-free and host elaborator residual are **independent**; never forge either | Single greppable "we're residual-free" marketing |
 | **QTT** | Multiplicities **0** (erased), **1** (once), **omega** (unrestricted) | Prop-only erasure story without linearity |
 | **Slake (compiler)** | **This project's north-star product** -- the compiler written in Systems Lean | -- |
@@ -104,7 +104,7 @@ Curry-Howard is not a slogan here: programs and proofs inhabit a typed universe 
   (QTT core, linear)                 (kernel, elab, proofs)
          \                                /
           \     correspondence maps      /
-           \    (erasure, mult, TCB)    /
+           \    (erasure, mult, trusted computing base)    /
             v                          v
          Shared core story  ->  later shared IR
                     |
@@ -118,18 +118,18 @@ Curry-Howard is not a slogan here: programs and proofs inhabit a typed universe 
                             interop design bar)
 ```
 
-### Three runtime/TCB stories (must stay distinct in docs)
+### Three runtime/trusted computing base stories (must stay distinct in docs)
 
 | Path | Residual honesty |
 |------|------------------|
-| Idris **RefC** | C + **reference-counting** runtime still in TCB |
-| Classic Lean **AOT** | Managed Lean runtime (`libleanshared` / RC objects) still in TCB |
+| Idris **RefC** | C + **reference-counting** runtime still in trusted computing base |
+| Classic Lean **AOT** | Managed Lean runtime (`libleanshared` / RC objects) still in trusted computing base |
 | Systems **freestanding** | **No** Lean managed runtime on product wire; host elaborator still classic until earned |
 
 ### First spikes after docs (residual items, not this pass's code)
 
 1. Multiplicity correspondence table (Idris 0/1/omega <-> Systems Lean 0/1/omega <-> Lean Prop/runtime erasure) with **known imperfect edges** written down.
-2. Tiny dual examples (same algorithm in Idris2 + Lean/Systems) with TCB notes.
+2. Tiny dual examples (same algorithm in Idris2 + Lean/Systems) with trusted computing base notes.
 3. Shared IR sketch (on disk under `doc/` or `doc/research/` until product code lands).
 4. LLVM + Rust interop design note (what "without FFI" means in one concrete ABI proposal).
 
@@ -218,7 +218,7 @@ Curry-Howard is not a slogan here: programs and proofs inhabit a typed universe 
 | `doc/goals.md` | Full goals, non-goals, honesty ladder, relationship to Systems Lean |
 | `doc/vocabulary.md` | Stable terms; **Slake disambiguation table** |
 | `doc/architecture.md` | Meet-in-middle diagram; backends; design vs implemented |
-| `doc/divergence.md` | Erasure models; three TCB stories; imperfect map edges |
+| `doc/divergence.md` | Erasure models; three trusted computing base stories; imperfect map edges |
 | `doc/idris-entry.md` | Short map into `ref/Idris2` (overview, QTT, RefC paths) |
 | `doc/lean-entry.md` | Map into `ref/lean4` + pointer to Systems Lean sister absolute paths |
 | `doc/SESSION-HANDOFF.md` | Role, one-liner goal, residual top 3, key paths, verify commands |

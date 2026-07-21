@@ -1,6 +1,6 @@
 # Divergence
 
-Honest differences between poles of the meet-in-the-middle bridge.
+Honest differences between sides of the meet-in-the-middle bridge.
 The point of this document is to prevent false "they're the same" claims.
 
 Related: [vocabulary.md](vocabulary.md), [architecture.md](architecture.md), [idris-entry.md](idris-entry.md), [lean-entry.md](lean-entry.md).
@@ -27,9 +27,9 @@ Related: [vocabulary.md](vocabulary.md), [architecture.md](architecture.md), [id
 
 | Path | Runtime on the wire | Honest residual |
 |------|---------------------|-----------------|
-| Idris **RefC** | C + reference-counting support | Managed RC remains in TCB |
+| Idris **RefC** | C + reference-counting support | Managed RC remains in trusted computing base |
 | Idris Scheme backends | Scheme runtime | Not freestanding bare metal |
-| Classic Lean **AOT** | Lean object runtime / shared libs | Managed runtime remains in TCB |
+| Classic Lean **AOT** | Lean object runtime / shared libs | Managed runtime remains in trusted computing base |
 | **Freestanding** product goal | No Lean managed runtime on product wire | Host elaborator may still use managed runtime until residual is **earned** |
 
 **Never claim** that RefC or classic Lean AOT is freestanding.
@@ -52,7 +52,7 @@ Entry: `ref/lean4/README.md`, `ref/lean4/doc/`.
 
 ### Slake (intended)
 
-Systems Lean host implements shared core checks + freestanding extract + CompCert and LLVM backends. Surface grows toward superset of both poles under progressive gates.
+Systems Lean host implements shared core checks + freestanding extract + CompCert and LLVM backends. Surface grows toward superset of both sides under progressive gates.
 
 ---
 
@@ -62,7 +62,7 @@ Systems Lean host implements shared core checks + freestanding extract + CompCer
 |-----------|----------------|
 | Idris | Programs and proofs share QTT; quantities decide runtime presence |
 | Lean | Heavy proof ecosystem; extract/AOT still often carries runtime residual |
-| Slake goal | Host proofs erased from product TCB; product wire freestanding; dual residual honesty |
+| Slake goal | Host proofs erased from product trusted computing base; product wire freestanding; dual residual honesty |
 
 ---
 
@@ -72,7 +72,56 @@ Systems Lean host implements shared core checks + freestanding extract + CompCer
 - Not "every Lean theorem is an Idris program and vice versa on day one."
 - Not "marketing isomorphism" without a written map and tests.
 
-It means a **deliberate correspondence** of core notions (types, proofs, multiplicities, extract) that both poles can meet, implemented and checked in Slake over time.
+It means a **deliberate correspondence** of core notions (types, proofs, multiplicities, extract) that both sides can meet, implemented and checked in Slake over time.
+
+---
+
+## Greppable imperfect edges (dual pair)
+
+Coordinator join of imperfect edges from both side multiplicity maps and JOIN files.
+Sources (read-only for this section): `src/idris2/multiplicity-map.md`, `src/lean4/multiplicity-map.md`,
+`src/idris2/JOIN.md`, `src/lean4/JOIN.md`. Dual example algorithm id: **ConsumeToken**.
+
+This is a **working map with listed exceptions**, not a formal isomorphism and not freestanding residual free.
+
+### Shared multiplicity row ids
+
+| Id | Topic | Both sides |
+|----|--------|------------|
+| MULT-0 | Erased / compile-time-only | Same greppable id on Idris and Lean maps |
+| MULT-1 | Use-once / linear | Same greppable id; classic Lean is sketch until Systems Lean mult-1 host |
+| MULT-OMEGA | Unrestricted / ordinary data | Same greppable id; labels differ (see EDGE-NAME) |
+
+### Edge aliases (keep both naming families greppable)
+
+| Idris-named id | Lean-named id | One-line meaning |
+|----------------|---------------|------------------|
+| EDGE-PROP | ERASE-PROP | Lean `Prop` erasure is not the same mechanism as Idris quantity 0 |
+| EDGE-RUNTIME | RUNTIME-CLASSIC | Stock hosts leave managed runtime in the trusted computing base |
+| EDGE-CLASSIC-LEAN | RUNTIME-FS (product goal) | Freestanding product C is out of scope for side forks; lives under `src/systems/` later |
+
+### Idris-named edges (Lean may lack dedicated rows)
+
+| Id | Meaning |
+|----|---------|
+| EDGE-NAME | Join docs say **omega**; Idris users say **unrestricted** / compiler `RigW`. Same three-way shape, different labels. |
+| EDGE-AFFINE | Systems Lean product talk includes affine (at most once). Idris public grades are 0 / exact-once 1 / unrestricted -- no first-class affine quantity. |
+
+### Dual example join
+
+| Id | Path / claim |
+|----|----------------|
+| JOIN-ALG | Algorithm id `ConsumeToken` |
+| EX-CONSUME (Idris side) | `src/idris2/examples/ConsumeToken.idr` -- native Idris; LinearCheck surface; not freestanding |
+| EX-CONSUME (Lean side) | `src/lean4/examples/ConsumeToken.lean` -- classic Lean dual sketch; not freestanding |
+| EX-TRUST | `examples/TRUST.md` on both sides -- trusted computing base notes for the dual |
+
+### What this section does not claim
+
+- Freestanding product residual free of managed runtime
+- CompCert PROVABLY
+- Complete formal isomorphism of erasure or runtime models
+- Permission for side forks to implement freestanding body under `src/systems/`
 
 ---
 

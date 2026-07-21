@@ -1,6 +1,9 @@
 # ASCII symbol map
 
-Sole novel-work file allowed non-ASCII. All other novel paths: tab/LF/CR + 0x20-0x7E only.
+Unicode -> ASCII glossary used by hygiene `--fix` and by authors outside the Unicode allowlist.
+
+**Unicode allowed in novel work only here, in `README.md`, and in `doc/vocabulary.md`.** Everywhere else we author: tab/LF/CR + printable ASCII only.
+
 Rows between MAP_BEGIN/MAP_END: `CODEPOINT <TAB> UNICODE <TAB> ASCII <TAB> NAME`.
 Enforce: `script/check-source-hygiene.sh`, `nix flake check` (`source-hygiene`).
 

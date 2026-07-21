@@ -48,7 +48,7 @@ Default production backend is Chez Scheme. **RefC** is the C path; it is **not**
 ## What Systems Lean uses this for
 
 - Correspondence for QTT and linear resources
-- Honest TCB comparison vs freestanding product goals
+- Honest trusted computing base comparison vs freestanding product goals
 - Later: dual examples and surface matrix items
 
 Not for forking Idris 2 development inside this repo.

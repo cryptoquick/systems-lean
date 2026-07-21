@@ -26,6 +26,18 @@ else
   exit 1
 fi
 
-# Future workspace gates (idris2 / lean4 / systems) append below and stay in this script.
+echo "== idris-side (if present) =="
+if [[ -x ./src/idris2/check.sh ]]; then
+  ./src/idris2/check.sh
+elif [[ -f ./src/idris2/check.sh ]]; then
+  bash ./src/idris2/check.sh
+fi
+
+echo "== lean-side (if present) =="
+if [[ -x ./src/lean4/check.sh ]]; then
+  ./src/lean4/check.sh
+elif [[ -f ./src/lean4/check.sh ]]; then
+  bash ./src/lean4/check.sh
+fi
 
 echo "check-all OK"

@@ -31,3 +31,11 @@ out-llvm-ir:
 # Pre-commit path (also installed via script/git-hooks/pre-commit).
 pre-commit:
     ./script/check-all.sh --staged
+
+# One-shot progress meter -> doc/PROGRESS.md (+ guidance snapshots).
+progress:
+    python3 script/progress.py
+
+# Poll sides every 300s (override: WATCH_INTERVAL=60 just watch).
+watch:
+    ./script/watch-forks.sh

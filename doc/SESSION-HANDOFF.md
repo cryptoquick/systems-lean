@@ -6,14 +6,15 @@ Reseed after compaction or a new chat. Read in order with `AGENTS.md`.
 
 ## Role (fork-ready)
 
-**Pole forks:** paste `doc/fork-idris.md` or `doc/fork-lean.md` (PROMPT section).
-**Coordinator:** this chat / `doc/fork-coordinator.md` -- join only; do not race poles by default.
+**Forks:** paste `doc/fork-idris.md` or `doc/fork-lean.md` (PROMPT section).
+**Watcher:** root `WATCHER.md` (`WATCHER_BEGIN` / `WATCHER_END`) -- next implement prompt for auto-continue.
+**Coordinator:** this chat / `doc/fork-coordinator.md` -- join only; do not race Idris/Lean sides by default.
 
 This project is set up so you can **fork the chat** into research vs implementor without fighting over the same residual.
 
 | Role | Does | Does not |
 |------|------|----------|
-| **Research / analysis** | Correspondence, TCB essays, dual-example analysis, IR/interop design notes under `doc/research/` or analysis docs | Drive product residual treadmill unless reassigned; does not need to own git |
+| **Research / analysis** | Correspondence, trusted computing base essays, dual-example analysis, IR/interop design notes under `doc/research/` or analysis docs | Drive product residual treadmill unless reassigned; does not need to own git |
 | **Primary implementor** | Residual that changes product surface, later `src/`, gates | Invent research backlog from silence |
 
 If role is unclear after compaction: **ask once**. Do not assume.
@@ -28,12 +29,12 @@ If role is unclear after compaction: **ask once**. Do not assume.
 
 ---
 
-## Residual
+## Residual and progress
 
-See `RESIDUAL.md`.
-
-- **Open now:** human signed initial commit only.
-- **Hold:** multiplicity table, dual examples, IR sketch, Rust/LLVM interop design, CompCert build-for-PROVABLY, compiler skeleton.
+- Coordinator: `RESIDUAL.md`
+- Sides: `RESIDUAL-idris.md`, `RESIDUAL-lean.md`
+- Meter: `doc/PROGRESS.md` (`just progress` / `just watch` every 300s)
+- Steering: `doc/fork-guidance-idris.md`, `doc/fork-guidance-lean.md`
 
 ---
 
@@ -45,7 +46,7 @@ See `RESIDUAL.md`.
 | `doc/goals.md` | Canonical goals |
 | `doc/vocabulary.md` | Stable terms; Slake = compiler |
 | `doc/architecture.md` | Meet-in-middle sketch |
-| `doc/divergence.md` | Honest differences / TCB |
+| `doc/divergence.md` | Honest differences / trusted computing base |
 | `RESIDUAL.md` | Living open work (Systems Lean only); Hold vs Open |
 | `ref/Idris2/` | Upstream Idris 2 (read-only) |
 | `ref/lean4/` | Upstream Lean 4 (read-only) |

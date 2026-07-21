@@ -45,7 +45,7 @@ See [divergence.md](divergence.md) and [vocabulary.md](vocabulary.md).
 
 ## What Systems Lean uses this for
 
-- Kernel / elaborator / proof-ecosystem pole of the meet-in-the-middle
+- Kernel / elaborator / proof-ecosystem side of the meet-in-the-middle
 - Understanding classic AOT residual vs freestanding goals
 - Later: surface matrix and dual examples
 
