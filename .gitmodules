@@ -1,0 +1,12 @@
+[submodule "ref/Idris2"]
+	path = ref/Idris2
+	url = git@github.com:idris-lang/Idris2.git
+[submodule "ref/lean4"]
+	path = ref/lean4
+	url = https://github.com/leanprover/lean4.git
+[submodule "ref/CompCert"]
+	path = ref/CompCert
+	url = https://github.com/AbsInt/CompCert.git
+[submodule "ref/rust"]
+	path = ref/rust
+	url = https://github.com/rust-lang/rust.git

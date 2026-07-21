@@ -1,0 +1,63 @@
+# --- Nix ---
+/result
+/result-*
+/results/
+.nix-gc-roots/
+.nix-defexpr/
+.nix-profile/
+*.nar
+*.narinfo
+
+# direnv / devenv / nix-direnv
+.direnv/
+.devenv/
+.devenv.local.nix
+.devenv.yaml.bak
+
+# nix develop / flake ephemeral
+.flake-inputs/
+
+# --- Build / cache (language-agnostic) ---
+/build/
+/dist/
+# Build outputs under out/, but keep release surfaces tracked.
+/out/*
+!/out/freestanding-c/
+!/out/freestanding-c/**
+!/out/llvm-ir/
+!/out/llvm-ir/**
+.cache/
+*.o
+*.a
+*.so
+*.dylib
+
+# --- Editors & OS ---
+*~
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# --- Secrets & local overrides ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.nix
+**/secrets.local.*
+
+# --- Logs / temp ---
+*.log
+*.tmp
+*.temp
+.temp/
+tmp/
+temp/
