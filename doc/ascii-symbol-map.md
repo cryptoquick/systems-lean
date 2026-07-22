@@ -5,7 +5,7 @@ Unicode -> ASCII glossary used by hygiene `--fix` and by authors outside the Uni
 **Unicode allowed in novel work only here, in `README.md`, and in `doc/vocabulary.md`.** Everywhere else we author: tab/LF/CR + printable ASCII only.
 
 Rows between MAP_BEGIN/MAP_END: `CODEPOINT <TAB> UNICODE <TAB> ASCII <TAB> NAME`.
-Enforce: `script/check-source-hygiene.sh`, `nix flake check` (`source-hygiene`).
+Enforce: `just hygiene / nix flake check`, `nix flake check` (`source-hygiene`).
 
 ## Map data
 

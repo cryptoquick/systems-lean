@@ -12,17 +12,17 @@ The freestanding compiler product of this project is **Slake**.
 
 Meet-in-the-middle Idris 2 and Lean 4 correspondence feeds Slake -- sides live under `src/idris2/` and `src/lean4/`. LLVM intermediate representation for Rust-native link is **deferred** until self-host (`out/llvm-ir`).
 
-Tooling: idiomatic **Nix flakes** + `just`. Spec and proof stay separated; red/green tests stay required. Policy detail: [AGENTS.md](AGENTS.md), [doc/goals.md](doc/goals.md).
+**Three languages only** for novel work: **Idris 2**, **Lean 4** (including Systems Lean / Slake), and **pure Nix flakes** (small modules under `nix/`, not bash-in-Nix). No project Python; shell under `script/` is migration debt to shrink. Freestanding C is product emit, not a fourth source language. Thin **`just`** orchestrates only. Policy: [AGENTS.md](AGENTS.md), terms: [doc/vocabulary.md](doc/vocabulary.md), goals: [doc/goals.md](doc/goals.md). Spec and proof stay separated; red/green tests stay required.
 
 ## Read first
 
 | Doc | Purpose |
 |-----|---------|
 | [doc/goals.md](doc/goals.md) | Full goals, non-goals, honesty ladder |
-| [doc/vocabulary.md](doc/vocabulary.md) | Stable terms (project = Systems Lean; Slake = **compiler**) |
+| [doc/vocabulary.md](doc/vocabulary.md) | Stable terms (project = Systems Lean; Slake = **compiler**; tooling terms) |
 | [doc/architecture.md](doc/architecture.md) | Meet-in-the-middle sketch |
 | [doc/divergence.md](doc/divergence.md) | Honest differences and trusted computing bases |
-| [AGENTS.md](AGENTS.md) | Agent hygiene and isolation |
+| [AGENTS.md](AGENTS.md) | Agent hygiene, isolation, and pure Nix tooling rule |
 | [RESIDUAL.md](RESIDUAL.md) | Living open work for **this** project |
 
 ## References (read-only)
@@ -55,7 +55,7 @@ Work **here**. This repository **is** Systems Lean. Do not default to other tree
 |   +-- llvm-ir/         # LLVM IR for Rust-native link (deferred post self-host)
 +-- ref/                 # Upstream read-only submodules (Idris2, lean4, CompCert, rust)
 +-- doc/                 # Goals, vocabulary, architecture, entry maps
-+-- script/              # check-all, build-systems, hygiene, hooks
++-- script/              # residual build/emit shells + git-hooks; tooling is flake apps
 +-- justfile             # just check | build | out-freestanding-c (default: list)
 +-- flake.nix            # Nix checks / devShell / apps
 +-- AGENTS.md            # Agent policy + detailed tree map
@@ -69,6 +69,7 @@ Next autonomous implement instructions: [WATCHER.md](WATCHER.md) (`WATCHER_BEGIN
 ## Tooling
 
 ```bash
+nix develop       # elan (Lean/Lake pin manager) + idris2 + just + rg + scc
 just              # list
 just check        # CI-identical full suite
 just progress     # % meter -> doc/PROGRESS.md
@@ -77,6 +78,10 @@ just build        # freestanding src/systems/
 just out-freestanding-c  # release freestanding C
 just out-llvm-ir         # deferred (see out/llvm-ir/README.md)
 ```
+
+Lean elaborator pin is `leanprover/lean4:v4.32.0` (`src/systems/lean-toolchain`, `src/lean4/lean-toolchain`).
+In the dev shell: `elan toolchain install "$(tr -d '[:space:]' < src/systems/lean-toolchain)"` once.
+Workspace checks skip Lake when the pin is not installed (no surprise network download).
 
 Side residuals: `RESIDUAL-idris.md`, `RESIDUAL-lean.md`. Coordinator: `RESIDUAL.md`.
 ASCII map: [doc/ascii-symbol-map.md](doc/ascii-symbol-map.md). Policy: [AGENTS.md](AGENTS.md).

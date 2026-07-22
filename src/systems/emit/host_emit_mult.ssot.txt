@@ -1,0 +1,76 @@
+# HOST-EMIT-MULT -- Mult freestanding C product text (durable host artifact)
+# SSoT owner: SystemsLean.EmitMult (src/systems/SystemsLean/EmitMult.lean)
+#   multHeaderFragment + multBodyFragment + Mult.name grade strings
+# Bash generator script/slake-emit-freestanding-c.sh is NON-SSOT for Mult product text.
+# MULT_NAME_* must match Mult.name / EmitMult.multName* (HOST-EMIT-MULT-SMOKE).
+# MULT_C_HEADER / MULT_C_BODY blocks must match multHeaderFragment / multBodyFragment.
+# FAIL-CLOSED-UNKNOWN-GRADE: unknown grades return 0 / null (no silent coerce).
+# Product API: enum slake_mult, slake_mult_is_valid, slake_mult_is_known, slake_mult_name.
+# Host stage ids only: HOST-EMIT-MULT / SELF-HOST-EMIT-MULT / SLAKE_SELF_HOST_EMIT_MULT_V0.
+# Do not mint EMIT_MULT_V0 residual C stage ladder as freestanding residual progress.
+HOST-EMIT-MULT
+NON-SSOT
+SELF-HOST-EMIT-MULT
+SLAKE_SELF_HOST_EMIT_MULT_V0
+FAIL-CLOSED-UNKNOWN-GRADE
+MULT_NAME_0=MULT-0
+MULT_NAME_1=MULT-1
+MULT_NAME_OMEGA=MULT-OMEGA
+MULT_C_0=SLAKE_MULT_0
+MULT_C_1=SLAKE_MULT_1
+MULT_C_OMEGA=SLAKE_MULT_OMEGA
+# MULT_C_HEADER_BEGIN
+/* ---- Mult (Mult.slake) ----
+ * MULT-0 / MULT-1 / MULT-OMEGA only. FAIL-CLOSED-UNKNOWN-GRADE.
+ * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt
+ * (generator bash is NON-SSOT for Mult product text).
+ */
+enum slake_mult {
+  SLAKE_MULT_0 = 0,     /* MULT-0 */
+  SLAKE_MULT_1 = 1,     /* MULT-1 */
+  SLAKE_MULT_OMEGA = 2  /* MULT-OMEGA */
+};
+
+/* 1 if m is one of MULT-0 / MULT-1 / MULT-OMEGA; 0 otherwise (fail closed).
+ * Canonical UNIT_DEEPEN_V1 map name: slake_mult_is_valid (alias multIsValid).
+ */
+int slake_mult_is_valid(enum slake_mult m);
+/* Alias of slake_mult_is_valid (UNIT_TRANSLATION_V0 name). */
+int slake_mult_is_known(enum slake_mult m);
+
+/* Greppable grade name: "MULT-0" | "MULT-1" | "MULT-OMEGA" | 0 if unknown. */
+const char *slake_mult_name(enum slake_mult m);
+# MULT_C_HEADER_END
+# MULT_C_BODY_BEGIN
+/* ---- Mult (FAIL-CLOSED-UNKNOWN-GRADE) ----
+ * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt
+ * (generator bash is NON-SSOT for Mult product text).
+ */
+
+int slake_mult_is_valid(enum slake_mult m)
+{
+  if (m == SLAKE_MULT_0 || m == SLAKE_MULT_1 || m == SLAKE_MULT_OMEGA) {
+    return 1;
+  }
+  return 0;
+}
+
+int slake_mult_is_known(enum slake_mult m)
+{
+  return slake_mult_is_valid(m);
+}
+
+const char *slake_mult_name(enum slake_mult m)
+{
+  if (m == SLAKE_MULT_0) {
+    return "MULT-0";
+  }
+  if (m == SLAKE_MULT_1) {
+    return "MULT-1";
+  }
+  if (m == SLAKE_MULT_OMEGA) {
+    return "MULT-OMEGA";
+  }
+  return 0; /* unknown: fail closed; no silent coerce */
+}
+# MULT_C_BODY_END

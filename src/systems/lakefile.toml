@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Unlicense
+# Systems Lean host: Mult + Linear + Types + ordered IR program + Erasure + Extract
+# + IrGraph + HostCompose + EmitPlan + EmitApply + EmitBody + CompilePath + JoinMap
+# + SelfHost + SurfaceMatrix + KernelMult + EmitMult + ParityMult + KernelLinear
+# + ParityLinear + KernelTypes + ParityTypes + KernelProgram + ParityProgram +
+# KernelEmit + ParityEmit + SelfApply + SelfApplyFs + LlvmHold + InventoryClose +
+# ProductPath (Mult..ProductPath, 31 modules)
+# under classic Lean elaborator.
+# Not freestanding residual free. Not product C. No remote dependencies.
+# Offline: lake-manifest.json has empty packages (mirror src/lean4 policy).
+name = "SystemsLean"
+version = "0.1.0"
+defaultTargets = ["SystemsLean"]
+
+[[lean_lib]]
+name = "SystemsLean"
+srcDir = "."
+roots = ["SystemsLean"]

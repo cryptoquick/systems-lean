@@ -1,14 +1,20 @@
-# Trusted computing base notes -- ConsumeToken (Lean side)
+# Trusted computing base notes -- dual examples (Lean side)
 
-**Algorithm id:** ConsumeToken
-**Example:** `src/lean4/examples/ConsumeToken.lean`
-**Pair:** `src/idris2/examples/ConsumeToken.idr`, `src/idris2/examples/TRUST.md`
+**Examples:**
 
-## What is in the trust base if you run classic Lean on this file
+| Algorithm id | Path |
+|--------------|------|
+| ConsumeToken | `src/lean4/examples/ConsumeToken.lean` |
+| ErasedIndex | `src/lean4/examples/ErasedIndex.lean` |
+| UnrestrictedShare | `src/lean4/examples/UnrestrictedShare.lean` |
+
+**Pair:** same algorithm ids under `src/idris2/examples/`, plus `src/idris2/examples/TRUST.md`.
+
+## What is in the trust base if you run classic Lean on these files
 
 - Lean kernel and elaborator
 - Lean managed runtime if you ahead-of-time compile a real program that links Lean runtime
-- Opaque stubs and defs here do not emit freestanding C
+- Axiom contracts and defs here do not emit freestanding C
 
 ## Pair honesty (Idris side)
 

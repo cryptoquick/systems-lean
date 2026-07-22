@@ -1,4 +1,4 @@
-# Same suite as `just check` / script/check-all.sh
+# Same suite as `just check` (pure flake hygiene + residual workspace gates).
 name: ci
 
 on:
@@ -15,4 +15,4 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: just check (full suite)
         run: |
-          nix shell nixpkgs#just nixpkgs#python3 -c "just check"
+          nix shell nixpkgs#just nixpkgs#scc -c "just check"

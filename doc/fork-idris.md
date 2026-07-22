@@ -34,7 +34,7 @@ Your job: honest **native Idris 2** artifacts (multiplicities 0 / 1 / unrestrict
 - Re-read doc/fork-guidance-idris.md at the start of every implement loop (coordinator directives).
 - Own residual file: RESIDUAL-idris.md (not only coordinator RESIDUAL.md).
 - Isolation in this repo; git hands-off unless human asks.
-- Unicode allowlist only: README.md, doc/vocabulary.md, doc/ascii-symbol-map.md. All other novel work: printable ASCII + no trailing whitespace. just check / script/check-source-hygiene.sh --walk
+- Unicode allowlist only: README.md, doc/vocabulary.md, doc/ascii-symbol-map.md. All other novel work: printable ASCII + no trailing whitespace. just check / just hygiene
 - Language: natural precise prose; first use of any short form in parentheses; never bare obscure codes (e.g. write trusted computing base, not bare TCB). Say Idris side / Lean side -- do not say "pole."
 - Unlicense novel work: UNLICENSE.md; SPDX Unlicense on packages we author.
 - No freestanding / PROVABLY / garbage-collection-free elaborator claims without greppable evidence. RefC (reference-counting C) is not freestanding.
@@ -91,7 +91,7 @@ Great, what do we need to work on next to manifest that consideration along with
 
 ## Validation (run yourself)
 just check
-./script/check-source-hygiene.sh --walk
+just hygiene
 Update RESIDUAL-idris.md. Re-read doc/fork-guidance-idris.md each loop. Coordinator owns RESIDUAL.md join board.
 
 ## Coordination handoff (every slice)

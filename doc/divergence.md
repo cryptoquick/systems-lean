@@ -98,7 +98,13 @@ This is a **working map with listed exceptions**, not a formal isomorphism and n
 |----------------|---------------|------------------|
 | EDGE-PROP | ERASE-PROP | Lean `Prop` erasure is not the same mechanism as Idris quantity 0 |
 | EDGE-RUNTIME | RUNTIME-CLASSIC | Stock hosts leave managed runtime in the trusted computing base |
-| EDGE-CLASSIC-LEAN | RUNTIME-FS (product goal) | Freestanding product C is out of scope for side forks; lives under `src/systems/` later |
+| EDGE-CLASSIC-LEAN | RUNTIME-FS (product goal; see note) | Not a single clean 1:1 alias -- overloaded across side maps (below) |
+
+**EDGE-CLASSIC-LEAN honesty (not 1:1 yet):** this id carries more than one sense until sides normalize naming.
+
+1. **Classic Lean binder-algebra gap** -- stock Lean has no full Idris-style 0/1/omega binder algebra; Lean duals remain sketches until Systems Lean mult checks are host.
+2. **RUNTIME-FS (product goal)** -- freestanding product C is out of scope for side forks; lives under `src/systems/` later. Idris map aliases EDGE-CLASSIC-LEAN partly to this out-of-scope freestanding goal.
+3. **Lean crosswalk co-name with RUNTIME-CLASSIC** -- Lean map also attaches EDGE-CLASSIC-LEAN to EDGE-RUNTIME / RUNTIME-CLASSIC (managed runtime residual on stock hosts). Greppable on both maps; do not collapse to one clean pairing yet.
 
 ### Idris-named edges (Lean may lack dedicated rows)
 
@@ -114,7 +120,8 @@ This is a **working map with listed exceptions**, not a formal isomorphism and n
 | JOIN-ALG | Algorithm id `ConsumeToken` |
 | EX-CONSUME (Idris side) | `src/idris2/examples/ConsumeToken.idr` -- native Idris; LinearCheck surface; not freestanding |
 | EX-CONSUME (Lean side) | `src/lean4/examples/ConsumeToken.lean` -- classic Lean dual sketch; not freestanding |
-| EX-TRUST | `examples/TRUST.md` on both sides -- trusted computing base notes for the dual |
+| EX-TRUST (Idris side) | `src/idris2/examples/TRUST.md` -- trusted computing base notes for the dual |
+| EX-TRUST (Lean side) | `src/lean4/examples/TRUST.md` -- trusted computing base notes for the dual |
 
 ### What this section does not claim
 

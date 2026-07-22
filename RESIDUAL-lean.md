@@ -8,7 +8,7 @@ Fork prompt: `doc/fork-lean.md`. Re-read `doc/fork-guidance-lean.md` every imple
 
 **Status vocabulary:** `open` | `in progress` | `done` | `blocked` | `wontfix`
 
-**Language:** say **Idris side** / **Lean side** / **bridge half** / **fork**. Do not use the word "pole" (except when documenting the ban or a red/green grep that rejects it).
+**Language:** say **Idris side** / **Lean side** / **bridge half** / **fork**. Follow `AGENTS.md` banned-jargon list.
 
 ---
 
@@ -17,19 +17,18 @@ Fork prompt: `doc/fork-lean.md`. Re-read `doc/fork-guidance-lean.md` every imple
 | Id | Item | Status | Paths |
 |----|------|--------|-------|
 | L-DONE-MAP | First-cut multiplicity / erasure map | **done** | `src/lean4/multiplicity-map.md` |
-| L-DONE-EX | Classic Lean ConsumeToken sketch | **done** | `src/lean4/examples/ConsumeToken.lean` |
-| L-DONE-TRUST | Trusted computing base notes for example | **done** | `src/lean4/examples/TRUST.md` |
-| L-DONE-JOIN | Greppable join table | **done** | `src/lean4/JOIN.md` |
-| L-DUAL-MAP | Dual-update map + edge crosswalk from real Idris text | **done** | `src/lean4/multiplicity-map.md` |
-| L-DUAL-EX | Align ConsumeToken; `SystemsLean.LeanBridge` namespace | **done** | `src/lean4/examples/ConsumeToken.lean` |
-| L-DUAL-TRUST | TRUST paired with Idris trust notes | **done** | `src/lean4/examples/TRUST.md` |
-| L-JOIN | JOIN paired status (Idris dual present) | **done** | `src/lean4/JOIN.md` |
+| L-DONE-EX | Classic Lean ConsumeToken sketch | **done** | `examples/ConsumeToken.lean` |
+| L-DONE-ERASED | Classic Lean ErasedIndex dual (MULT-0) | **done** | `examples/ErasedIndex.lean` |
+| L-DONE-SHARE | Classic Lean UnrestrictedShare dual (MULT-OMEGA) | **done** | `examples/UnrestrictedShare.lean` |
+| L-DONE-TRUST | Trusted computing base notes for duals | **done** | `examples/TRUST.md` |
+| L-DONE-JOIN | Greppable join table (three algorithm ids) | **done** | `JOIN.md` |
+| L-DUAL-MAP | Dual-update map + edge crosswalk from real Idris text | **done** | multiplicity-map |
 | L-EDGE-XWALK | Durable Lean <-> Idris edge crosswalk | **done** | multiplicity-map edge table |
-| L-README | README dual status + residual pointer | **done** | `src/lean4/README.md` |
-| L-JARGON | Scrub pole/Pole under Lean product sources | **done** | `src/lean4/**` clean except check.sh ban |
-| L-CHECK-SH | Presence/syntax red/green gate | **done** | `src/lean4/check.sh` |
+| L-README | README dual status + residual pointer | **done** | `README.md` |
+| L-JARGON | Language hygiene under Lean product sources | **done** | examples clean of banned jargon |
+| L-CHECK-SH | Presence/syntax red/green gate | **done** | `check.sh` |
+| L-LAKE | Minimal Lake package + optional elaborator | **done** | `lakefile.toml` roots for three examples |
 | L-RESIDUAL | Living inventory in this file | **done** (kept current) | this file |
-| L-RESEARCH | Optional analysis note | **wontfix** (this slice) | product map holds dual honesty |
 
 ---
 
@@ -37,8 +36,8 @@ Fork prompt: `doc/fork-lean.md`. Re-read `doc/fork-guidance-lean.md` every imple
 
 | Id | Item | Status | Notes |
 |----|------|--------|-------|
-| L-LAKE | Optional Lake/lean elaborator check for examples | **open** | Must not break default `just check`; no freestanding claim |
 | L-FORMAL-ISO | Formal map theorems in Lean | **open** (deferred) | After duals stabilize + human prioritizes proofs |
+| L-MORE-DUAL | Further duals | **open** (deferred) | Only when a named map gap requires a new algorithm id |
 
 ---
 
@@ -64,21 +63,18 @@ Fork prompt: `doc/fork-lean.md`. Re-read `doc/fork-guidance-lean.md` every imple
 
 ## Highest value next (if continuing Lean chat)
 
-1. **L-LAKE** only if a cheap Lake package can typecheck `ConsumeToken.lean` without wiring freestanding claims into the suite -- otherwise leave open.
-2. Otherwise **stop Lean autonomous loop**: dual honesty is current; remaining product freestanding work is coordinator / systems hold.
-3. Do not invent residual to keep the watcher spinning.
+1. **Stop Lean autonomous loop** unless the human prioritizes **L-FORMAL-ISO** or a named new dual.
+2. Do not invent residual to keep the watcher spinning.
+3. Hand **L-COORD-JOIN** to the coordinator chat (not Lean-fork duty).
+4. Systems Lean host deepen is **Systems fork** (`src/systems/`), not this tree.
 
 ---
 
 ## Next residual implement prompt (Lean side)
 
 ```
-/implement --effort 1 remaining Lean-side work only under src/lean4/ (residual file: RESIDUAL-lean.md only):
-
-1. If L-LAKE is still open and a minimal Lake package is low-risk: red/green elaborator check for examples/ConsumeToken.lean without freestanding claims; keep just check green.
-2. Else: do not invent work -- document blocked or residual-closed-except-optional in RESIDUAL-lean.md; hand coordinator L-COORD-JOIN if still open.
-3. Do not implement src/idris2 or src/systems. Do not use the word pole in new prose.
-4. Run just check and ./src/lean4/check.sh; update RESIDUAL-lean.md; end with another implement prompt or a short stop/blocked note.
-
-Subagents: strategic parallel for disjoint reads; parent soft ~40% context / ~200k cost knee; join on disk.
+blocked (Lean side): dual depth residual for this fork is current
+(ConsumeToken + ErasedIndex + UnrestrictedShare). Optional formal map theorems
+only if human prioritizes. Do not edit src/idris2 or src/systems.
+Follow AGENTS.md language rules. No freestanding/PROVABLY forge. No git.
 ```

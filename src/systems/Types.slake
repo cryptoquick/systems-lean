@@ -1,0 +1,74 @@
+-- UNIT_SURFACE freestanding unit surface for Slake shared core.
+-- UNIT_DEEPEN_V1 abstract body (thin type_tag contract already in C).
+-- TYPED_IR_V0 richer typed IR surface (ir_node; kind/mult pairing; fail closed).
+-- IR_PROGRAM_V0 multi-node ordered IR program (ordered list; not CFG).
+-- IR_GRAPH_EDGES_V0 graph edges over ordered IR program (node index endpoints).
+-- HOST_COMPOSE_V0 host + IR graph composition (graph side light note).
+-- EMIT_PLAN_V0 emit plan from host compose (light note; primary extract.md).
+-- EMIT_APPLY_V0 apply plan tags into fixed buffer (light note; primary extract.md).
+-- EMIT_BODY_V0 freestanding C body fragment (light note; primary extract.md).
+-- Not freestanding emit residual free. Not freestanding residual free.
+-- Not freestanding emit claim as residual free product. Not product C residual free.
+-- Module: Types (dependent types as common universe)
+-- See: types.md, doc/shared-ir-sketch.md
+-- JOIN-ALG ConsumeToken duals stay on language sides; freestanding host is CONSUME_TOKEN_HOST_V0 under emit (not reimplemented here).
+-- C map: typeTagInit -> slake_type_tag_init; ir_node -> slake_ir_node_* (TYPED_IR_V0)
+-- C map: ir_program -> slake_ir_program_* (IR_PROGRAM_V0)
+-- C map: ir_graph -> slake_ir_graph_* (IR_GRAPH_EDGES_V0)
+-- C map: host_compose embeds ir_graph (HOST_COMPOSE_V0; graph call-through)
+-- C map: emit_plan counts graph nodes/edges (EMIT_PLAN_V0; light)
+-- C map: emit_apply packs mult/kind tags (EMIT_APPLY_V0; light)
+-- C map: emit_body builds C fragment from compose (EMIT_BODY_V0; light)
+-- Contract ids: COMMON-UNIVERSE; HOST-RESIDUAL; PRODUCT-WIRE-RESIDUAL; TYPED_IR_V0; IR_PROGRAM_V0; IR_GRAPH_EDGES_V0; HOST_COMPOSE_V0; EMIT_PLAN_V0; EMIT_APPLY_V0; EMIT_BODY_V0
+
+-- UNIT_SURFACE
+-- UNIT_DEEPEN_V1
+-- TYPED_IR_V0
+-- IR_PROGRAM_V0
+-- IR_GRAPH_EDGES_V0
+-- HOST_COMPOSE_V0
+-- EMIT_PLAN_V0
+-- EMIT_APPLY_V0
+-- EMIT_BODY_V0
+module Types where
+
+-- Abstract surface: types are the common universe (COMMON-UNIVERSE) for Slake shared core.
+-- Host elaborator differences (Idris side / Lean side) are HOST-RESIDUAL, not PRODUCT-WIRE-RESIDUAL.
+--
+-- UNIT_DEEPEN_V1 thin type_tag contract:
+--   typeTagInit t tag  -- fail closed on null; sets tag field
+-- C product symbol: slake_type_tag_init (slake_type_tag *, uint32_t)
+--
+-- TYPED_IR_V0 ir_node contract (not full elaborator; not residual free):
+--   ir_node: type_tag + mult + kind + valid
+--   kind/mult pairing fail closed:
+--     VALUE  <-> MULT-OMEGA
+--     LINEAR <-> MULT-1
+--     ERASED <-> MULT-0
+--   slake_ir_node_init / slake_ir_node_is_well_typed / slake_ir_node_check_fail_closed
+--   check path composes FAIL_CLOSED_CHECKER_V1 (claimed_runtime always RUNTIME-FS)
+--
+-- IR_PROGRAM_V0 ir_program contract (ordered multi-node list; not CFG):
+--   ir_program: nodes[SLAKE_IR_PROGRAM_CAP=8] + count + valid
+--   empty program (count=0) is NOT well-typed as a program (fail closed)
+--   push: 0 ok; -1 null/bad; -2 full; bad push leaves count unchanged
+--   check_fail_closed: every node via slake_ir_node_check_fail_closed
+--   honesty: MULT-1 nodes may share one live linear token for V0 (not consumed)
+--
+-- IR_GRAPH_EDGES_V0 ir_graph contract (edges over program nodes; not full CFG):
+--   ir_graph: prog + edges[SLAKE_IR_EDGE_MAX=16] + edge_count + valid
+--   add_edge: 0 ok; -1 null/invalid/full/endpoints out of range; leave edge_count unchanged
+--   empty edges OK; empty valid graph well-typed + check OK (graph surface)
+--   is_well_typed: empty graph OK or program well-typed + every edge valid with from/to < count
+--   check_fail_closed: requires well-typed; empty graph OK; else program check call-through
+--
+-- HOST_COMPOSE_V0 (graph side light): slake_host_compose embeds ir_graph; push/add_edge
+--   call through; extract owns host + erased (see extract.md / linear.md).
+-- EMIT_PLAN_V0 (light): slake_emit_plan_from_compose counts nodes/edges/mult survivors
+--   from checked host_compose; primary API in extract.md. Not CFG/SSA.
+-- EMIT_APPLY_V0 (light): slake_emit_apply_from_compose packs mult/kind tags into
+--   fixed buffer; primary API in extract.md. Not full C body emit; not CFG/SSA.
+-- EMIT_BODY_V0 (light): slake_emit_body_from_compose builds fixed C fragment via
+--   plan + apply; primary API in extract.md. Not residual free; not CFG/SSA.
+-- Contract: later type checks fail closed under freestanding constraints; no product GC.
+-- Not freestanding emit residual free (emit stage is separate).

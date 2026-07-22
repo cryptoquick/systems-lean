@@ -37,7 +37,7 @@ Your job: honest **native Lean 4** duals of Idris-side examples, plus a written 
 - Re-read doc/fork-guidance-lean.md at the start of every implement loop (coordinator directives).
 - Own residual file: RESIDUAL-lean.md (not only coordinator RESIDUAL.md).
 - Isolation in this repo; git hands-off unless human asks.
-- Unicode allowlist only: README.md, doc/vocabulary.md, doc/ascii-symbol-map.md. All other novel work: printable ASCII + no trailing whitespace. just check / script/check-source-hygiene.sh --walk
+- Unicode allowlist only: README.md, doc/vocabulary.md, doc/ascii-symbol-map.md. All other novel work: printable ASCII + no trailing whitespace. just check / just hygiene
 - Language: natural precise prose; first use of any short form in parentheses; never bare obscure codes (e.g. write trusted computing base, not bare TCB). Prefer "Idris side" / "Lean side"; do not say "pole".
 - Unlicense novel work: UNLICENSE.md; SPDX Unlicense on packages we author.
 - Ahead-of-time != freestanding. Classic Lean ahead-of-time still has managed runtime residual.
@@ -93,7 +93,7 @@ Great, what do we need to work on next to manifest that consideration along with
 
 ## Validation (run yourself)
 just check
-./script/check-source-hygiene.sh --walk
+just hygiene
 Update RESIDUAL-lean.md. Re-read doc/fork-guidance-lean.md each loop. Coordinator owns RESIDUAL.md join board.
 
 ## Coordination handoff (every slice)

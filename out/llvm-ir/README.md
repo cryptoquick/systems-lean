@@ -4,13 +4,22 @@
 
 ## Status: deferred
 
-Do **not** implement populate/pipeline work here until **self-hosted Systems Lean** is working in the **Slake** compiler design (`src/systems/`).
+Do **not** implement populate/pipeline work here until **true freestanding
+product self-host** is working in the **Slake** compiler design
+(`src/systems/`).
+
+**SH6 hold (documented, not unlock):** host gate `SystemsLean/LlvmHold.lean`
+(`HOST-LLVM-HOLD` / `SELF-HOST-LLVM-HOLD` / `HOST-PROVABLY-HOLD`;
+`llvmUnlocked` / `provablyUnlocked` / `freestandingProductSelfHostComplete`
+decide false; `llvmHoldReady` true). SH5 host-structural `selfApplyReady` does
+**not** open this path. Not residual-open llvm mill. Not PROVABLY. Still not
+residual free.
 
 Until then:
 
 - This directory is a reserved release surface + design placeholder.
 - Correspondence and freestanding C (`out/freestanding-c/`) take priority.
-- Residual: keep deferred; do not invent llvm-ir residual treadmill.
+- Residual: keep deferred (P6 hold); do not invent llvm-ir residual treadmill.
 
 ## Later (after self-host)
 

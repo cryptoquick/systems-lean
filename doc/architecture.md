@@ -4,6 +4,7 @@ Design sketch for the meet-in-the-middle bridge and the **Slake** compiler.
 **Status:** design documentation. Not an implementation claim.
 
 Related: [goals.md](goals.md), [divergence.md](divergence.md), [vocabulary.md](vocabulary.md).
+See also: [shared-ir-sketch.md](shared-ir-sketch.md) (shared intermediate-representation correspondence; design only).
 
 ---
 
@@ -55,7 +56,7 @@ Curry-Howard is operational: well-typed terms are programs and/or proofs; extrac
 | Layer | Responsibility | Now |
 |-------|----------------|-----|
 | Surface | Language(s) accepted by Slake (phased toward superset) | Design only |
-| Core / IR | Shared typed core with multiplicities | Design only |
+| Core / IR | Shared typed core with multiplicities | Design sketch: [shared-ir-sketch.md](shared-ir-sketch.md); not implemented |
 | Checks | Use/linearity/affine; fail-closed freestanding constraints | Design only |
 | Host tooling | Proofs, elaborator services on full host | Design only |
 | Product extract | Freestanding C / objects without managed Lean runtime | Design only |
@@ -107,7 +108,7 @@ Other residual mills are **not** part of the architecture diagram. This reposito
 ## What is deliberately not designed yet
 
 - Full surface syntax for the superset language
-- Exact shared IR schema
+- Exact shared IR schema (correspondence sketch only: [shared-ir-sketch.md](shared-ir-sketch.md))
 - Package manager / build driver story for Slake (orthogonal to the Lake-twin naming collision elsewhere)
 - Verified concurrent runtime on the product residual
 - Formal proof that extract preserves all observational behavior

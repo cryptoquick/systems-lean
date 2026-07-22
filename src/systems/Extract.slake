@@ -1,0 +1,95 @@
+-- UNIT_SURFACE freestanding unit surface for Slake shared core.
+-- UNIT_DEEPEN_V1 abstract body (first unit translation into emit).
+-- FAIL_CLOSED_CHECKER_V1 composed checker + extract path (V0 product surface).
+-- HOST_COMPOSE_V0 host + IR graph composition for fail-closed extract.
+-- EMIT_PLAN_V0 emit plan from host compose (readiness inventory; not CFG/SSA).
+-- EMIT_APPLY_V0 apply plan tags into fixed buffer (not residual free; not full C body).
+-- EMIT_BODY_V0 freestanding C body fragment from host compose (not residual free; not CFG/SSA).
+-- Not freestanding emit body residual free in this unit (V0 product C is separate stage).
+-- Not freestanding residual free. Not full compiler body.
+-- Not freestanding emit claim as residual free product.
+-- Module: Extract (extract boundary; RUNTIME-FS product goal)
+-- See: extract.md, doc/shared-ir-sketch.md
+-- V0 emit path: SLAKE_EMIT_FREESTANDING_C_V0 under emit/ + just out-freestanding-c.
+-- Still not residual free; RUNTIME-FS is the goal, not a residual-free claim.
+-- Contract id: EMIT-BOUNDARY
+-- C map: host_compose -> slake_host_compose_* (HOST_COMPOSE_V0)
+-- C map: emit_plan -> slake_emit_plan_* (EMIT_PLAN_V0)
+-- C map: emit_apply -> slake_emit_apply_* (EMIT_APPLY_V0)
+-- C map: emit_body -> slake_emit_body_* (EMIT_BODY_V0)
+
+-- UNIT_SURFACE
+-- UNIT_DEEPEN_V1
+-- FAIL_CLOSED_CHECKER_V1
+-- HOST_COMPOSE_V0
+-- EMIT_PLAN_V0
+-- EMIT_APPLY_V0
+-- EMIT_BODY_V0
+module Extract where
+
+-- Abstract surface: extract boundary between host elaborator / proofs and product extract.
+-- Three runtime stories stay distinct: Idris RefC; classic Lean AOT; freestanding product.
+-- EDGE-RUNTIME / RUNTIME-CLASSIC mark stock-host managed residual.
+-- RUNTIME-FS is the freestanding product goal (no Lean managed runtime on the wire).
+-- EMIT-BOUNDARY: host elaborator / proofs vs product extract honesty.
+--
+-- UNIT_DEEPEN_V1 first unit translation note:
+--   Mult / Linear / Erasure abstract contracts map into SLAKE_EMIT_FREESTANDING_C_V0
+--   product symbols (slake_mult_is_valid, slake_linear_consume,
+--   slake_erasure_is_runtime_absent). Still not residual free; not full compiler.
+--
+-- FAIL_CLOSED_CHECKER_V1 (composed fail-closed checks before product extract):
+--   slake_check_bundle        -- mult + optional linear/erased + claimed runtime
+--   slake_check_fail_closed   -- returns SLAKE_EXTRACT_OK or SLAKE_EXTRACT_FAIL_CLOSED
+--   slake_extract_with_checks -- check then set out_rt to RUNTIME-FS on success only
+-- Rules (fail closed, not residual free):
+--   unknown mult fail; MULT-1 needs live linear; MULT-0 needs marked erased;
+--   claimed_runtime must be RUNTIME-FS (CLASSIC / EDGE-RUNTIME rejected on product wire).
+-- CONSUME_TOKEN_HOST_V0 composes this checker via slake_consume_token_check_fail_closed
+-- (Linear host; dual cite only; not residual free).
+--
+-- HOST_COMPOSE_V0 host_compose contract (not second elaborator):
+--   slake_host_compose: graph + host (CONSUME_TOKEN_HOST_V0) + erased + valid
+--   init / push_node / add_edge / mint / consume / mark_erased: thin call-throughs
+--   is_well_typed: valid + graph well-typed; empty compose OK at graph surface
+--   check_fail_closed: intentional mult pre-scan (compose owns host/erasure) then
+--     graph check_fail_closed with host.token + erased; redundant-safe vs node path
+--   extract: run check; empty well-typed graph OK; null out_rt on success FAIL_CLOSED;
+--     *out_rt = RUNTIME-FS on OK
+-- Greppable: HOST_COMPOSE_V0, slake_host_compose, EMIT-BOUNDARY, RUNTIME-FS
+--
+-- EMIT_PLAN_V0 emit_plan contract (readiness inventory; not full IR body emit):
+--   slake_emit_plan: node_count, edge_count, runtime_nodes, erased_nodes, ready, valid
+--   slake_emit_plan_id -> exact EMIT_PLAN_V0
+--   slake_emit_plan_from_compose: 0 ok after check_fail_closed; -1 fail closed zeros out
+--   runtime_nodes = MULT-1 + MULT-OMEGA; erased_nodes = MULT-0; empty compose counts 0
+--   slake_emit_plan_is_ready: 1 if non-null valid ready; else 0
+-- Greppable: EMIT_PLAN_V0, slake_emit_plan, HOST_COMPOSE_V0, EMIT-BOUNDARY, RUNTIME-FS
+--
+-- EMIT_APPLY_V0 emit_apply contract (fixed tag buffer; not full C body emit):
+--   slake_emit_apply: tags[SLAKE_EMIT_APPLY_CAP], count, valid (CAP=32)
+--   slake_emit_apply_id -> exact EMIT_APPLY_V0
+--   slake_emit_apply_from_compose: 0 ok after check_fail_closed; -1 fail closed
+--     zeros count/valid; -1 if node count would exceed CAP
+--   CAP honesty: APPLY_CAP 32 is defensive headroom above SLAKE_IR_PROGRAM_CAP 8;
+--     overflow unreachable via honest push_node; not a claim of 32 live nodes
+--   tag packing: (mult & 0xF) << 4 | (kind & 0xF)
+--     mult codes MULT_0=0 MULT_1=1 MULT_OMEGA=2; kind VALUE=0 LINEAR=1 ERASED=2
+--   empty well-typed ready compose: count=0 valid=1
+--   slake_emit_apply_is_valid: 1 if non-null valid; else 0
+-- Greppable: EMIT_APPLY_V0, EMIT_PLAN_V0, slake_emit_apply, HOST_COMPOSE_V0, RUNTIME-FS
+--
+-- EMIT_BODY_V0 emit_body contract (fixed C body fragment; not full module emit):
+--   slake_emit_body: buf[SLAKE_EMIT_BODY_CAP], len, valid (CAP=256)
+--   slake_emit_body_id -> exact EMIT_BODY_V0
+--   slake_emit_body_from_compose: calls plan + apply APIs; 0 ok; -1 fail closed
+--     zeros valid/len/buf[0]; -1 on buffer overflow
+--   CAP honesty: BODY_CAP 256 is defensive headroom under PROGRAM_CAP 8
+--     (~222 bytes max honest fragment); overflow not reachable via honest mutators
+--   fragment: EMIT_BODY_V0 + RUNTIME-FS + r=N e=M + one tI mult=X kind=Y line per tag
+--   MULT-0 tags may still be listed (erased inventory honesty)
+--   empty well-typed ready compose: header with r=0 e=0
+--   slake_emit_body_is_valid: 1 if non-null valid len<CAP buf[len]==0; else 0
+-- Greppable: EMIT_BODY_V0, EMIT_APPLY_V0, EMIT_PLAN_V0, slake_emit_body, RUNTIME-FS, EMIT-BOUNDARY
+-- Contract: V0 emit surface exists (SLAKE_EMIT_FREESTANDING_C_V0); not residual free; no product GC.
+-- Not freestanding emit residual free product claim.

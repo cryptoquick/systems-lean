@@ -1,33 +1,48 @@
-# Coordinator chat (this conversation's role)
+# Coordinator role (optional separate session)
 
-This chat stays **between** the Idris side and the Lean side. It does not race `src/idris2/` or `src/lean4/` implementation unless the human reassigns it.
+Paste or assign when a chat is the **join / advisory** session -- not the Systems / Slake
+implement session, and not the watcher session.
 
 ## Does
-- Join summaries from both forks (paths + residual lines + their residual implement prompts)
-- Keep coordinator `RESIDUAL.md` honest; each side owns `RESIDUAL-idris.md` / `RESIDUAL-lean.md`
-- Steer forks via `doc/fork-guidance-idris.md` and `doc/fork-guidance-lean.md` (Latest directive)
-- Run `just progress` / `just watch` (300s) while forks run; read `doc/PROGRESS.md`
-- Tooling, policy, release surfaces (`out/freestanding-c`, deferred `out/llvm-ir`)
-- Decide when synthesis work under `src/systems/` starts
-- Enforce token-efficient subagent posture in joins (no parent re-mapping either side)
+- Join summaries from forks (paths + residual lines + their next implement prompts)
+- Keep coordinator `RESIDUAL.md` honest; forks own their residual files
+- Steer forks via `doc/fork-guidance-idris.md`, `doc/fork-guidance-lean.md`,
+  `doc/fork-guidance-systems.md` (Latest directive)
+- May run `just progress` / `just watch` for meters; read `doc/PROGRESS.md`
+- Policy, tooling, honesty of release surfaces (`out/freestanding-c`, deferred `out/llvm-ir`)
+- Advise what is unblocked vs held; do not invent residual for parked duals
 
 ## Does not
-- Own the Idris or Lean residual treadmill by default
-- Rewrite fork work without a clear join request
+- Own the Idris, Lean, or Systems residual treadmill by default
+- Replace the **watcher** session (that session owns auto-continue from `WATCHER.md`)
+- Race freestanding units under `src/systems/` while a Systems / Slake session is active
 
-## Paste targets
-- Idris fork: `doc/fork-idris.md` (section PROMPT -- includes implement loop)
-- Lean fork: `doc/fork-lean.md` (section PROMPT -- includes implement loop)
+## Related paste targets
+- Idris fork: `doc/fork-idris.md` (PROMPT)
+- Lean fork: `doc/fork-lean.md` (PROMPT)
+- Systems / Slake fork: `doc/fork-systems.md` (PROMPT)
+- Watcher contract: root `WATCHER.md`
 
-## Watch / progress
+## Residuals
+
+| File | Owner |
+|------|--------|
+| `RESIDUAL-idris.md` | Idris-side fork |
+| `RESIDUAL-lean.md` | Lean-side fork |
+| `RESIDUAL-systems.md` | Systems / Slake fork |
+| `RESIDUAL.md` | Coordinator join board |
+
+## Watch / progress (tooling, any session)
 
 ```bash
-just progress          # one-shot meter -> doc/PROGRESS.md
-just watch             # every 300s (WATCH_INTERVAL=60 to speed up)
+just progress          # pure Nix meters -> doc/PROGRESS.md
+just progress-scc      # meters + scc line-count appendix
+just hygiene           # pure Nix ASCII / trailing-whitespace walk
+just watch             # every 300s: progress-scc + hygiene
 ```
 
-## Next high-value join
+`just watch` is a **progress tool**, not the watcher residual-implement session.
 
-1. Both sides have multiplicity notes + ConsumeToken dual + JOIN files (see meter).
-2. Coordinator merges imperfect edges into `doc/divergence.md` without freestanding claims.
-3. Only then consider `src/systems/` skeleton for Slake (still not LLVM pipeline).
+**Three languages only:** Idris 2, Lean 4 (including Systems Lean / Slake), pure Nix
+flakes. No project Python. Do not grow shell; residual `.sh` is debt. No bash-in-Nix.
+Policy: `AGENTS.md` (Three languages only + Nix tooling).

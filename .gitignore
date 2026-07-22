@@ -61,3 +61,7 @@ secrets.nix
 .temp/
 tmp/
 temp/
+
+# --- Lake / Lean local build (src/lean4 package) ---
+**/.lake/
+

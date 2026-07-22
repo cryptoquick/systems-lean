@@ -47,7 +47,7 @@ Idris 2 and Lean 4 both inhabit dependent type theory, but they do not share one
 5. **Runtimeless freestanding C first.** Primary release surface `out/freestanding-c`. Dual residual honesty (product vs host elaborator).
 6. **CompCert path.** C sealable with CompCert when PROVABLY is earned with a real resolved `ccomp`.
 7. **LLVM / Rust path (later).** After self-host; layout-compatible link without classic foreign-function glue as the design bar -- not claimed early.
-8. **Tooling in idiomatic Nix flakes.** New tools are named flake `checks` / `apps` / `devShells` + `just` recipes; not ad-hoc one-off scripts as the source of truth.
+8. **Three languages only.** Novel work is **Idris 2** (`src/idris2/`), **Lean 4** including Systems Lean / Slake (`src/lean4/`, `src/systems/`), or **pure modern Nix flakes** (`nix/`, thin `flake.nix`) designed as small modules for large language model attention limits. No project Python. No growing shell/bash mills. No bash/shell/Python smuggled inside Nix. Freestanding C is product *emit*, not a fourth source language. `just` is thin orchestration only. Full rule: `AGENTS.md` (Three languages only); terms: `doc/vocabulary.md`.
 9. **Honesty ladder.** Every major claim has an evidence bar (below). Prefer greppable gates over prose.
 10. **Theory and experiment.** Spec/proof separation for formal work **and** red/green tests -- both, like scientific method (hypothesis + experiment).
 

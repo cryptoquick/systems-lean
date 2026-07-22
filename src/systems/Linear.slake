@@ -1,0 +1,49 @@
+-- UNIT_SURFACE freestanding unit surface for Slake shared core.
+-- UNIT_DEEPEN_V1 abstract body (first unit translation into emit).
+-- CONSUME_TOKEN_HOST_V0 freestanding JOIN-ALG ConsumeToken-class host shape.
+-- HOST_COMPOSE_V0 host + IR graph composition (host side mint path).
+-- Not freestanding emit residual free. Not freestanding residual free.
+-- Not freestanding emit claim as residual free product. Not product C residual free.
+-- Module: Linear (exact-once use; linear resource contract)
+-- See: linear.md, doc/shared-ir-sketch.md
+-- Dual cite (read-only; do not reimplement duals here):
+--   src/idris2/examples/ConsumeToken.idr
+--   src/lean4/examples/ConsumeToken.lean
+-- C map (first unit translation): linearConsume -> slake_linear_consume
+-- C host (CONSUME_TOKEN_HOST_V0): slake_consume_token + mint/consume/check
+-- C compose (HOST_COMPOSE_V0): slake_host_compose_mint / consume call-through
+-- Contract id: LINEAR-EXACT-ONCE
+
+-- UNIT_SURFACE
+-- UNIT_DEEPEN_V1
+-- CONSUME_TOKEN_HOST_V0
+-- HOST_COMPOSE_V0
+module Linear where
+
+-- Abstract surface: linear resource contract for product-relevant MULT-1 values.
+-- Exact-once resources fail closed under use checks (LINEAR-EXACT-ONCE).
+-- JOIN-ALG ConsumeToken is the dual algorithm on Idris side / Lean side.
+-- Freestanding host shape is CONSUME_TOKEN_HOST_V0 under emit (not dual reimpl).
+-- TYPED_IR_V0 pairs LINEAR kind with MULT-1 grades on ir_node (composes host grades).
+-- Affine (at most once) is product talk (EDGE-AFFINE); not first-class on Idris public grades.
+--
+-- UNIT_DEEPEN_V1 exact-once consume contract (fail closed):
+--   linearConsume tok  -- exact-once; second consume fails closed
+--   null -> -1; already-consumed -> -2; success -> 0
+--   init fails closed on id 0 (spent sentinel); live is consumability authority
+-- C product symbol: slake_linear_consume (slake_linear_token *)
+--
+-- CONSUME_TOKEN_HOST_V0 (JOIN-ALG ConsumeToken-class freestanding host):
+--   slake_consume_token          -- program state holding MULT-1 token
+--   slake_consume_token_init     -- empty host
+--   slake_consume_token_mint     -- mkToken shape; MULT-1; id != 0
+--   slake_consume_token_consume  -- consume shape; composes slake_linear_consume
+--   slake_consume_token_is_live  -- live predicate
+--   slake_consume_token_check_fail_closed -- MULT-1 + FAIL_CLOSED_CHECKER_V1 path
+--   slake_consume_token_host_id  -- greppable CONSUME_TOKEN_HOST_V0
+-- Second consume fails closed (-2). Not residual free. Not PROVABLY.
+-- FAIL_CLOSED_CHECKER_V1 composes live linear into slake_check_fail_closed (check-only).
+-- HOST_COMPOSE_V0 joins this host with IR graph + erasure for slake_host_compose_extract;
+-- MULT-1 nodes need live host token via mint (check-only call-through).
+-- Contract: no product GC; RC only if proven necessary.
+-- Not freestanding emit residual free (emit stage is separate).

@@ -24,11 +24,13 @@ Use these ids on both bridge halves and in coordinator joins.
 | Artifact | Lean side | Idris side |
 |----------|-----------|------------|
 | Multiplicity map | this file | `src/idris2/multiplicity-map.md` |
-| ConsumeToken | `examples/ConsumeToken.lean` | `examples/ConsumeToken.idr` |
+| ConsumeToken (MULT-1 focus) | `examples/ConsumeToken.lean` | `examples/ConsumeToken.idr` |
+| ErasedIndex (MULT-0 focus) | `examples/ErasedIndex.lean` | `examples/ErasedIndex.idr` |
+| UnrestrictedShare (MULT-OMEGA focus) | `examples/UnrestrictedShare.lean` | `examples/UnrestrictedShare.idr` |
 | Trust notes | `examples/TRUST.md` | `examples/TRUST.md` |
 | Join table | `JOIN.md` | `JOIN.md` |
 
-Idris duals **have landed**. This file tracks correspondence honesty, not a "please mirror" backlog.
+Idris duals for all three algorithm ids **have landed**. This file tracks correspondence honesty.
 
 ## Correspondence (Lean view)
 

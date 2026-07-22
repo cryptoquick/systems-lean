@@ -21,8 +21,17 @@
   - dropping a linear Token without use
   Idris LinearCheck rejects those; classic Lean will not.
 
-  Red/green: until a Lake/lean check is wired for src/lean4, validation is
-  just check (hygiene + flake) and optional src/lean4/check.sh presence gate.
+  Classic Lean elaborator note:
+  - Token, mkToken, and consume are `axiom`s (not `opaque`) because opaque
+    constants over an abstract Token require a Nonempty instance that would
+    force a fake model. Axioms keep those contracts abstract.
+  - roundTrip is a noncomputable `def` composition of consume (mkToken n) so the
+    elaborator checks the stated wiring (axioms are not code-generated);
+    still no MULT-1 enforcement.
+  - MULT-1 is not enforced by classic Lean; axioms are honesty markers only.
+
+  Red/green: `./src/lean4/check.sh` presence gate always; Lake elaborator when
+  lean+lake and the pinned lean-toolchain are already installed (no network).
   Module must stay ASCII.
 -/
 
@@ -31,21 +40,25 @@ namespace SystemsLean.LeanBridge.ConsumeToken
 /-- Unrestricted ordinary data (MULT-OMEGA class). May be used more than once. -/
 def shareNat (n : Nat) : Nat := n + n
 
-/-- Abstract once-use resource. Freestanding map: MULT-1. -/
-opaque Token : Type
+/-- Abstract once-use resource. Freestanding map: MULT-1. Not enforced here. -/
+axiom Token : Type
 
 /-- Mint a token from unrestricted data (MULT-OMEGA in, Token out). -/
-opaque mkToken : Nat -> Token
+axiom mkToken : Nat -> Token
 
 /--
   consume t -- use the token once (contract); return payload.
   Classic Lean does not reject double application of consume to the same
   proof-relevant value the way Idris LinearCheck would; Systems Lean will.
 -/
-opaque consume : Token -> Nat
+axiom consume : Token -> Nat
 
-/-- Unrestricted in, linear middle (by contract), unrestricted out. -/
-opaque roundTrip : Nat -> Nat
+/--
+  Unrestricted in, linear middle (by contract), unrestricted out.
+  Elaborator-checked composition of the axiom contracts; not a linearity proof.
+  noncomputable: mkToken/consume are axioms (no code generator support).
+-/
+noncomputable def roundTrip (n : Nat) : Nat := consume (mkToken n)
 
 /--
   Erased-parameter sketch (MULT-0 class): type parameter present for typing.

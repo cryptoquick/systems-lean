@@ -15,14 +15,19 @@ Lean 4 half of the meet-in-the-middle correspondence (kernel, elaborator, proof 
 | Path | Role |
 |------|------|
 | `multiplicity-map.md` | Lean-side multiplicity / erasure correspondence + edge crosswalk |
-| `examples/ConsumeToken.lean` | Dual algorithm id ConsumeToken (classic Lean sketch) |
-| `examples/TRUST.md` | Trusted computing base notes for the example |
+| `examples/ConsumeToken.lean` | Dual algorithm id ConsumeToken (MULT-1 focus) |
+| `examples/ErasedIndex.lean` | Dual algorithm id ErasedIndex (MULT-0 focus) |
+| `examples/UnrestrictedShare.lean` | Dual algorithm id UnrestrictedShare (MULT-OMEGA focus) |
+| `examples/TRUST.md` | Trusted computing base notes for the examples |
 | `JOIN.md` | Greppable join points for the coordinator |
-| `check.sh` | Optional presence/syntax red/green for this tree |
+| `check.sh` | Presence gate + optional Lake elaborator red/green |
+| `lakefile.toml` | Minimal Lake package (no remote deps) for classic elaborator |
+| `lean-toolchain` | Pin matching installed elan (currently v4.32.0) |
+| `lake-manifest.json` | Offline empty-deps snapshot (no remote packages) |
 
 ## Language
 
-Prefer **Idris side** / **Lean side**. Do not use the word "pole" in novel prose.
+Prefer **Idris side** / **Lean side**. Follow AGENTS.md language rules.
 
 ## Validation
 
@@ -31,4 +36,10 @@ just check
 ./src/lean4/check.sh
 ```
 
-Lean package elaborator build for this tree is not required for suite green yet; hygiene, flake, and presence check are the current automated gates.
+Presence files are always required (including the empty offline `lake-manifest.json`).
+
+Optional classic Lean elaborator (`lake build`; not freestanding):
+
+1. **elan present:** run only if the pin in `lean-toolchain` appears in `elan toolchain list` (status suffixes like ` (default)` are ignored). Missing pin -> skip (no network download).
+2. **elan absent:** skip by default so a mismatched PATH lean cannot RED `just check`. Set `SYSTEMS_LEAN_LAKE=1` to force PATH `lake build` (elaborator RED is accepted if that install cannot build the pin).
+3. **lean and/or lake missing:** skip honestly; presence gate still green.

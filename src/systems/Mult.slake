@@ -1,0 +1,28 @@
+-- UNIT_SURFACE freestanding unit surface for Slake shared core.
+-- UNIT_DEEPEN_V1 abstract body (first unit translation into emit).
+-- Not freestanding emit residual free. Not freestanding residual free.
+-- Not freestanding emit claim as residual free product. Not product C residual free.
+-- Module: Mult (MULT-0 / MULT-1 / MULT-OMEGA only)
+-- See: mult.md, doc/shared-ir-sketch.md
+-- Side maps (read-only): src/idris2/multiplicity-map.md, src/lean4/multiplicity-map.md
+-- C map (first unit translation): multIsValid -> slake_mult_is_valid
+-- Contract id: FAIL-CLOSED-UNKNOWN-GRADE
+
+-- UNIT_SURFACE
+-- UNIT_DEEPEN_V1
+module Mult where
+
+-- Abstract surface: Quantitative Type Theory (QTT) grades on freestanding Slake.
+-- Grades enum (product surface only -- no multiplicity zoo):
+--   MULT-0     erased / compile-time-only
+--   MULT-1     use-once / linear
+--   MULT-OMEGA unrestricted / ordinary data
+--
+-- UNIT_DEEPEN_V1 grade validity contract (FAIL-CLOSED-UNKNOWN-GRADE):
+--   multIsValid m  -- true only for MULT-0 | MULT-1 | MULT-OMEGA
+--   unknown grades fail closed (return false / 0)
+-- C product symbol: slake_mult_is_valid (enum slake_mult)
+-- FAIL_CLOSED_CHECKER_V1 composes this grade contract into slake_check_fail_closed.
+-- TYPED_IR_V0 ir_node pairs kinds with these grades (VALUE/OMEGA, LINEAR/1, ERASED/0).
+-- Contract: no product GC; RC only if proven necessary.
+-- Not freestanding emit residual free (emit stage is separate).

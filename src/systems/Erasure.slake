@@ -1,0 +1,25 @@
+-- UNIT_SURFACE freestanding unit surface for Slake shared core.
+-- UNIT_DEEPEN_V1 abstract body (first unit translation into emit).
+-- Not freestanding emit residual free. Not freestanding residual free.
+-- Not freestanding emit claim as residual free product. Not product C residual free.
+-- Module: Erasure (MULT-0; EDGE-PROP / ERASE-PROP imperfect)
+-- See: erasure.md, doc/shared-ir-sketch.md
+-- C map (first unit translation): erasureIsRuntimeAbsent -> slake_erasure_is_runtime_absent
+-- Contract id: ERASE-RULE-MULT-0
+
+-- UNIT_SURFACE
+-- UNIT_DEEPEN_V1
+module Erasure where
+
+-- Abstract surface: erasure rule for MULT-0 compile-time-only values (ERASE-RULE-MULT-0).
+-- When checks succeed, erased values leave no product runtime presence.
+-- EDGE-PROP / ERASE-PROP: Lean Prop vs Idris quantity 0 -- working map with exceptions.
+--
+-- UNIT_DEEPEN_V1 MULT-0 honesty contract:
+--   erasureIsRuntimeAbsent e  -- 1 only when non-null and marked; else 0
+-- C product symbol: slake_erasure_is_runtime_absent (const slake_erased *)
+-- FAIL_CLOSED_CHECKER_V1 composes marked erasure into slake_check_fail_closed.
+-- TYPED_IR_V0 pairs ERASED kind with MULT-0 grades on ir_node (composes erasure).
+-- EDGE-PROP / ERASE-PROP honesty retained (not papered over).
+-- Contract: no product GC; do not paper over imperfect edges.
+-- Not freestanding emit residual free (emit stage is separate).

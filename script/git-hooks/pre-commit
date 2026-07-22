@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Unlicense
-# Repo pre-commit (after global GPG guard). Same gates as `just pre-commit`.
+# Pre-commit: pure flake hygiene + residual workspace gates (via just).
 set -euo pipefail
-root=$(git rev-parse --show-toplevel)
+root=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$root"
-if command -v just >/dev/null 2>&1; then
-  exec just pre-commit
-fi
-exec ./script/check-all.sh --staged
+exec just pre-commit

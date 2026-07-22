@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Unlicense
+# Minimal Lake package: elaborate classic Lean dual examples only.
+# No freestanding product claim. No remote dependencies.
+name = "SystemsLeanLean4"
+version = "0.1.0"
+defaultTargets = ["ConsumeToken", "ErasedIndex", "UnrestrictedShare"]
+
+[[lean_lib]]
+name = "ConsumeToken"
+srcDir = "examples"
+roots = ["ConsumeToken"]
+
+[[lean_lib]]
+name = "ErasedIndex"
+srcDir = "examples"
+roots = ["ErasedIndex"]
+
+[[lean_lib]]
+name = "UnrestrictedShare"
+srcDir = "examples"
+roots = ["UnrestrictedShare"]

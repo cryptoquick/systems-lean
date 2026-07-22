@@ -48,6 +48,16 @@ Idris keeps EDGE-* names. Lean map uses ERASE-* / RUNTIME-*. Both must stay grep
 | EDGE-NAME | (none on Lean map yet) | Label: omega vs unrestricted / RigW |
 | EDGE-AFFINE | (none on Lean map yet) | Affine (at most once) vs Idris exact-once 1 |
 
+## Native dual examples (algorithm ids)
+
+| Algorithm id | Path | Grade focus |
+|--------------|------|-------------|
+| ConsumeToken | `examples/ConsumeToken.idr` | MULT-1 linear Token + LinearCheck surface |
+| ErasedIndex | `examples/ErasedIndex.idr` | MULT-0 erased length/index on Vect |
+| UnrestrictedShare | `examples/UnrestrictedShare.idr` | MULT-OMEGA unrestricted copy/drop/multi-use |
+
+Lean duals: same algorithm ids under `src/lean4/examples/`. See `JOIN.md`.
+
 ## What this file is not
 
 - Not a completed mathematical isomorphism.
