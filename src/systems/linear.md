@@ -2,7 +2,10 @@
 
 **Module role:** linear (and later affine) use checks for product-relevant resources.
 **Status:** SYSTEMS_LEAN_HOST partial -- `SystemsLean/Linear.lean` (JOIN-ALG
-ConsumeToken axioms) + host compose mint/consume evidence in
+ConsumeToken axioms + LINEAR-THEOREM / HOST-LINEAR-THEOREM honest limited
+theorems: `shareNat_eq`, `shareNat_zero`, `shareNat_succ`, `polyId_id`,
+`roundTrip_eq`; axioms remain; no MULT-1
+enforcement claim; SpecProof.proofCompleteClaimed stays false) + host compose mint/consume evidence in
 `SystemsLean/HostCompose.lean` (LinearHost live flag; MULT-1 mult pre-scan) +
 **HOST-JOIN-MAP** / `SLAKE_JOIN_MAP_V0` in `SystemsLean/JoinMap.lean` (join-
 informed compile readiness; duals read-only cite) + **SELF-HOST-KERNEL-LINEAR** /
@@ -15,14 +18,18 @@ linearParityReady / multLinearParityReady; PARITY-LINEAR-SMOKE). UNIT_DEEPEN_V1 
 **CONSUME_TOKEN_HOST_V0** freestanding host shape on emit (+ **HOST_COMPOSE_V0**
 host + IR graph composition; not pure layout only). V0 emit path exists
 (`SLAKE_EMIT_FREESTANDING_C_V0` / **UNIT_TRANSLATION_V0** / **CONSUME_TOKEN_HOST_V0** /
-**HOST_COMPOSE_V0**); still not residual free.
+**HOST_COMPOSE_V0**); **HOST-EMIT-LINEAR** owns Linear + ConsumeToken product C text
+(`SystemsLean/EmitLinear.lean` + `emit/host_emit_linear.ssot.txt`; map
+`emit/host-owned-emit.md`); still not residual free.
 Not freestanding residual free. Not freestanding emit body in this unit file.
 **IR sketch:** `doc/shared-ir-sketch.md` (Linear use / Affine rows).
 **Anchors:** MULT-1; LINEAR-EXACT-ONCE; JOIN-ALG ConsumeToken; UNIT_DEEPEN_V1;
 CONSUME_TOKEN_HOST_V0; HOST_COMPOSE_V0; HOST-JOIN-MAP; SLAKE_JOIN_MAP_V0;
 SELF-HOST-KERNEL-LINEAR; HOST-KERNEL-LINEAR; SLAKE_SELF_HOST_KERNEL_LINEAR_V0;
 HOST-PARITY-LINEAR; SELF-HOST-PARITY-LINEAR; SLAKE_SELF_HOST_PARITY_LINEAR_V0;
-SYSTEMS_LEAN_HOST
+HOST-EMIT-LINEAR; SELF-HOST-EMIT-LINEAR; SLAKE_SELF_HOST_EMIT_LINEAR_V0;
+LINEAR-THEOREM; HOST-LINEAR-THEOREM; shareNat_eq; shareNat_zero; shareNat_succ;
+polyId_id; roundTrip_eq; SYSTEMS_LEAN_HOST
 
 ## Intent
 
@@ -91,17 +98,20 @@ SYSTEMS_LEAN_HOST.
 
 ## HOST-JOIN-MAP / SLAKE_JOIN_MAP_V0 (join into compile path)
 
-**Lean host:** `SystemsLean/JoinMap.lean` -- composes JOIN-ALG dual cite
-(read-only: `src/idris2/examples/ConsumeToken.idr`,
-`src/lean4/examples/ConsumeToken.lean`) with CompilePath unit/program readiness.
-`joinUnitCompileReady` = unitCompileReady && joinAlgContractOk;
-`joinProgramCompileReady` sibling preserves EMPTY-PROGRAM-FAIL-CLOSED (empty host
-OK != empty program OK). JOIN-MAP-SMOKE behavioral examples under Lake. PARTIAL:
-surface canary + host Bool map, not formal dual-bridge theorems and not
-freestanding LinearCheck. Still not residual free.
+**Lean host:** `SystemsLean/JoinMap.lean` -- composes JOIN-ALG dual inventory
+(three examples; read-only dual trees) + host **use** pins (`joinAlgUseOk`)
+with CompilePath unit/program readiness. Stated map: `join-map.md`.
+ConsumeToken use = HostCompose mint/consume (`consumeTokenHostUseOk`; Linear
+Token axioms stay dual-cite on Linear.lean only); ErasedIndex = Erasure;
+UnrestrictedShare = Mult multOmega + Linear.shareNat. `joinUnitCompileReady` =
+unitCompileReady && joinAlgContractOk; sibling program bar preserves
+EMPTY-PROGRAM-FAIL-CLOSED. JOIN-MAP-SMOKE under Lake. PARTIAL: use pins + cite
+inventory, not formal dual-bridge theorems and not freestanding LinearCheck.
+Still not residual free.
 
-Greppable: HOST-JOIN-MAP, SLAKE_JOIN_MAP_V0, JOIN-MAP, JOIN-ALG, ConsumeToken,
-JOIN-MAP-SMOKE, SYSTEMS_LEAN_HOST.
+Greppable: HOST-JOIN-MAP, SLAKE_JOIN_MAP_V0, JOIN-MAP, JOIN-ALG, JOIN-ALG-USE,
+joinAlgUseOk, ConsumeToken, ErasedIndex, UnrestrictedShare, JOIN-MAP-SMOKE,
+SYSTEMS_LEAN_HOST.
 
 ## SELF-HOST-KERNEL-LINEAR / HOST-KERNEL-LINEAR (SH4 start)
 
@@ -114,17 +124,18 @@ fixture + HostCompose mint/consume exact-once path.
 | `linearHostPathReady` | HostCompose: unminted MULT-1 fails; mint OK; consume clears live; id 0 / double mint reject |
 | `linearKernelReady` | programCompileReady + linearHostPathReady + gradeSurfaceOk + surface |
 | KERNEL-LINEAR-SMOKE | Lake `example` smokes for the above |
+| KERNEL-LINEAR-THEOREM | Real theorems: linearKernelReady_true / linearKernelOk_true / programCompileReady_empty_false (SpecProof.proofCompleteClaimed stays false) |
 
 Stage ids: `SLAKE_SELF_HOST_KERNEL_LINEAR_V0`, `SELF-HOST-KERNEL-LINEAR`,
 `HOST-KERNEL-LINEAR`. Product API cites only (`slake_linear_consume`,
 `CONSUME_TOKEN_HOST_V0`); no new EMIT_* residual C stage. PARTIAL: Linear kernel
 IR + host path only -- not full Linear product C text SSoT; not types/program
 full ladder; SH5 host compose is SelfApply (not freestanding product self-host
-complete). Still not residual free.
+complete). Still not residual free. Not proof complete.
 
 Greppable: SELF-HOST-KERNEL-LINEAR, HOST-KERNEL-LINEAR,
-SLAKE_SELF_HOST_KERNEL_LINEAR_V0, KERNEL-LINEAR-SMOKE, LINEAR-EXACT-ONCE,
-linearKernelReady, SYSTEMS_LEAN_HOST.
+SLAKE_SELF_HOST_KERNEL_LINEAR_V0, KERNEL-LINEAR-SMOKE, KERNEL-LINEAR-THEOREM,
+LINEAR-EXACT-ONCE, linearKernelReady, SYSTEMS_LEAN_HOST.
 
 ## HOST-PARITY-LINEAR / SELF-HOST-PARITY-LINEAR (Mult+Linear freestanding path)
 
@@ -138,18 +149,21 @@ with ParityMult Mult closed loop and frozen product API canaries.
 | `linearParityReady` | linearContractParityOk && paritySurfaceOk (FAIL-CLOSED) |
 | `multLinearParityReady` | greppable Mult+Linear joint name; Mult already in linearContractParityOk so equivalent to linearParityReady under current defs (not a stronger gate) |
 | PARITY-LINEAR-SMOKE | Lake `example` smokes for the above |
+| PARITY-LINEAR-THEOREM | Real theorems: linearParityReady_true / linearContractParityOk_true / multLinearParityReady_true; frozen-ABI product API surface pins (not Mult ofNat-level depth): productLinearConsumeApi_eq / productLinearTokenInitApi_eq / productLinearTokenIsLiveApi_eq / productLinearTokenConsumeApi_eq / productConsumeTokenMintApi_eq / productConsumeTokenConsumeApi_eq / productConsumeTokenIsLiveApi_eq / productConsumeTokenHostId_eq / productApiSurfaceOk_true (SpecProof.proofCompleteClaimed stays false) |
 
 Stage ids: `SLAKE_SELF_HOST_PARITY_LINEAR_V0`, `HOST-PARITY-LINEAR`,
 `SELF-HOST-PARITY-LINEAR`. Product API cites only (slake_linear_*,
-slake_consume_token_*, CONSUME_TOKEN_HOST_V0); probe labels existing
-init/live/consume + mint/consume path; no new EMIT_* residual C stage.
+slake_consume_token_*, CONSUME_TOKEN_HOST_V0); greppable `product*Api_eq`
+theorems are local def-literal frozen-ABI surface canaries (not Kernel/C/probe
+cross-SSOT); probe labels existing init/live/consume + mint/consume path; no
+new EMIT_* residual C stage.
 PARTIAL: Linear freestanding path honesty only -- Mult grades already SH3; not
 EmitLinear product C text SSoT; not freestanding product self-host complete.
-Still not residual free.
+Still not residual free. Not proof complete.
 
 Greppable: HOST-PARITY-LINEAR, SELF-HOST-PARITY-LINEAR,
-SLAKE_SELF_HOST_PARITY_LINEAR_V0, PARITY-LINEAR-SMOKE, linearParityReady,
-multLinearParityReady, SYSTEMS_LEAN_HOST.
+SLAKE_SELF_HOST_PARITY_LINEAR_V0, PARITY-LINEAR-SMOKE, PARITY-LINEAR-THEOREM,
+linearParityReady, multLinearParityReady, SYSTEMS_LEAN_HOST.
 
 ## Non-claims
 

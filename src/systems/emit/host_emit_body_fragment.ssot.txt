@@ -1,6 +1,7 @@
 # HOST-EMIT-SSOT -- EMIT_BODY_V0 fragment dialect (durable host artifact)
 # SSoT owner: SystemsLean.EmitBody.buildFragment (src/systems/SystemsLean/EmitBody.lean)
-# Bash generator script/slake-emit-freestanding-c.sh is NON-SSOT for this fragment.
+# Lean FreestandingEmit embeds this dialect; do not invent a second format.
+# NON-SSOT: bulk frozen wire templates are not a second fragment dialect owner.
 # EMPTY_FRAGMENT must match bodyFromCompose HostCompose.empty (EMIT-BODY-SMOKE).
 # Format pieces below are the only legal dialect for product wire put_str strings.
 EMPTY_FRAGMENT=/* EMIT_BODY_V0 RUNTIME-FS r=0 e=0 */

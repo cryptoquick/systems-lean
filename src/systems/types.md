@@ -1,35 +1,67 @@
 # Types -- shared core (unit surface notes)
 
 **Module role:** dependent types as the common universe for Slake's shared core.
-**Lean host:** `SystemsLean/Types.lean` (TypeTag, NodeKind, IrNode, kind/mult pairing) +
+**Lean host:** `SystemsLean/Types.lean` (TypeTag, NodeKind, IrNode, kind/mult pairing;
+FAIL-CLOSED-UNKNOWN-KIND via `ofKindTag?` / `isValidKindTag`;
+TYPES-THEOREM / HOST-TYPES-THEOREM real Lean theorems on known-tag decode +
+ofKindTag? / isValidKindTag unknown-tag reject + kindMultOk known pairings +
+kindMultOk mismatch family + mkNode?_mismatch_none + expectedMult_value +
+expectedMult_linear + expectedMult_erased +
+isWellTyped_eq_kindMultOk + mkNode?_ok + mkNodeFromTags? unknown/good paths;
+partial Types only -- SpecProof.proofCompleteClaimed stays false) +
 `SystemsLean/IrProgram.lean` (ordered IR program node list; push / well-typed fold;
-EMPTY-PROGRAM-FAIL-CLOSED) + `SystemsLean/IrGraph.lean` (embeds ordered program +
+EMPTY-PROGRAM-FAIL-CLOSED; IR-PROGRAM-THEOREM / HOST-IR-PROGRAM-THEOREM real Lean
+theorems on empty reject + push/fold fail-closed + isWellTyped_single_value +
+foldWellTyped_single_value_some;
+partial IrProgram only -- SpecProof.proofCompleteClaimed stays false) +
+`SystemsLean/IrGraph.lean` (embeds ordered program +
 edge list; edgeMax 16 SLAKE_IR_EDGE_MAX; pushNode / addEdge; EMPTY-GRAPH-OK;
-endpoint bounds fail-closed; IR-GRAPH-EDGES honesty) + light emit host modules
+IR-GRAPH-THEOREM / HOST-IR-GRAPH-THEOREM real Lean theorems on empty graph OK +
+addEdge empty fail-closed + edgesSound_empty + isWellTyped_one_node_empty_edges +
+pushNode_value_one_ok + addEdge_one_node_self_ok + addEdge_one_node_badEndpoints;
+endpoint bounds fail-closed; IR-GRAPH-EDGES honesty;
+partial IrGraph only -- SpecProof.proofCompleteClaimed stays false) + light emit host modules
 `SystemsLean/EmitPlan.lean` / `EmitApply.lean` / `EmitBody.lean` (plan counts +
 tag pack + body fragment readiness; primary tables in extract.md) +
 `SystemsLean/KernelTypes.lean` (**SELF-HOST-KERNEL-TYPES** / **HOST-KERNEL-TYPES** /
 `SLAKE_SELF_HOST_KERNEL_TYPES_V0` SH4 growth: lowerTypesKernel / typesProgramPathReady /
-typesKernelReady + KERNEL-TYPES-SMOKE; typed IR + foldWellTyped program path) +
+typesKernelReady + KERNEL-TYPES-SMOKE + KERNEL-TYPES-THEOREM / HOST-KERNEL-TYPES-THEOREM;
+typed IR + foldWellTyped program path; SpecProof.proofCompleteClaimed stays false) +
 `SystemsLean/ParityTypes.lean` (**HOST-PARITY-TYPES** / **SELF-HOST-PARITY-TYPES** /
 `SLAKE_SELF_HOST_PARITY_TYPES_V0` Mult+Linear+Types freestanding Types path parity;
-typesParityReady / multLinearTypesParityReady; PARITY-TYPES-SMOKE) +
+typesParityReady / multLinearTypesParityReady; PARITY-TYPES-SMOKE +
+PARITY-TYPES-THEOREM / HOST-PARITY-TYPES-THEOREM;
+content equality frozen-ABI pins: productTypedIrId_eq / productIrNodeApi_eq /
+productIrNodeInitApi_eq / productIrNodeIsWellTypedApi_eq /
+productIrNodeCheckFailClosedApi_eq / productApiSurfaceOk_true (local
+def-literal surface canaries -- not Mult ofNat-level algebraic depth);
+SpecProof.proofCompleteClaimed stays false) +
 `SystemsLean/KernelProgram.lean` (**SELF-HOST-KERNEL-PROGRAM** / **HOST-KERNEL-PROGRAM** /
 `SLAKE_SELF_HOST_KERNEL_PROGRAM_V0` SH4 remainder: lowerProgramKernel /
 programPathReady / programGraphPathReady / programComposePathReady /
-programKernelReady + KERNEL-PROGRAM-SMOKE; ordered IR + graph edges + HostCompose) +
+programKernelReady + KERNEL-PROGRAM-SMOKE + KERNEL-PROGRAM-THEOREM /
+HOST-KERNEL-PROGRAM-THEOREM; ordered IR + graph edges + HostCompose;
+SpecProof.proofCompleteClaimed stays false) +
 `SystemsLean/ParityProgram.lean` (**HOST-PARITY-PROGRAM** / **SELF-HOST-PARITY-PROGRAM** /
 `SLAKE_SELF_HOST_PARITY_PROGRAM_V0` Mult+Linear+Types+Program freestanding Program
 path parity; programParityReady / multLinearTypesProgramParityReady;
-PARITY-PROGRAM-SMOKE) +
+PARITY-PROGRAM-SMOKE + PARITY-PROGRAM-THEOREM / HOST-PARITY-PROGRAM-THEOREM;
+content equality frozen-ABI pins: productIrProgramApi_eq / productIrGraph* /
+productHostCompose* / productApiSurfaceOk_true (local def-literal surface
+canaries); SpecProof.proofCompleteClaimed stays false) +
 `SystemsLean/KernelEmit.lean` (**SELF-HOST-KERNEL-EMIT** / **HOST-KERNEL-EMIT** /
 `SLAKE_SELF_HOST_KERNEL_EMIT_V0` SH4 remainder: lowerEmitCompose / emitPlanPathReady /
-emitApplyPathReady / emitBodyPathReady / emitKernelReady + KERNEL-EMIT-SMOKE;
-plan/apply/body + Mult emit over program kernel; no new EMIT_* C stage) +
+emitApplyPathReady / emitBodyPathReady / emitKernelReady + KERNEL-EMIT-SMOKE +
+KERNEL-EMIT-THEOREM / HOST-KERNEL-EMIT-THEOREM;
+plan/apply/body + Mult emit over program kernel; no new EMIT_* C stage;
+SpecProof.proofCompleteClaimed stays false) +
 `SystemsLean/ParityEmit.lean` (**HOST-PARITY-EMIT** / **SELF-HOST-PARITY-EMIT** /
 `SLAKE_SELF_HOST_PARITY_EMIT_V0` Mult+Linear+Types+Program+Emit freestanding Emit
 path parity; emitParityReady / multLinearTypesProgramEmitParityReady;
-PARITY-EMIT-SMOKE).
+PARITY-EMIT-SMOKE + PARITY-EMIT-THEOREM / HOST-PARITY-EMIT-THEOREM;
+content equality frozen-ABI pins: productEmitPlanApi_eq / productEmitApply* /
+productEmitBody* / productHostEmit* / productApiSurfaceOk_true (local
+def-literal surface canaries); SpecProof.proofCompleteClaimed stays false).
 Greppable **SYSTEMS_LEAN_HOST** (partial). Still not residual free.
 **Status:** UNIT_DEEPEN_V1 abstract body + **TYPED_IR_V0** richer typed IR surface +
 **IR_PROGRAM_V0** multi-node ordered program (historical wire id; node list) + **IR_GRAPH_EDGES_V0** graph edges on emit (`slake_type_tag_init`, `slake_ir_node_*`, `slake_ir_program_*`,
@@ -49,14 +81,16 @@ freestanding Emit path parity).
 Still not residual free. Still not full compiler / elaborator.
 Not a full CFG / dominance / SSA.
 **Self-host kernel marker:** SELF-HOST-KERNEL-TYPES / HOST-KERNEL-TYPES /
-SLAKE_SELF_HOST_KERNEL_TYPES_V0 / KERNEL-TYPES-SMOKE; HOST-PARITY-TYPES /
-SELF-HOST-PARITY-TYPES / SLAKE_SELF_HOST_PARITY_TYPES_V0 / PARITY-TYPES-SMOKE;
+SLAKE_SELF_HOST_KERNEL_TYPES_V0 / KERNEL-TYPES-SMOKE / KERNEL-TYPES-THEOREM;
+HOST-PARITY-TYPES / SELF-HOST-PARITY-TYPES / SLAKE_SELF_HOST_PARITY_TYPES_V0 /
+PARITY-TYPES-SMOKE / PARITY-TYPES-THEOREM;
 SELF-HOST-KERNEL-PROGRAM / HOST-KERNEL-PROGRAM / SLAKE_SELF_HOST_KERNEL_PROGRAM_V0 /
-KERNEL-PROGRAM-SMOKE; HOST-PARITY-PROGRAM / SELF-HOST-PARITY-PROGRAM /
-SLAKE_SELF_HOST_PARITY_PROGRAM_V0 / PARITY-PROGRAM-SMOKE; SELF-HOST-KERNEL-EMIT /
-HOST-KERNEL-EMIT / SLAKE_SELF_HOST_KERNEL_EMIT_V0 / KERNEL-EMIT-SMOKE;
-HOST-PARITY-EMIT / SELF-HOST-PARITY-EMIT / SLAKE_SELF_HOST_PARITY_EMIT_V0 /
-PARITY-EMIT-SMOKE
+KERNEL-PROGRAM-SMOKE / KERNEL-PROGRAM-THEOREM; HOST-PARITY-PROGRAM /
+SELF-HOST-PARITY-PROGRAM / SLAKE_SELF_HOST_PARITY_PROGRAM_V0 /
+PARITY-PROGRAM-SMOKE / PARITY-PROGRAM-THEOREM; SELF-HOST-KERNEL-EMIT /
+HOST-KERNEL-EMIT / SLAKE_SELF_HOST_KERNEL_EMIT_V0 / KERNEL-EMIT-SMOKE /
+KERNEL-EMIT-THEOREM; HOST-PARITY-EMIT / SELF-HOST-PARITY-EMIT /
+SLAKE_SELF_HOST_PARITY_EMIT_V0 / PARITY-EMIT-SMOKE / PARITY-EMIT-THEOREM
 **IR sketch:** `doc/shared-ir-sketch.md` (Types row).
 **Deepen marker:** UNIT_DEEPEN_V1
 **Typed IR marker:** TYPED_IR_V0
@@ -103,8 +137,21 @@ Kind/mult pairing (fail closed):
 | LINEAR | MULT-1 |
 | ERASED | MULT-0 |
 
-Greppable: TYPED_IR_V0, COMMON-UNIVERSE, FAIL_CLOSED_CHECKER_V1, slake_ir_node,
-slake_ir_node_init, slake_ir_node_is_well_typed, slake_ir_node_check_fail_closed,
+## Lean host TYPES-THEOREM / HOST-TYPES-THEOREM
+
+| Host surface | Role |
+|--------------|------|
+| `ofKindTag?` / `isValidKindTag` | FAIL-CLOSED-UNKNOWN-KIND on raw kind tags (0/1/2 only) |
+| TYPES-THEOREM / HOST-TYPES-THEOREM | Real theorems: ofKindTag?_zero/one/two, ofKindTag?_fail_closed, isValidKindTag_fail_closed, isValidKindTag_eq_ofKindTag?_isSome, isValidKindTag_zero/one/two, kindMultOk_value_omega / kindMultOk_linear_one / kindMultOk_erased_zero, kindMultOk mismatch family (value_not_one/zero, linear_not_omega/zero, erased_not_omega/one), mkNode?_mismatch_none -- partial Types only; not SpecProof complete |
+
+**FAIL-CLOSED-UNKNOWN-KIND:** raw kind tags outside 0/1/2 decode to none / false
+(no silent coerce). Partial Types theorems do not mean host proof complete
+(SpecProof.proofCompleteClaimed stays false).
+
+Greppable: TYPED_IR_V0, COMMON-UNIVERSE, FAIL-CLOSED-UNKNOWN-KIND, TYPES-THEOREM,
+HOST-TYPES-THEOREM, ofKindTag?_fail_closed, isValidKindTag_fail_closed,
+FAIL_CLOSED_CHECKER_V1, slake_ir_node, slake_ir_node_init,
+slake_ir_node_is_well_typed, slake_ir_node_check_fail_closed,
 HOST-PARITY-TYPES, SELF-HOST-PARITY-TYPES, SLAKE_SELF_HOST_PARITY_TYPES_V0,
 PARITY-TYPES-SMOKE, typesParityReady, multLinearTypesParityReady.
 
@@ -115,8 +162,13 @@ Mult+Linear+Types freestanding Types path parity in `SystemsLean/ParityTypes.lea
 (re-assert) + `kindMultMismatchRejected` + Mult+Linear `linearParityReady` +
 product API canaries; `typesParityReady`; `multLinearTypesParityReady` greppable
 joint name (equivalent to typesParityReady under current defs -- Mult+Linear
-already folded). Product side: probe labels existing TYPED_IR / slake_ir_node
-path. No new EMIT_* C stage. Not freestanding product self-host complete.
+already folded). PARITY-TYPES-THEOREM content pins (frozen-ABI local
+def-literal surface canaries, not Mult ofNat depth): `productTypedIrId_eq` /
+`productIrNodeApi_eq` / `productIrNodeInitApi_eq` /
+`productIrNodeIsWellTypedApi_eq` / `productIrNodeCheckFailClosedApi_eq` /
+`productApiSurfaceOk_true`. Product side: probe labels existing TYPED_IR /
+slake_ir_node path. No new EMIT_* C stage. Not freestanding product self-host
+complete.
 
 ## HOST-PARITY-PROGRAM (Program freestanding path honesty)
 
@@ -176,10 +228,30 @@ Not residual free. Not a full elaborator.
 
 Empty program (count==0) is NOT well-typed as a program (fail closed).
 
+## Lean host IR-PROGRAM-THEOREM / HOST-IR-PROGRAM-THEOREM
+
+| Host surface | Role |
+|--------------|------|
+| `isWellTyped` / `empty` | EMPTY-PROGRAM-FAIL-CLOSED: empty program is not well-typed as a program |
+| `push` / `foldWellTyped` / `checkFailClosed` | Fail-closed push on bad node; fold none when ill-typed; check = isWellTyped |
+| IR-PROGRAM-THEOREM / HOST-IR-PROGRAM-THEOREM | Real theorems: empty_isEmpty, empty_length_zero, isWellTyped_empty_false / empty_not_well_typed, checkFailClosed_eq_isWellTyped, foldWellTyped_ill_typed_none / foldWellTyped_empty_none, push_bad_node, programCap_eq_eight, push_value_one_ok / length_single_value / isWellTyped_single_value, foldWellTyped_single_value_some, isWellTyped_two_values / length_two_values / foldWellTyped_two_values_some, push_second_value_ok, push_full_at_cap -- partial IrProgram only; not SpecProof complete |
+
+**EMPTY-PROGRAM-FAIL-CLOSED:** empty program (count 0) is NOT well-typed as a
+program (matches emit slake_ir_program_is_well_typed). Partial IrProgram
+theorems do not mean host proof complete (SpecProof.proofCompleteClaimed stays
+false).
+
 Honesty (V0): MULT-1 nodes may share one live linear token for check (checker does
 not consume). MULT-0 nodes need marked erased when checked.
 
 Greppable: IR_PROGRAM_V0, slake_ir_program, SLAKE_IR_PROGRAM_CAP,
+EMPTY-PROGRAM-FAIL-CLOSED, IR-PROGRAM-THEOREM, HOST-IR-PROGRAM-THEOREM,
+isWellTyped_empty_false, empty_not_well_typed, empty_isEmpty, empty_length_zero,
+checkFailClosed_eq_isWellTyped, foldWellTyped_empty_none,
+foldWellTyped_ill_typed_none, push_bad_node, programCap_eq_eight,
+push_value_one_ok, length_single_value, isWellTyped_single_value,
+foldWellTyped_single_value_some, isWellTyped_two_values, length_two_values,
+foldWellTyped_two_values_some, push_second_value_ok, push_full_at_cap,
 HOST-PARITY-PROGRAM, SELF-HOST-PARITY-PROGRAM, SLAKE_SELF_HOST_PARITY_PROGRAM_V0,
 PARITY-PROGRAM-SMOKE, programParityReady, multLinearTypesProgramParityReady.
 
@@ -187,8 +259,18 @@ PARITY-PROGRAM-SMOKE, programParityReady, multLinearTypesProgramParityReady.
 
 **Lean host:** `SystemsLean/IrGraph.lean` -- `Edge` (fromIdx, toIdx), `Graph` embeds
 ordered program + edge list, `edgeMax = 16` (SLAKE_IR_EDGE_MAX), `pushNode` /
-`addEdge` fail-closed (full / bad endpoints), EMPTY-GRAPH-OK. Not residual free.
-Not PROVABLY. Not a full CFG.
+`addEdge` fail-closed (full / bad endpoints), EMPTY-GRAPH-OK;
+IR-GRAPH-THEOREM / HOST-IR-GRAPH-THEOREM real theorems (`isWellTyped_empty_true` /
+`empty_well_typed`, `checkFailClosed_eq_isWellTyped`, `empty_isEmpty`,
+`edgeMax_eq_sixteen`, `addEdge_empty_badEndpoints`, `edgesSound_empty`,
+`isWellTyped_one_node_empty_edges`, `pushNode_value_one_ok`,
+`addEdge_one_node_self_ok`, `addEdge_one_node_badEndpoints`,
+`edgesSound_one_edge`, `isWellTyped_two_nodes_one_edge`, `addEdge_two_nodes_ok`,
+`edgesSound_two_edges`, `isWellTyped_two_nodes_two_edges`,
+`addEdge_two_nodes_second_ok`, `addEdge_two_nodes_badEndpoints`,
+`edgesSound_oversize_false`); nested IrProgram.empty stays
+EMPTY-PROGRAM-FAIL-CLOSED. Partial IrGraph only -- SpecProof.proofCompleteClaimed
+stays false. Not residual free. Not PROVABLY. Not a full CFG.
 
 Emit graph shell owns a ordered IR program plus a fixed edge table (`SLAKE_IR_EDGE_MAX` 16).
 Edges are index pairs into `prog.nodes`. Not residual free. Not PROVABLY.
@@ -232,20 +314,24 @@ PARITY-PROGRAM-SMOKE, programParityReady, multLinearTypesProgramParityReady.
 
 **EMIT_PLAN_V0** builds a readiness inventory from a checked host compose
 (`slake_emit_plan_from_compose`). Counts graph nodes/edges and mult survivors.
-**Lean host:** `SystemsLean/EmitPlan.lean` (planFromCompose / isReady; EMIT-PLAN-SMOKE).
-Primary API table lives in `extract.md`. Not residual free; not CFG/SSA.
+**Lean host:** `SystemsLean/EmitPlan.lean` (planFromCompose / isReady;
+EMIT-PLAN-SMOKE; EMIT-PLAN-THEOREM / HOST-EMIT-PLAN-THEOREM). Primary API table
+lives in `extract.md`. Not residual free; not CFG/SSA; not proof complete.
 
-Greppable: EMIT_PLAN_V0, slake_emit_plan, HOST_COMPOSE_V0, SYSTEMS_LEAN_HOST.
+Greppable: EMIT_PLAN_V0, slake_emit_plan, HOST_COMPOSE_V0, SYSTEMS_LEAN_HOST,
+EMIT-PLAN-THEOREM.
 
 ## EMIT_APPLY_V0 (light note; primary in extract.md)
 
 **EMIT_APPLY_V0** packs live node mult/kind tags into a fixed buffer
 (`slake_emit_apply_from_compose`, `SLAKE_EMIT_APPLY_CAP` 32 defensive headroom
 above `SLAKE_IR_PROGRAM_CAP` 8). **Lean host:** `SystemsLean/EmitApply.lean`
-(packTag / applyFromCompose / applyIsValid; EMIT-APPLY-SMOKE). Primary API table
-lives in `extract.md`. Not residual free; not full C body; fixed buffer tags only.
+(packTag / applyFromCompose / applyIsValid; EMIT-APPLY-SMOKE; EMIT-APPLY-THEOREM
+/ HOST-EMIT-APPLY-THEOREM). Primary API table lives in `extract.md`. Not residual
+free; not full C body; fixed buffer tags only; not proof complete.
 
-Greppable: EMIT_APPLY_V0, slake_emit_apply, HOST_COMPOSE_V0, SYSTEMS_LEAN_HOST.
+Greppable: EMIT_APPLY_V0, slake_emit_apply, HOST_COMPOSE_V0, SYSTEMS_LEAN_HOST,
+EMIT-APPLY-THEOREM.
 
 ## EMIT_BODY_V0 (light note; primary in extract.md)
 

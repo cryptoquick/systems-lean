@@ -18,6 +18,18 @@
     -- same Mult.name / ofNat? contracts the host proves here.
   - No new EMIT_MULT_V0 residual C stage ladder (host stage ids only).
 
+  Theorems (PARITY-MULT-THEOREM / HOST-PARITY-MULT-THEOREM -- partial ParityMult):
+  - multParityReady_true / multParityOk_true / multParityOk_eq_ready
+  - gradeParityOk_true / ofNatRoundTripOk_true / isValidTagParityOk_true
+  - nameParityOk_true / stageId_eq / hostParityMultId_eq / selfHostParityMultId_eq
+  - Content equality (not pure readiness canaries): ofNatRoundTrip_tag0/tag1/
+    tagOmega / ofNatRoundTrip_unknown3/unknown99; isValidTag_tag0/tag1/tagOmega /
+    isValidTag_unknown3/unknown99; nameParity_mult0/mult1/multOmega;
+    enumTag_multC0/C1/COmega; productIsValidApi_eq / productIsKnownApi_eq /
+    productNameApi_eq; isValidParityOk_true / enumTagParityOk_true
+  These ParityMult theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Mult grades closed-loop theorems != freestanding product self-host complete.
+
   Intentional non-claims / partial parity:
   - PARTIAL: Mult closed loop for grades only; not full product module emit;
     Linear kernel growth is KernelLinear (SH4 start); SH5 host compose is
@@ -25,6 +37,7 @@
   - PARTIAL: host String/Bool model vs C int/const char* return tables
     (compatible contracts, not bit-identical runtime).
   - Not freestanding residual free. Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Classic Lean elaborator residual remains (host residual != product wire).
   - Does not unlock llvm. Does not grow bash EMIT_* residual treadmill.
   - Not freestanding product self-host complete.
@@ -33,7 +46,16 @@
   SELF-HOST-PARITY-MULT, PARITY-MULT-SMOKE, HOST-PARITY-MULT-SMOKE, MULT-0,
   MULT-1, MULT-OMEGA, FAIL-CLOSED-UNKNOWN-GRADE, multParityReady, gradeParityOk,
   slake_mult_is_valid, slake_mult_is_known, slake_mult_name, SELF-HOST-KERNEL-MULT,
-  HOST-EMIT-MULT
+  HOST-EMIT-MULT, PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM,
+  multParityReady_true, multParityOk_true, multParityOk_eq_ready,
+  gradeParityOk_true, ofNatRoundTripOk_true, isValidTagParityOk_true,
+  nameParityOk_true, stageId_eq, hostParityMultId_eq, selfHostParityMultId_eq,
+  ofNatRoundTrip_tag0, ofNatRoundTrip_tag1, ofNatRoundTrip_tagOmega,
+  ofNatRoundTrip_unknown3, ofNatRoundTrip_unknown99, isValidTag_tag0,
+  isValidTag_tag1, isValidTag_tagOmega, isValidTag_unknown3, isValidTag_unknown99,
+  nameParity_mult0, nameParity_mult1, nameParity_multOmega, enumTag_multC0,
+  enumTag_multC1, enumTag_multCOmega, productIsValidApi_eq, productIsKnownApi_eq,
+  productNameApi_eq, isValidParityOk_true, enumTagParityOk_true
   UNIT_SURFACE host surface. Module: SystemsLean.ParityMult
   Not freestanding emit. Not freestanding residual free. Not PROVABLY.
   Not freestanding emit residual free.
@@ -149,14 +171,170 @@ def multParityReady : Bool :=
     && gradeParityOk
     && paritySurfaceOk
 
-/-- Full SH3 inventory ok (alias of multParityReady for inventory greps). -/
+/-- Full SH3 inventory ok (alias of multParityReady for inventory greps).
+    Definitional alias honesty: multParityOk == multParityReady (not a stronger
+    gate). Theorems prove both names for greppable inventory. -/
 def multParityOk : Bool := multParityReady
+
+/-! ### PARITY-MULT-THEOREM / HOST-PARITY-MULT-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is Mult grades
+  closed-loop readiness, grade parity tables, and stage-id surface canaries only.
+  Does not complete SpecProof; does not claim residual free / freestanding
+  product self-host complete / PROVABLY / llvm unlock.
+  maxRecDepth raised for emitMultReady / multParityReady String.beq unfolds.
+-/
+
+set_option maxRecDepth 4096
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_PARITY_MULT_V0.
+    Greppable: stageId_eq, PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_PARITY_MULT_V0" := rfl
+
+/-- Host map id is greppable HOST-PARITY-MULT.
+    Greppable: hostParityMultId_eq, PARITY-MULT-THEOREM. -/
+theorem hostParityMultId_eq : hostParityMultId = "HOST-PARITY-MULT" := rfl
+
+/-- Short map id is greppable SELF-HOST-PARITY-MULT.
+    Greppable: selfHostParityMultId_eq, PARITY-MULT-THEOREM. -/
+theorem selfHostParityMultId_eq :
+    selfHostParityMultId = "SELF-HOST-PARITY-MULT" := rfl
+
+/-- Mult closed-loop host readiness holds (kernel + emit + grade parity).
+    Greppable: multParityReady_true, HOST-PARITY-MULT, SELF-HOST-PARITY-MULT,
+    PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM. -/
+theorem multParityReady_true : multParityReady = true := by decide
+
+/-- multParityOk holds (same bar as multParityReady; joint inventory name).
+    Greppable: multParityOk_true, PARITY-MULT-THEOREM. -/
+theorem multParityOk_true : multParityOk = true := by decide
+
+/-- Joint-name honesty: multParityOk is definitional alias of multParityReady
+    (not a stronger gate). Greppable: multParityOk_eq_ready, PARITY-MULT-THEOREM,
+    HOST-PARITY-MULT-THEOREM. -/
+theorem multParityOk_eq_ready : multParityOk = multParityReady := rfl
+
+/-- Grade parity tables hold (ofNat / isValidTag / isValid / name / enum).
+    Greppable: gradeParityOk_true, PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM. -/
+theorem gradeParityOk_true : gradeParityOk = true := by decide
+
+/-- ofNat? round-trip for product grades 0/1/2 + unknown fail-closed.
+    Greppable: ofNatRoundTripOk_true, FAIL-CLOSED-UNKNOWN-GRADE,
+    PARITY-MULT-THEOREM. -/
+theorem ofNatRoundTripOk_true : ofNatRoundTripOk = true := by decide
+
+/-- isValidTag parity for known vs unknown tags.
+    Greppable: isValidTagParityOk_true, PARITY-MULT-THEOREM. -/
+theorem isValidTagParityOk_true : isValidTagParityOk = true := by decide
+
+/-- Mult.name strings match greppable product wire names.
+    Greppable: nameParityOk_true, PARITY-MULT-THEOREM. -/
+theorem nameParityOk_true : nameParityOk = true := by decide
+
+/-! ### PARITY-MULT content equality (parity table + product surface; not readiness canaries)
+
+  Strength tiers (do not flatten):
+  - Strong function content: ofNatRoundTrip_tag* / isValidTag_tag* /
+    nameParity_mult* pin Mult.ofNat? / Mult.isValidTag / Mult.name (real
+    cross-def equations on Mult).
+  - Cross-module emit enum: enumTag_multC* pin EmitMult.multC* strings.
+  - Frozen-ABI surface canaries only: productIsValidApi_eq /
+    productIsKnownApi_eq / productNameApi_eq are local def-literal
+    self-equality (def productX := "slake_..." then productX = "slake_...").
+    They do NOT cross-check C/probe SSOT; weaker than ofNat/isValidTag/name.
+  Mult already proves ofNat?_zero/one/two + name_mult*; Parity pins the parity
+  module table (tag0/tag1/tagOmega defs + EmitMult enum + product API strings).
+  Does NOT re-list multParityReady_true as new depth. Does NOT forge residual free.
+  Do not treat product*Api_eq volume as remaining algebraic residual.
+-/
+
+/-- ofNat? round-trip content: parity tag0 decodes to MULT-0.
+    Greppable: ofNatRoundTrip_tag0, PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM. -/
+theorem ofNatRoundTrip_tag0 : Mult.ofNat? tag0 = some Mult.mult0 := rfl
+
+/-- ofNat? round-trip content: parity tag1 decodes to MULT-1.
+    Greppable: ofNatRoundTrip_tag1, PARITY-MULT-THEOREM. -/
+theorem ofNatRoundTrip_tag1 : Mult.ofNat? tag1 = some Mult.mult1 := rfl
+
+/-- ofNat? round-trip content: parity tagOmega decodes to MULT-OMEGA.
+    Greppable: ofNatRoundTrip_tagOmega, PARITY-MULT-THEOREM. -/
+theorem ofNatRoundTrip_tagOmega : Mult.ofNat? tagOmega = some Mult.multOmega := rfl
+
+/-- ofNat? unknown raw tag 3 rejects (FAIL-CLOSED-UNKNOWN-GRADE content).
+    Greppable: ofNatRoundTrip_unknown3, FAIL-CLOSED-UNKNOWN-GRADE, PARITY-MULT-THEOREM. -/
+theorem ofNatRoundTrip_unknown3 : Mult.ofNat? 3 = none := rfl
+
+/-- ofNat? unknown raw tag 99 rejects (FAIL-CLOSED-UNKNOWN-GRADE content).
+    Greppable: ofNatRoundTrip_unknown99, FAIL-CLOSED-UNKNOWN-GRADE, PARITY-MULT-THEOREM. -/
+theorem ofNatRoundTrip_unknown99 : Mult.ofNat? 99 = none := rfl
+
+/-- isValidTag content: parity tag0 is valid.
+    Greppable: isValidTag_tag0, PARITY-MULT-THEOREM. -/
+theorem isValidTag_tag0 : Mult.isValidTag tag0 = true := rfl
+
+/-- isValidTag content: parity tag1 is valid.
+    Greppable: isValidTag_tag1, PARITY-MULT-THEOREM. -/
+theorem isValidTag_tag1 : Mult.isValidTag tag1 = true := rfl
+
+/-- isValidTag content: parity tagOmega is valid.
+    Greppable: isValidTag_tagOmega, PARITY-MULT-THEOREM. -/
+theorem isValidTag_tagOmega : Mult.isValidTag tagOmega = true := rfl
+
+/-- isValidTag content: raw tag 3 is invalid (fail-closed).
+    Greppable: isValidTag_unknown3, FAIL-CLOSED-UNKNOWN-GRADE, PARITY-MULT-THEOREM. -/
+theorem isValidTag_unknown3 : Mult.isValidTag 3 = false := rfl
+
+/-- isValidTag content: raw tag 99 is invalid (fail-closed).
+    Greppable: isValidTag_unknown99, FAIL-CLOSED-UNKNOWN-GRADE, PARITY-MULT-THEOREM. -/
+theorem isValidTag_unknown99 : Mult.isValidTag 99 = false := rfl
+
+/-- name parity content: MULT-0 greppable product wire name.
+    Greppable: nameParity_mult0, PARITY-MULT-THEOREM. -/
+theorem nameParity_mult0 : Mult.name Mult.mult0 = "MULT-0" := rfl
+
+/-- name parity content: MULT-1 greppable product wire name.
+    Greppable: nameParity_mult1, PARITY-MULT-THEOREM. -/
+theorem nameParity_mult1 : Mult.name Mult.mult1 = "MULT-1" := rfl
+
+/-- name parity content: MULT-OMEGA greppable product wire name.
+    Greppable: nameParity_multOmega, PARITY-MULT-THEOREM. -/
+theorem nameParity_multOmega : Mult.name Mult.multOmega = "MULT-OMEGA" := rfl
+
+/-- Emit Mult enum constant content: SLAKE_MULT_0.
+    Greppable: enumTag_multC0, PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM. -/
+theorem enumTag_multC0 : EmitMult.multC0 = "SLAKE_MULT_0" := rfl
+
+/-- Emit Mult enum constant content: SLAKE_MULT_1.
+    Greppable: enumTag_multC1, PARITY-MULT-THEOREM. -/
+theorem enumTag_multC1 : EmitMult.multC1 = "SLAKE_MULT_1" := rfl
+
+/-- Emit Mult enum constant content: SLAKE_MULT_OMEGA.
+    Greppable: enumTag_multCOmega, PARITY-MULT-THEOREM. -/
+theorem enumTag_multCOmega : EmitMult.multCOmega = "SLAKE_MULT_OMEGA" := rfl
+
+/-- Product Mult is_valid API surface pin (frozen-ABI canary; local def-literal).
+    Greppable: productIsValidApi_eq, PARITY-MULT-THEOREM. -/
+theorem productIsValidApi_eq : productIsValidApi = "slake_mult_is_valid" := rfl
+
+/-- Product Mult is_known API surface pin (frozen-ABI canary; local def-literal).
+    Greppable: productIsKnownApi_eq, PARITY-MULT-THEOREM. -/
+theorem productIsKnownApi_eq : productIsKnownApi = "slake_mult_is_known" := rfl
+
+/-- Product Mult name API surface pin (frozen-ABI canary; local def-literal).
+    Greppable: productNameApi_eq, PARITY-MULT-THEOREM. -/
+theorem productNameApi_eq : productNameApi = "slake_mult_name" := rfl
+
+/-- isValid component table holds (typed Mult total-true; intermediate of gradeParityOk).
+    Greppable: isValidParityOk_true, PARITY-MULT-THEOREM. -/
+theorem isValidParityOk_true : isValidParityOk = true := by decide
+
+/-- enumTag component table holds (EmitMult SLAKE_MULT_* strings).
+    Greppable: enumTagParityOk_true, PARITY-MULT-THEOREM. -/
+theorem enumTagParityOk_true : enumTagParityOk = true := by decide
 
 /-! ### Mult closed-loop parity smoke (behavioral; lake build fails if example fails)
     Greppable: PARITY-MULT-SMOKE, HOST-PARITY-MULT-SMOKE.
-    maxRecDepth raised for emitMultReady / multParityReady String.beq unfolds. -/
-
-set_option maxRecDepth 4096
+    maxRecDepth already raised above for emitMultReady / multParityReady unfolds. -/
 
 /-- PARITY-MULT-SMOKE / HOST-PARITY-MULT-SMOKE: stage / map ids greppable. -/
 example : stageId = "SLAKE_SELF_HOST_PARITY_MULT_V0" := by decide

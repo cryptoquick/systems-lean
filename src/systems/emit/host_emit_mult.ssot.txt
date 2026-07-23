@@ -1,7 +1,7 @@
 # HOST-EMIT-MULT -- Mult freestanding C product text (durable host artifact)
 # SSoT owner: SystemsLean.EmitMult (src/systems/SystemsLean/EmitMult.lean)
 #   multHeaderFragment + multBodyFragment + Mult.name grade strings
-# Bash generator script/slake-emit-freestanding-c.sh is NON-SSOT for Mult product text.
+# Lean FreestandingEmit embeds Mult product text from this artifact (no second dialect).
 # MULT_NAME_* must match Mult.name / EmitMult.multName* (HOST-EMIT-MULT-SMOKE).
 # MULT_C_HEADER / MULT_C_BODY blocks must match multHeaderFragment / multBodyFragment.
 # FAIL-CLOSED-UNKNOWN-GRADE: unknown grades return 0 / null (no silent coerce).
@@ -23,7 +23,7 @@ MULT_C_OMEGA=SLAKE_MULT_OMEGA
 /* ---- Mult (Mult.slake) ----
  * MULT-0 / MULT-1 / MULT-OMEGA only. FAIL-CLOSED-UNKNOWN-GRADE.
  * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt
- * (generator bash is NON-SSOT for Mult product text).
+ * (Lean FreestandingEmit embeds this Mult product text).
  */
 enum slake_mult {
   SLAKE_MULT_0 = 0,     /* MULT-0 */
@@ -44,7 +44,7 @@ const char *slake_mult_name(enum slake_mult m);
 # MULT_C_BODY_BEGIN
 /* ---- Mult (FAIL-CLOSED-UNKNOWN-GRADE) ----
  * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt
- * (generator bash is NON-SSOT for Mult product text).
+ * (Lean FreestandingEmit embeds this Mult product text).
  */
 
 int slake_mult_is_valid(enum slake_mult m)

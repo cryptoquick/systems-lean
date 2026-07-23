@@ -25,8 +25,9 @@ echo "  not freestanding emit; not product C; not residual free"
 echo "  never writes out/freestanding-c/ (release surface is separate)"
 echo "  host deepen: ${HOST_STAGE_ID} / HOST-COMPILE-PATH (SystemsLean/CompilePath.lean)"
 
-# Same freestanding unit discovery as script/build-systems.sh and src/systems/check.sh.
-# Prune package-local .lake / .git (parity with pure Nix unitWalkSkipDirs).
+# Freestanding unit discovery (parity with pure Nix unitWalkSkipDirs).
+# just build invokes this driver; pure Nix systems-emit-wire walks the same tree.
+
 mapfile -t units < <(find src/systems \( -name .lake -o -name .git \) -prune -o -type f \( -name '*.lean' -o -name '*.slake' \) -print 2>/dev/null | sort || true)
 
 if [[ ${#units[@]} -eq 0 ]]; then
@@ -82,7 +83,7 @@ validated=()
 for u in "${unit_surface[@]}"; do
   unit_fail=0
 
-  # Thin content bar (aligned with src/systems/check.sh).
+  # Thin content bar (structure stage only; static mills are pure Nix).
   # .lean host modules use namespace; .slake units use module.
   if ! grep -qE 'module |namespace ' "$u" 2>/dev/null; then
     echo "RED ${STAGE_ID}: $u missing module/namespace name" >&2

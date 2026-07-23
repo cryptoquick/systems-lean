@@ -10,8 +10,8 @@
   - Durable artifact: src/systems/emit/host_emit_mult.ssot.txt
     (MULT_NAME_* + MULT_C_HEADER / MULT_C_BODY blocks match multHeaderFragment /
     multBodyFragment / Mult.name).
-  - Bash script/slake-emit-freestanding-c.sh is NON-SSOT for Mult product text;
-    it must read/embed the artifact, not invent a second Mult dialect.
+  - FreestandingEmit embeds Mult product text from the durable SSOT artifact;
+    it must not invent a second Mult dialect.
   - Grade name strings derive from Mult.name (structural host model -- not AI).
   - FAIL-CLOSED-UNKNOWN-GRADE: unknown raw grades return 0 / null on the wire.
   - emitMultReady: kernel-adjacent emit readiness + honesty piece equality.
@@ -72,7 +72,7 @@ def multCOmega : String := "SLAKE_MULT_OMEGA"
 /-- Ownership comment shared by header and body fragments (HOST-EMIT-MULT). -/
 def multOwnershipComment : String :=
   " * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt\n"
-    ++ " * (generator bash is NON-SSOT for Mult product text).\n"
+    ++ " * (Lean FreestandingEmit embeds this Mult product text).\n"
 
 /-- Header Mult grade line (uses Mult.name). -/
 def multHeaderGradeLine : String :=
@@ -171,11 +171,11 @@ def gradeNamesOk : Bool :=
     && (multName1 == "MULT-1")
     && (multNameOmega == "MULT-OMEGA")
 
-/-- Ownership comment carries HOST-EMIT-MULT + NON-SSOT (short equality). -/
+/-- Ownership comment carries HOST-EMIT-MULT + FreestandingEmit embed honesty. -/
 def ownershipHonestyOk : Bool :=
   (multOwnershipComment
     == " * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt\n"
-      ++ " * (generator bash is NON-SSOT for Mult product text).\n")
+      ++ " * (Lean FreestandingEmit embeds this Mult product text).\n")
 
 /-- Header piece honesty: grade line + API decls + ownership (no deep substr). -/
 def headerHonestyOk : Bool :=

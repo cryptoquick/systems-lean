@@ -21,51 +21,30 @@ Reseed after compaction or a new chat. Read in order with `AGENTS.md`.
 If role is unclear after compaction: **ask once**. Do not assume coordinator or watcher.
 
 **Status:** foundation + dual depth (algorithm ids ConsumeToken, ErasedIndex,
-UnrestrictedShare on both bridge sides) + IR sketch + systems skeleton + unit
-surface + compile-path + **frozen** emit V0 wire (`SLAKE_EMIT_FREESTANDING_C_V0`
-through EMIT_BODY_V0 end; stage id `IR_PROGRAM_V0` for ordered IR program) +
-**SYSTEMS_LEAN_HOST partial** (Lake + Mult..ProductPath under `src/systems/`;
-31 modules including KernelMult + EmitMult + ParityMult + KernelLinear +
-ParityLinear + KernelTypes + ParityTypes + KernelProgram + ParityProgram +
-KernelEmit + ParityEmit + SelfApply + SelfApplyFs + LlvmHold + InventoryClose +
-ProductPath).
-Still **not residual free**.
-Progress meter 100% is evidence-weighted milestones, not freestanding residual free.
-**Active product residual:** freestanding self-host track. SH0..SH5 partial +
-SH5 freestanding deepen (extract/body + Mult..Emit parity compose) + Mult+Linear
-freestanding Linear path parity + Mult+Linear+Types freestanding Types path
-parity + Mult+Linear+Types+Program freestanding Program path parity +
-Mult+Linear+Types+Program+Emit freestanding Emit path parity + SH6 hold
-documented + HOST-INVENTORY-CLOSE + HOST-PRODUCT-PATH:
-`self-host.md`; KernelMult; EmitMult + host_emit_mult.ssot.txt;
-ParityMult + probe Mult; KernelLinear HOST-KERNEL-LINEAR; ParityLinear
-HOST-PARITY-LINEAR / linearParityReady / multLinearParityReady + probe labels;
-KernelTypes HOST-KERNEL-TYPES; ParityTypes HOST-PARITY-TYPES / typesParityReady /
-multLinearTypesParityReady + probe TYPED_IR / slake_ir_node labels;
-KernelProgram HOST-KERNEL-PROGRAM; ParityProgram HOST-PARITY-PROGRAM /
-programParityReady / multLinearTypesProgramParityReady + probe IR_PROGRAM /
-IR_GRAPH / HOST_COMPOSE labels; KernelEmit HOST-KERNEL-EMIT (plan/apply/body +
-Mult emit); ParityEmit HOST-PARITY-EMIT / emitParityReady /
-multLinearTypesProgramEmitParityReady + probe EMIT_PLAN / EMIT_APPLY / EMIT_BODY
-labels; SelfApply HOST-SELF-APPLY / selfApplyReady (host structural
-Mult+Linear+Types+Program+Emit only); SelfApplyFs HOST-SELF-APPLY-FS /
-freestandingParityLadderReady / freestandingSelfApplyReady (extract/body path +
-Mult..Emit parity compose; freestandingProductSelfHostComplete = false -- not
-freestanding product self-host complete); LlvmHold HOST-LLVM-HOLD /
-llvmHoldReady (unlock flags false -- not llvm unlocked); InventoryClose
-HOST-INVENTORY-CLOSE / inventoryCloseReady (residualFreeClaimed false -- not
-residual free; intentional PARTIAL carry); ProductPath HOST-PRODUCT-PATH /
-productPathReady (unit/program CompilePath honesty after inventory close;
-residualFreeClaimed false -- not residual free; not freestanding product
-self-host complete).
-**Next: further honest freestanding product path deepen** -- without forging
-complete / residual free / llvm unlock. SH4 host ladder substantially complete;
-Mult..Emit freestanding parity ladder partial landed; SH5 freestanding path deepen
-+ parity ladder compose partial landed; host inventory close readiness landed;
-freestanding product path readiness landed.
-P7 / P5 direction maps remain partial history. P6 llvm / PROVABLY held
-(documented via LlvmHold; not residual-open mill). Product wire / host model
-jargon: `doc/vocabulary.md`. See `RESIDUAL-systems.md`.
+UnrestrictedShare) + IR sketch + systems skeleton + unit surface + compile path
++ **frozen** freestanding emit product wire (through emit body) +
+**SYSTEMS_LEAN_HOST partial** (Lake + Mult..SelfHostBody under `src/systems/`;
+36 host modules including EmitLinear + SelfHostBody). Self-host body defined
+(acceptance + gated emit path). Still **not residual free**. Progress meter
+100% is evidence-weighted milestones, not freestanding residual free.
+
+**Active product residual:** freestanding **Slake** bootstrap under
+`src/systems/` (Lean host + freestanding emit). Living Open Names (not phase
+labels): **Thin process glue** (next). Done (archive): **Self-host body**;
+**Dual algorithms into Slake** -- stated map `src/systems/join-map.md`;
+`JoinMap.joinAlgUseOk` host use pins (ConsumeToken / ErasedIndex /
+UnrestrictedShare); dual trees read-only; freestandingProductSelfHostComplete
+and residual free stay false. Detail: **`RESIDUAL-systems.md`**. Join board:
+**`RESIDUAL.md`**. Watcher: **`WATCHER.md`**. Plan:
+`.agents/plans/plan-unambiguous-residual-work.md`.
+Still **not** residual free, **not** freestanding product self-host complete,
+**not** PROVABLY, **not** proof complete; llvm deferred. Product wire / host
+model jargon: `doc/vocabulary.md`.
+
+**Next:** **Thin process glue** -- remaining shell only for Lake / cc / drivers;
+static presence pure Nix. Chain short implement loops autonomously when Done
+when is checkable. Do not invent readiness theorem canaries; do not forge
+residual free / proof complete / llvm unlock.
 
 ---
 
@@ -80,10 +59,12 @@ jargon: `doc/vocabulary.md`. See `RESIDUAL-systems.md`.
 - Coordinator: `RESIDUAL.md`
 - Forks: `RESIDUAL-idris.md`, `RESIDUAL-lean.md`, `RESIDUAL-systems.md`
 - Meter: `doc/PROGRESS.md` via `just progress` (pure Nix under `nix/progress/`); `just watch` loops every 300s
-- Hygiene: `just hygiene` (pure Nix under `nix/source-hygiene.nix`) -- not Python, not bash-in-Nix
+- Hygiene: `just hygiene` (pure Nix ASCII under `nix/source-hygiene.nix` + professional-tone under `nix/professional-tone.nix` on novel `*.md`) -- not Python, not bash-in-Nix; focused tone gate: `just professional-tone`
 - Host presence: `just systems-host` (pure Nix under `nix/systems-host-presence/`; live impure eval)
 - Emit-wire presence: `just systems-emit-wire` (pure Nix under `nix/systems-emit-wire/`; live impure eval)
-- Flake vs live: new `nix/` modules must be human-staged before `nix flake check` sees them
+- Flake vs live: new `nix/` (and related flake paths) need **human** stage before `nix flake check` matches live `just` gates; stage paths from the flake error / `git status` (no fixed laundry list); agents never stage to silence WARN (see `AGENTS.md` Nix tooling + Git)
+- Plan approval: full plan text in chat; freeform Approve / revise / abandon only -- no quiz UI
+- Git: agents do not push local unpushed work-in-progress (WIP) unless the human asks; hands-off git otherwise
 - Steering: `doc/fork-guidance-idris.md`, `doc/fork-guidance-lean.md`, `doc/fork-guidance-systems.md`
 
 ## Three languages only (reseed after compaction)
@@ -94,7 +75,7 @@ Novel work uses **only**:
 2. **Lean 4** -- `src/lean4/` and `src/systems/` (Systems Lean / **Slake**)
 3. **Pure Nix flakes** -- small modules under `nix/` (not bash-in-Nix, not kitchen-sink files; layout for large language model attention and compaction)
 
-No project Python. Do not grow shell. Residual `.sh` under `script/` and large workspace `check.sh` files are **debt to shrink**, not a template. Freestanding C under `out/` is **emit output**, not a source language for the project.
+No project Python. Do not grow shell. Large residual `.sh` under `script/` and fat workspace `check.sh` bodies are **scheduled deletion** (pay down; plan `.agents/plans/plan-paydown-shell-c-surfaces.md`), not a template. Freestanding C under `out/` is **product wire** (emit output), not a source language for the project. Do not accumulate labeled debt when Lean/Nix ports are available.
 
 Read `AGENTS.md` (**Three languages only** + **Nix tooling**) and `doc/vocabulary.md` before adding any tool or gate.
 
@@ -110,16 +91,17 @@ Read `AGENTS.md` (**Three languages only** + **Nix tooling**) and `doc/vocabular
 | `doc/architecture.md` | Meet-in-middle sketch |
 | `doc/divergence.md` | Honest differences / trusted computing base |
 | `RESIDUAL.md` | Living open work (Systems Lean only); Hold vs Open |
-| `nix/` | Pure flake tooling modules (hygiene, progress, systems-host-presence, systems-emit-wire, novel-source filter) |
+| `nix/` | Pure flake tooling modules (hygiene, professional-tone, progress, systems-host-presence, systems-emit-wire, novel-source filter) |
 | `flake.nix` | Thin flake wire-up only (not a shell-script dump) |
-| `justfile` | Task runner: check / progress / hygiene / watch / build / emit |
+| `justfile` | Task runner: check / progress / hygiene / professional-tone / watch / build / emit |
 | `ref/Idris2/` | Upstream Idris 2 (read-only) |
 | `ref/lean4/` | Upstream Lean 4 (read-only) |
 | `ref/CompCert/` | AbsInt CompCert (read-only; `ccomp` source) |
 | `ref/rust/` | rustc layout/ABI + codegen_llvm (read-only) |
 | `src/idris2/` `src/lean4/` `src/systems/` | Novel workspaces |
 | `out/freestanding-c/` | Release freestanding ahead-of-time C (no managed runtime on the wire) |
-| `script/` | Residual product build/emit shells only (migration debt) |
+| `script/` | Residual product build/emit shells only (scheduled deletion / process glue) |
+| `.agents/plans/plan-paydown-shell-c-surfaces.md` | Approved shell/C paydown waves 0-E |
 | `doc/idris-entry.md` | Idris map |
 | `doc/lean-entry.md` | Lean map |
 | `doc/compcert-entry.md` | CompCert map |

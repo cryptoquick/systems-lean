@@ -1,30 +1,34 @@
-# scc . snapshot (generated)
+# scc novel snapshot (generated)
 
 Exit: 0
-Generator: flake app progress --scc (no Python)
+Generator: just progress-scc (scc from PATH / nixpkgs)
+Excludes: .git ref .lake .cache (honest novel; not freestanding vs classic AOT confusion)
 
 ```
 
 Language            Files       Lines    Blanks  Comments       Code Complexity
 
-Markdown               47       3,923     1,039         0      2,884          0
-Shell                   7         988        92       111        785        174
-Nix                     3         904        58       129        717        100
+Markdown               56       7,020     1,506         0      5,514          0
+Lean                   39       9,134     1,142     3,833      4,159      1,350
+Nix                    20       4,666       146       284      4,236        282
+Shell                   4         346        31        47        268         88
+C                       3       3,737       296       450      2,991      1,668
+Idris                   3         266        42        43        181          4
+Plain Text              3         123        14         0        109          0
+Autoconf                2       1,604       178        13      1,413        374
+C Header                2       1,184       150       698        336          0
+JSON                    2          12         0         0         12          0
+TOML                    2          47         5        16         26          0
 BASH                    1           7         0         3          4          1
-Idris                   1          84        14        17         53          2
-JSON                    1           6         0         0          6          0
-Lean                    1          69         8        53          8          0
-Plain Text              1          31         9         0         22          0
-TOML                    1          11         1         3          7          0
 YAML                    1          18         2         1         15          0
 
-Total                  64       6,041     1,223       317      4,501        277
+Total                 138      28,164     3,512     5,388     19,264      3,767
 
-Estimated Cost to Develop (organic) $131,090
-Estimated Schedule Effort (organic) 6.35 months
-Estimated People Required (organic) 1.83
+Estimated Cost to Develop (organic) $603,363
+Estimated Schedule Effort (organic) 11.35 months
+Estimated People Required (organic) 4.72
 
-Processed 272398 bytes, 0.272 megabytes (SI)
+Processed 1335147 bytes, 1.335 megabytes (SI)
 
 ```
 

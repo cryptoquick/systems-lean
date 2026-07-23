@@ -12,9 +12,11 @@
  * EMIT_APPLY_V0 -- apply plan tags into fixed buffer (not residual free; not full C body).
  * EMIT_BODY_V0 -- freestanding C body fragment (not residual free; not CFG/SSA).
  * HOST-EMIT-SSOT -- fragment dialect from SystemsLean.EmitBody + host_emit_body_fragment.ssot.txt
- * (generator bash is NON-SSOT for EMIT_BODY fragment text).
+ * (Lean freestanding emit embeds HOST-EMIT-SSOT dialect (no second format)).
  * HOST-EMIT-MULT -- Mult product text from SystemsLean.EmitMult + host_emit_mult.ssot.txt
- * (generator bash is NON-SSOT for Mult product text).
+ * (Lean freestanding emit embeds HOST-EMIT-MULT Mult product text).
+ * HOST-EMIT-LINEAR -- Linear/ConsumeToken product text from SystemsLean.EmitLinear +
+ * host_emit_linear.ssot.txt (Lean freestanding emit embeds HOST-EMIT-LINEAR text).
  *
  * RUNTIME-FS product surface goal: no Lean managed runtime on the wire.
  * not residual free; not freestanding residual free product claim.
@@ -80,7 +82,7 @@ uint32_t slake_type_tag_get(const slake_type_tag *t);
 /* ---- Mult (Mult.slake) ----
  * MULT-0 / MULT-1 / MULT-OMEGA only. FAIL-CLOSED-UNKNOWN-GRADE.
  * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt
- * (generator bash is NON-SSOT for Mult product text).
+ * (Lean FreestandingEmit embeds this Mult product text).
  */
 enum slake_mult {
   SLAKE_MULT_0 = 0,     /* MULT-0 */
@@ -101,6 +103,8 @@ const char *slake_mult_name(enum slake_mult m);
 /* ---- Linear (Linear.slake / LINEAR-EXACT-ONCE) ----
  * JOIN-ALG ConsumeToken is the dual anchor on language sides (not reimplemented).
  * live==1 means not yet consumed; consume fails closed if already spent.
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
  */
 typedef struct slake_linear_token {
   uint32_t id;
@@ -123,6 +127,8 @@ int slake_linear_token_is_live(const slake_linear_token *tok);
  * Models dual algorithm shape at C level: mint MULT-1 token, exact-once consume.
  * Duals stay read-only under src/idris2 and src/lean4 (not reimplemented here).
  * LINEAR-EXACT-ONCE / MULT-1; not residual free; not PROVABLY; no product GC.
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
  *
  * Host state:
  *   0 = empty (not minted)

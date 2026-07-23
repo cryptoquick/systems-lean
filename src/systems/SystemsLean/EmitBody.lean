@@ -26,25 +26,43 @@
     at once; call EmitPlan.planFromCompose / EmitApply.applyFromCompose /
     EmitBody.bodyFromCompose with module qualification when combining.
 
+  Theorems (EMIT-BODY-THEOREM / HOST-EMIT-BODY-THEOREM -- partial EmitBody only):
+  - bodyCap_eq_256 (SLAKE_EMIT_BODY_CAP honesty)
+  - emptyComposeFragmentSsot_eq / bodyFromCompose_empty_buf_ssot (HOST-EMIT-SSOT)
+  - bodyOk_empty_true / bodyFromCompose_empty_markers (RUNTIME-FS / EMIT_BODY_V0)
+  - fromCompose_eq_bodyFromCompose / bodyOk_eq
+  - bodyIsValid_failClosed_false (fail-closed empty body rejects)
+  - bufHasEmitBodyMarker_ssot / bufHasRuntimeFsMarker_ssot
+  - Non-empty fixtures: bodyOk_mult1_unminted_false / bodyOk_mult1_minted_true /
+    bodyFromCompose_mult1_minted_buf / bodyFromCompose_mult0_marked_buf /
+    bodyOk_omega_true / bodyFromCompose_linear_and_erased
+  These EmitBody theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Partial theorems on EmitBody != host proof complete != residual free.
+  Does not invent a second fragment dialect; does not grow product C.
+
   Intentional non-claims / partial parity:
   - PARTIAL vs full C EMIT_BODY_V0: host uses String + Nat inventory (no fixed
     char array, no null pointers, no exact -1 return codes).
   - BODY_CAP is not a claim that arbitrary IR modules fit in 256 bytes.
   - Not freestanding residual free. Not product C residual free.
   - Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Not full product module emit / CFG/SSA. Not residual free.
 
   HOST-EMIT-SSOT (P2): this module owns the EMIT_BODY_V0 fragment dialect.
   Durable artifact: src/systems/emit/host_emit_body_fragment.ssot.txt
   (EMPTY_FRAGMENT + HEADER_*/TAG_* keys must match buildFragment).
-  Bash script/slake-emit-freestanding-c.sh is NON-SSOT for fragment text;
-  it must read/embed the artifact dialect, not invent a second format.
+  FreestandingEmit embeds the artifact dialect into product C put_str strings;
+  it must not invent a second fragment header format.
   PARTIAL: host String inventory vs freestanding C fixed char buf remains.
 
   Greppable: SYSTEMS_LEAN_HOST, EMIT-BODY, EMIT_BODY_V0, BODY_CAP,
   SLAKE_EMIT_BODY_CAP, RUNTIME-FS, EMIT-BOUNDARY, FAIL-CLOSED, HOST-COMPOSE,
   EMIT-PLAN, EMIT-APPLY, slake_emit_body, bodyFromCompose, fromCompose,
-  bodyIsValid, buildFragment, HOST-EMIT-SSOT, emptyComposeFragmentSsot
+  bodyIsValid, buildFragment, HOST-EMIT-SSOT, emptyComposeFragmentSsot,
+  EMIT-BODY-THEOREM, HOST-EMIT-BODY-THEOREM, bodyCap_eq_256,
+  emptyComposeFragmentSsot_eq, bodyOk_empty_true, bodyOk_mult1_unminted_false,
+  bodyOk_mult1_minted_true, bodyFromCompose_linear_and_erased
   UNIT_SURFACE host surface. Module: SystemsLean.EmitBody
   Red/green: just systems-host (nix/systems-host-presence/; flake checks.systems-host-presence); lake build when toolchain installed.
   Module must stay ASCII.
@@ -209,33 +227,165 @@ def bodyIsValid (b : Body) : Bool :=
 def bodyOk (hc : Host) : Bool :=
   bodyIsValid (bodyFromCompose hc)
 
+/-! ### EMIT-BODY-THEOREM / HOST-EMIT-BODY-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is HOST-EMIT-SSOT
+  empty fragment honesty, bodyCap, and fail-closed empty body only. Does not
+  complete SpecProof; does not claim residual free / freestanding product
+  self-host complete / PROVABLY. Does not invent a second fragment dialect.
+-/
+
+/-- bodyCap matches emit SLAKE_EMIT_BODY_CAP (BODY_CAP honesty).
+    Greppable: bodyCap_eq_256, SLAKE_EMIT_BODY_CAP, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyCap_eq_256 : bodyCap = 256 := rfl
+
+/-- HOST-EMIT-SSOT empty fragment text (exact dialect string).
+    Greppable: emptyComposeFragmentSsot_eq, HOST-EMIT-SSOT, EMIT_BODY_V0,
+    RUNTIME-FS, EMIT-BODY-THEOREM, HOST-EMIT-BODY-THEOREM. -/
+theorem emptyComposeFragmentSsot_eq :
+    emptyComposeFragmentSsot = "/* EMIT_BODY_V0 RUNTIME-FS r=0 e=0 */\n" := rfl
+
+/-- fromCompose is definitionally bodyFromCompose (emit-map alias honesty).
+    Greppable: fromCompose_eq_bodyFromCompose, EMIT-BODY-THEOREM. -/
+theorem fromCompose_eq_bodyFromCompose (hc : Host) :
+    fromCompose hc = bodyFromCompose hc := rfl
+
+/-- bodyOk is definitionally bodyIsValid (bodyFromCompose hc).
+    Greppable: bodyOk_eq, EMIT-BODY-THEOREM. -/
+theorem bodyOk_eq (hc : Host) :
+    bodyOk hc = bodyIsValid (bodyFromCompose hc) := rfl
+
+/-- Fail-closed empty body is not bodyIsValid.
+    Greppable: bodyIsValid_failClosed_false, FAIL-CLOSED, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyIsValid_failClosed_false :
+    bodyIsValid Body.failClosed = false := by decide
+
+/-- Empty compose body is valid under HOST-EMIT-SSOT (markers from buf).
+    Greppable: bodyOk_empty_true, HOST-EMIT-SSOT, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyOk_empty_true : bodyOk HostCompose.empty = true := by decide
+
+/-- Empty compose body buf is HOST-EMIT-SSOT emptyComposeFragmentSsot.
+    Greppable: bodyFromCompose_empty_buf_ssot, HOST-EMIT-SSOT, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyFromCompose_empty_buf_ssot :
+    (bodyFromCompose HostCompose.empty).buf = emptyComposeFragmentSsot := by
+  decide
+
+/-- Empty compose body carries greppable EMIT_BODY_V0 and RUNTIME-FS markers.
+    Greppable: bodyFromCompose_empty_markers, RUNTIME-FS, EMIT_BODY_V0,
+    EMIT-BODY-THEOREM, HOST-EMIT-BODY-THEOREM. -/
+theorem bodyFromCompose_empty_markers :
+    (let b := bodyFromCompose HostCompose.empty
+     b.valid && b.hasEmitBodyMarker && b.hasRuntimeFsMarker
+       && bufHasEmitBodyMarker b.buf && bufHasRuntimeFsMarker b.buf
+       && b.runtimeNodes == 0 && b.erasedNodes == 0 && b.tagCount == 0) =
+      true := by decide
+
+/-- SSOT empty fragment contains greppable EMIT_BODY_V0 substring.
+    Greppable: bufHasEmitBodyMarker_ssot, EMIT_BODY_V0, EMIT-BODY-THEOREM. -/
+theorem bufHasEmitBodyMarker_ssot :
+    bufHasEmitBodyMarker emptyComposeFragmentSsot = true := by decide
+
+/-- SSOT empty fragment contains greppable RUNTIME-FS substring.
+    Greppable: bufHasRuntimeFsMarker_ssot, RUNTIME-FS, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bufHasRuntimeFsMarker_ssot :
+    bufHasRuntimeFsMarker emptyComposeFragmentSsot = true := by decide
+
+/-! ### Non-empty body fixtures (theorem surface, not only smoke)
+
+  Real Lean theorems on MULT-1 fail-closed, minted/marked inventory, and multi-node
+  fragment text. Prefer decide on concrete HostCompose fixtures.
+-/
+
+private def thmLinearNode : IrNode :=
+  { ty := Types.typeTagInit 1, mult := Mult.mult1, kind := NodeKind.linear }
+
+private def thmErasedNode : IrNode :=
+  { ty := Types.typeTagInit 0, mult := Mult.mult0, kind := NodeKind.erased }
+
+private def thmValueNode : IrNode :=
+  { ty := Types.typeTagInit 2, mult := Mult.multOmega, kind := NodeKind.value }
+
+private def thmPush (hc : Host) (n : IrNode) : Host :=
+  match HostCompose.pushHostNode hc n with
+  | HostCompose.HostPushNodeResult.ok hc' => hc'
+  | HostCompose.HostPushNodeResult.full => hc
+  | HostCompose.HostPushNodeResult.badNode => hc
+
+private def thmMint (hc : Host) (id : Nat) : Host :=
+  match HostCompose.mint hc id with
+  | HostCompose.MintResult.ok hc' => hc'
+  | HostCompose.MintResult.alreadyLive => hc
+  | HostCompose.MintResult.badId => hc
+
+/-- MULT-1 (minted) then MULT-0 (marked): r=1 e=1, two tag lines. -/
+private def thmLinearAndErased : Host :=
+  HostCompose.markErased
+    (thmMint
+      (thmPush (thmPush HostCompose.empty thmLinearNode) thmErasedNode) 9)
+
+/-- MULT-1 without mint fails body (fail-closed via plan/apply).
+    Greppable: bodyOk_mult1_unminted_false, MULT-1, FAIL-CLOSED, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyOk_mult1_unminted_false :
+    bodyOk (thmPush HostCompose.empty thmLinearNode) = false := by decide
+
+/-- MULT-1 with mint body is valid (runtimeNodes=1).
+    Greppable: bodyOk_mult1_minted_true, MULT-1, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyOk_mult1_minted_true :
+    bodyOk (thmMint (thmPush HostCompose.empty thmLinearNode) 5) = true := by decide
+
+/-- MULT-1 minted fragment text (header + one tag line).
+    Greppable: bodyFromCompose_mult1_minted_buf, MULT-1, HOST-EMIT-SSOT,
+    EMIT-BODY-THEOREM, HOST-EMIT-BODY-THEOREM. -/
+theorem bodyFromCompose_mult1_minted_buf :
+    (let b := bodyFromCompose (thmMint (thmPush HostCompose.empty thmLinearNode) 5)
+     b.runtimeNodes == 1 && b.erasedNodes == 0 && b.tagCount == 1
+       && b.buf ==
+         "/* EMIT_BODY_V0 RUNTIME-FS r=1 e=0 */\n/* t0 mult=1 kind=1 */\n") = true := by
+  decide
+
+/-- MULT-0 marked fragment text (mult=0 kind=2).
+    Greppable: bodyFromCompose_mult0_marked_buf, MULT-0, HOST-EMIT-SSOT,
+    EMIT-BODY-THEOREM, HOST-EMIT-BODY-THEOREM. -/
+theorem bodyFromCompose_mult0_marked_buf :
+    (let b := bodyFromCompose
+      (HostCompose.markErased (thmPush HostCompose.empty thmErasedNode))
+     b.erasedNodes == 1 && b.runtimeNodes == 0 && b.tagCount == 1
+       && b.buf ==
+         "/* EMIT_BODY_V0 RUNTIME-FS r=0 e=1 */\n/* t0 mult=0 kind=2 */\n") = true := by
+  decide
+
+/-- MULT-OMEGA body is valid with runtimeNodes=1.
+    Greppable: bodyOk_omega_true, MULT-OMEGA, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyOk_omega_true :
+    bodyOk (thmPush HostCompose.empty thmValueNode) = true := by decide
+
+/-- Multi-node linear+erased fragment inventory and exact tag lines.
+    Greppable: bodyFromCompose_linear_and_erased, EMIT-BODY-THEOREM,
+    HOST-EMIT-BODY-THEOREM. -/
+theorem bodyFromCompose_linear_and_erased :
+    (let b := bodyFromCompose thmLinearAndErased
+     bodyIsValid b && b.runtimeNodes == 1 && b.erasedNodes == 1 && b.tagCount == 2
+       && b.buf ==
+         "/* EMIT_BODY_V0 RUNTIME-FS r=1 e=1 */\n/* t0 mult=1 kind=1 */\n/* t1 mult=0 kind=2 */\n")
+      = true := by decide
+
 /-! ### Emit body smoke (behavioral; lake build fails if an example does not hold)
     Greppable: EMIT-BODY-SMOKE. Exercises empty ok, markers from buf, multi-node. -/
 
-private def smokeLinearNode : IrNode :=
-  { ty := Types.typeTagInit 1, mult := Mult.mult1, kind := NodeKind.linear }
-
-private def smokeErasedNode : IrNode :=
-  { ty := Types.typeTagInit 0, mult := Mult.mult0, kind := NodeKind.erased }
-
-private def smokeValueNode : IrNode :=
-  { ty := Types.typeTagInit 2, mult := Mult.multOmega, kind := NodeKind.value }
-
-private def smokePush (hc : Host) (n : IrNode) : Host :=
-  match HostCompose.pushHostNode hc n with
-  | HostCompose.HostPushNodeResult.ok hc' => hc'
-  | _ => hc
-
-private def smokeMint (hc : Host) (id : Nat) : Host :=
-  match HostCompose.mint hc id with
-  | HostCompose.MintResult.ok hc' => hc'
-  | _ => hc
-
-/-- MULT-1 (minted) then MULT-0 (marked): r=1 e=1, two tag lines. -/
-private def smokeLinearAndErased : Host :=
-  HostCompose.markErased
-    (smokeMint
-      (smokePush (smokePush HostCompose.empty smokeLinearNode) smokeErasedNode) 9)
+private def smokeLinearNode : IrNode := thmLinearNode
+private def smokeErasedNode : IrNode := thmErasedNode
+private def smokeValueNode : IrNode := thmValueNode
+private def smokePush := thmPush
+private def smokeMint := thmMint
+private def smokeLinearAndErased : Host := thmLinearAndErased
 
 /-- EMIT-BODY-SMOKE: bodyCap is 256 (SLAKE_EMIT_BODY_CAP honesty). -/
 example : bodyCap = 256 := by decide

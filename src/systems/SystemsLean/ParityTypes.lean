@@ -32,6 +32,18 @@
     same kind/mult fail-closed contracts the host proves in KernelTypes.
   - No new EMIT_* residual C stage ladder (host stage ids + frozen ABI only).
 
+  Theorems (PARITY-TYPES-THEOREM / HOST-PARITY-TYPES-THEOREM -- partial
+  ParityTypes):
+  - typesParityReady_true / typesParityOk_true / typesContractParityOk_true
+  - multLinearTypesParityReady_true / stageId_eq / hostParityTypesId_eq /
+    selfHostParityTypesId_eq
+  - Content equality (product API surface strings): productTypedIrId_eq /
+    productIrNodeApi_eq / productIrNodeInitApi_eq /
+    productIrNodeIsWellTypedApi_eq / productIrNodeCheckFailClosedApi_eq /
+    productApiSurfaceOk_true
+  These ParityTypes theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Types freestanding path readiness != freestanding product self-host complete.
+
   Intentional non-claims / partial parity:
   - PARTIAL: Types freestanding path honesty only; Mult grades already SH3;
     Mult+Linear Linear path already HOST-PARITY-LINEAR; no EmitTypes residual
@@ -40,6 +52,7 @@
   - PARTIAL: host String/Bool model vs C int return tables
     (compatible contracts, not bit-identical runtime).
   - Not freestanding residual free. Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Classic Lean elaborator residual remains (host residual != product wire).
   - Does not unlock llvm. Does not grow bash EMIT_* residual treadmill.
   - Not freestanding product self-host complete.
@@ -50,7 +63,11 @@
   TYPED_IR_V0, slake_ir_node, slake_ir_node_init, slake_ir_node_is_well_typed,
   slake_ir_node_check_fail_closed, HOST-KERNEL-TYPES, HOST-PARITY-LINEAR,
   HOST-PARITY-MULT, kindMultMismatchRejected, typesProgramPathReady,
-  MULT-0, MULT-1, MULT-OMEGA, COMMON-UNIVERSE, ORDERED-IR-PROGRAM
+  MULT-0, MULT-1, MULT-OMEGA, COMMON-UNIVERSE, ORDERED-IR-PROGRAM,
+  PARITY-TYPES-THEOREM, HOST-PARITY-TYPES-THEOREM, typesParityReady_true,
+  typesContractParityOk_true, productTypedIrId_eq, productIrNodeApi_eq,
+  productIrNodeInitApi_eq, productIrNodeIsWellTypedApi_eq,
+  productIrNodeCheckFailClosedApi_eq, productApiSurfaceOk_true
   UNIT_SURFACE host surface. Module: SystemsLean.ParityTypes
   Not freestanding emit. Not freestanding residual free. Not PROVABLY.
   Not freestanding emit residual free.
@@ -147,11 +164,89 @@ def multLinearTypesParityReady : Bool :=
 /-- Full Types freestanding path inventory ok (alias for inventory greps). -/
 def typesParityOk : Bool := typesParityReady
 
-/-! ### Types freestanding path parity smoke (behavioral; lake build fails if example fails)
-    Greppable: PARITY-TYPES-SMOKE, HOST-PARITY-TYPES-SMOKE.
-    maxRecDepth raised for multLinearParityReady / typesKernelReady String.beq unfolds. -/
+/-! ### PARITY-TYPES-THEOREM / HOST-PARITY-TYPES-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is Types
+  freestanding path readiness + Mult+Linear join only. Does not complete
+  SpecProof; does not claim residual free / freestanding product self-host
+  complete / PROVABLY / llvm unlock.
+  maxRecDepth raised for multLinearParityReady / typesKernelReady unfolds.
+-/
 
 set_option maxRecDepth 8192
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_PARITY_TYPES_V0.
+    Greppable: stageId_eq, PARITY-TYPES-THEOREM, HOST-PARITY-TYPES-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_PARITY_TYPES_V0" := rfl
+
+/-- Host map id is greppable HOST-PARITY-TYPES.
+    Greppable: hostParityTypesId_eq, PARITY-TYPES-THEOREM. -/
+theorem hostParityTypesId_eq : hostParityTypesId = "HOST-PARITY-TYPES" := rfl
+
+/-- Short map id is greppable SELF-HOST-PARITY-TYPES.
+    Greppable: selfHostParityTypesId_eq, PARITY-TYPES-THEOREM. -/
+theorem selfHostParityTypesId_eq :
+    selfHostParityTypesId = "SELF-HOST-PARITY-TYPES" := rfl
+
+/-- Types freestanding path parity host readiness holds.
+    Greppable: typesParityReady_true, HOST-PARITY-TYPES, SELF-HOST-PARITY-TYPES,
+    PARITY-TYPES-THEOREM, HOST-PARITY-TYPES-THEOREM. -/
+theorem typesParityReady_true : typesParityReady = true := by decide
+
+/-- typesParityOk alias of typesParityReady holds.
+    Greppable: typesParityOk_true, PARITY-TYPES-THEOREM. -/
+theorem typesParityOk_true : typesParityOk = true := by decide
+
+/-- Host Types freestanding path contracts closed.
+    Greppable: typesContractParityOk_true, PARITY-TYPES-THEOREM,
+    HOST-PARITY-TYPES-THEOREM. -/
+theorem typesContractParityOk_true : typesContractParityOk = true := by decide
+
+/-- Mult+Linear+Types joint bar name holds (equivalent to typesParityReady).
+    Greppable: multLinearTypesParityReady_true, HOST-PARITY-MULT,
+    HOST-PARITY-LINEAR, HOST-PARITY-TYPES, PARITY-TYPES-THEOREM. -/
+theorem multLinearTypesParityReady_true :
+    multLinearTypesParityReady = true := by decide
+
+/-! ### PARITY-TYPES frozen-ABI product API surface pins (not Mult ofNat depth)
+
+  product*Api_eq / productTypedIrId_eq are intentional greppable frozen-ABI
+  surface canaries: local def-literal self-equality only (not Kernel/C/probe
+  cross-SSOT). Weaker than ParityMult ofNatRoundTrip_tag* function content.
+  Do not treat product*Api_eq volume as remaining algebraic residual.
+  Path readiness canaries already held; no definitional alias spam.
+-/
+
+/-- Product TYPED_IR stage id surface pin (frozen-ABI canary; local def-literal).
+    Greppable: productTypedIrId_eq, PARITY-TYPES-THEOREM. -/
+theorem productTypedIrId_eq : productTypedIrId = "TYPED_IR_V0" := rfl
+
+/-- Product ir_node API surface content.
+    Greppable: productIrNodeApi_eq, PARITY-TYPES-THEOREM. -/
+theorem productIrNodeApi_eq : productIrNodeApi = "slake_ir_node" := rfl
+
+/-- Product ir_node_init API surface content.
+    Greppable: productIrNodeInitApi_eq, PARITY-TYPES-THEOREM. -/
+theorem productIrNodeInitApi_eq :
+    productIrNodeInitApi = "slake_ir_node_init" := rfl
+
+/-- Product ir_node_is_well_typed API surface content.
+    Greppable: productIrNodeIsWellTypedApi_eq, PARITY-TYPES-THEOREM. -/
+theorem productIrNodeIsWellTypedApi_eq :
+    productIrNodeIsWellTypedApi = "slake_ir_node_is_well_typed" := rfl
+
+/-- Product ir_node_check_fail_closed API surface content.
+    Greppable: productIrNodeCheckFailClosedApi_eq, PARITY-TYPES-THEOREM. -/
+theorem productIrNodeCheckFailClosedApi_eq :
+    productIrNodeCheckFailClosedApi = "slake_ir_node_check_fail_closed" := rfl
+
+/-- Product TYPED_IR / slake_ir_node API surface fold holds.
+    Greppable: productApiSurfaceOk_true, PARITY-TYPES-THEOREM. -/
+theorem productApiSurfaceOk_true : productApiSurfaceOk = true := by decide
+
+/-! ### Types freestanding path parity smoke (behavioral; lake build fails if example fails)
+    Greppable: PARITY-TYPES-SMOKE, HOST-PARITY-TYPES-SMOKE.
+    maxRecDepth already raised above for multLinearParityReady / typesKernelReady. -/
 
 /-- PARITY-TYPES-SMOKE / HOST-PARITY-TYPES-SMOKE: stage / map ids greppable. -/
 example : stageId = "SLAKE_SELF_HOST_PARITY_TYPES_V0" := by decide

@@ -28,22 +28,38 @@
     existing emit modules. Not an AI/ML model. Not product C residual free.
     Not freestanding product self-host complete.
 
+  Theorems (KERNEL-EMIT-THEOREM / HOST-KERNEL-EMIT-THEOREM -- partial KernelEmit):
+  - emitKernelReady_true / emitKernelOk_true
+  - emitPlanPathReady_true / emitApplyPathReady_true / emitBodyPathReady_true
+  - stageId_eq / kernelEmitId_eq / hostKernelEmitId_eq
+  - lowerEmitCompose_isSome / lowerEmitCompose_plan_counts /
+    lowerEmitCompose_apply_tags / lowerEmitCompose_body_fragment (content)
+  These KernelEmit theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Codegen host honesty theorems != freestanding product self-host complete.
+  Does not mint a new EMIT_* C residual stage.
+
   Intentional non-claims / partial parity:
   - PARTIAL: host plan/apply/body readiness + Mult text honesty over program
     kernel only; not full freestanding product module emit mill; not CFG/SSA;
     not freestanding product self-host complete (SH5 is SelfApply).
   - Product wire bulk still frozen at EMIT_BODY_V0 except HOST-EMIT-SSOT +
-    HOST-EMIT-MULT (no new EMIT_* C residual stage).
+    HOST-EMIT-MULT + HOST-EMIT-LINEAR (Linear text owned by EmitLinear; not
+    folded into emitKernelReady; no new EMIT_* C residual stage).
   - Not freestanding residual free. Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Classic Lean elaborator residual remains (host residual != product wire).
   - Does not unlock llvm. Does not grow bash EMIT_* residual treadmill.
 
   Greppable: SYSTEMS_LEAN_HOST, SLAKE_SELF_HOST_KERNEL_EMIT_V0,
   SELF-HOST-KERNEL-EMIT, HOST-KERNEL-EMIT, SELF-HOST, KERNEL-EMIT-SMOKE,
   EMIT-PLAN, EMIT-APPLY, EMIT-BODY, HOST-EMIT-SSOT, HOST-EMIT-MULT,
+  HOST-EMIT-LINEAR,
   HOST-KERNEL-PROGRAM, programKernelReady, emitKernelReady, planOk, applyOk,
   bodyOk, emitMultReady, EMIT_PLAN_V0, EMIT_APPLY_V0, EMIT_BODY_V0,
-  RUNTIME-FS, FAIL-CLOSED, MULT-0, MULT-1, MULT-OMEGA
+  RUNTIME-FS, FAIL-CLOSED, MULT-0, MULT-1, MULT-OMEGA, KERNEL-EMIT-THEOREM,
+  HOST-KERNEL-EMIT-THEOREM, emitKernelReady_true, emitKernelOk_true,
+  lowerEmitCompose_isSome, lowerEmitCompose_plan_counts,
+  lowerEmitCompose_apply_tags, lowerEmitCompose_body_fragment
   UNIT_SURFACE host surface. Module: SystemsLean.KernelEmit
   Red/green: just systems-host; lake build when toolchain installed.
   Module must stay ASCII.
@@ -246,11 +262,94 @@ def emitKernelReady : Bool :=
 /-- Full SH4 emit / codegen kernel inventory ok. -/
 def emitKernelOk : Bool := emitKernelReady
 
-/-! ### Emit kernel smoke (behavioral; lake build fails if an example does not hold)
-    Greppable: KERNEL-EMIT-SMOKE.
-    maxRecDepth raised for programKernelReady / emitKernelReady unfolds. -/
+/-! ### KERNEL-EMIT-THEOREM / HOST-KERNEL-EMIT-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is freestanding
+  codegen host honesty (plan/apply/body + Mult emit over program kernel) only.
+  Does not complete SpecProof; does not claim residual free / freestanding
+  product self-host complete / PROVABLY / llvm unlock. No new EMIT_* C stage.
+  maxRecDepth raised for programKernelReady / emitKernelReady unfolds.
+-/
 
 set_option maxRecDepth 8192
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_KERNEL_EMIT_V0.
+    Greppable: stageId_eq, KERNEL-EMIT-THEOREM, HOST-KERNEL-EMIT-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_KERNEL_EMIT_V0" := rfl
+
+/-- Short map id is greppable SELF-HOST-KERNEL-EMIT.
+    Greppable: kernelEmitId_eq, KERNEL-EMIT-THEOREM. -/
+theorem kernelEmitId_eq : kernelEmitId = "SELF-HOST-KERNEL-EMIT" := rfl
+
+/-- Host map id is greppable HOST-KERNEL-EMIT.
+    Greppable: hostKernelEmitId_eq, KERNEL-EMIT-THEOREM,
+    HOST-KERNEL-EMIT-THEOREM. -/
+theorem hostKernelEmitId_eq : hostKernelEmitId = "HOST-KERNEL-EMIT" := rfl
+
+/-- Emit / codegen kernel readiness holds (program + plan/apply/body + Mult).
+    Greppable: emitKernelReady_true, SELF-HOST-KERNEL-EMIT, HOST-KERNEL-EMIT,
+    KERNEL-EMIT-THEOREM, HOST-KERNEL-EMIT-THEOREM. -/
+theorem emitKernelReady_true : emitKernelReady = true := by decide
+
+/-- Full SH4 emit kernel inventory ok holds.
+    Greppable: emitKernelOk_true, KERNEL-EMIT-THEOREM,
+    HOST-KERNEL-EMIT-THEOREM. -/
+theorem emitKernelOk_true : emitKernelOk = true := by decide
+
+/-- EMIT-PLAN path honesty over program kernel surface holds.
+    Greppable: emitPlanPathReady_true, EMIT-PLAN, KERNEL-EMIT-THEOREM. -/
+theorem emitPlanPathReady_true : emitPlanPathReady = true := by decide
+
+/-- EMIT-APPLY path honesty over program kernel surface holds.
+    Greppable: emitApplyPathReady_true, EMIT-APPLY, KERNEL-EMIT-THEOREM. -/
+theorem emitApplyPathReady_true : emitApplyPathReady = true := by decide
+
+/-- EMIT-BODY / HOST-EMIT-SSOT path honesty holds.
+    Greppable: emitBodyPathReady_true, EMIT-BODY, HOST-EMIT-SSOT,
+    KERNEL-EMIT-THEOREM. -/
+theorem emitBodyPathReady_true : emitBodyPathReady = true := by decide
+
+/-- lowerEmitCompose succeeds (isSome).
+    Greppable: lowerEmitCompose_isSome, KERNEL-EMIT-THEOREM,
+    HOST-KERNEL-EMIT-THEOREM. -/
+theorem lowerEmitCompose_isSome : lowerEmitCompose.isSome = true := by decide
+
+/-- lowerEmitCompose plan inventory content: 3 nodes, 2 edges, 2 runtime, 1 erased.
+    Greppable: lowerEmitCompose_plan_counts, EMIT-PLAN, KERNEL-EMIT-THEOREM,
+    HOST-KERNEL-EMIT-THEOREM. -/
+theorem lowerEmitCompose_plan_counts :
+    (match lowerEmitCompose with
+     | some hc =>
+         let p := EmitPlan.planFromCompose hc
+         p.nodeCount == 3 && p.edgeCount == 2 && p.runtimeNodes == 2
+           && p.erasedNodes == 1 && EmitPlan.isReady p
+     | none => false) = true := by decide
+
+/-- lowerEmitCompose apply tag buffer content: [2, 17, 32] order erased/linear/value.
+    Greppable: lowerEmitCompose_apply_tags, EMIT-APPLY, KERNEL-EMIT-THEOREM,
+    HOST-KERNEL-EMIT-THEOREM. -/
+theorem lowerEmitCompose_apply_tags :
+    (match lowerEmitCompose with
+     | some hc =>
+         let a := EmitApply.applyFromCompose hc
+         a.count == 3
+           && a.tags == [expectedTagErased, expectedTagLinear, expectedTagValue]
+           && EmitApply.applyIsValid a
+     | none => false) = true := by decide
+
+/-- lowerEmitCompose body fragment equals expected HOST-EMIT-SSOT text.
+    Greppable: lowerEmitCompose_body_fragment, EMIT-BODY, HOST-EMIT-SSOT,
+    KERNEL-EMIT-THEOREM, HOST-KERNEL-EMIT-THEOREM. -/
+theorem lowerEmitCompose_body_fragment :
+    (match lowerEmitCompose with
+     | some hc =>
+         let b := EmitBody.bodyFromCompose hc
+         b.buf == expectedBodyFragment && EmitBody.bodyIsValid b
+     | none => false) = true := by decide
+
+/-! ### Emit kernel smoke (behavioral; lake build fails if an example does not hold)
+    Greppable: KERNEL-EMIT-SMOKE.
+    maxRecDepth already raised above for programKernelReady / emitKernelReady. -/
 
 /-- KERNEL-EMIT-SMOKE: stage / map ids are greppable honesty strings. -/
 example : stageId = "SLAKE_SELF_HOST_KERNEL_EMIT_V0" := by decide

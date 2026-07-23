@@ -3,15 +3,26 @@
 **Module role:** Quantitative Type Theory (QTT) grades on freestanding Slake.
 **Status:** SYSTEMS_LEAN_HOST partial -- `SystemsLean/Mult.lean` (closed Mult
 inductive MULT-0 / MULT-1 / MULT-OMEGA; typed `isValid` total-true by match;
-FAIL-CLOSED-UNKNOWN-GRADE via `ofNat?` / `isValidTag`; `multIsValid` alias) +
+FAIL-CLOSED-UNKNOWN-GRADE via `ofNat?` / `isValidTag`; `multIsValid` alias;
+MULT-THEOREM / HOST-MULT-THEOREM real Lean theorems on known-tag decode +
+ofNat? / isValidTag unknown-tag reject + isValid_true + name_mult0/1/Omega +
+ofNat?_some_implies_isValidTag + ofNat?_name_zero/one/two +
+ofNat?_name_fail_closed) +
 UNIT_DEEPEN_V1 contract surface on Mult.slake (historical emit map) +
 HOST-EMIT-MULT (`EmitMult.lean` / `emit/host_emit_mult.ssot.txt`) +
 HOST-PARITY-MULT (`ParityMult.lean` + product Mult probe).
 Not freestanding residual free. Not freestanding emit body in this unit file.
+Not proof complete (SpecProof.proofCompleteClaimed stays false after Mult
+theorems).
 **IR sketch:** `doc/shared-ir-sketch.md` (Multiplicities row).
 **Greppable row ids:** MULT-0, MULT-1, MULT-OMEGA, FAIL-CLOSED-UNKNOWN-GRADE,
+MULT-THEOREM, HOST-MULT-THEOREM, ofNat?_fail_closed, isValidTag_fail_closed,
+name_mult0, name_mult1, name_multOmega, ofNat?_some_implies_isValidTag,
+ofNat?_name_zero, ofNat?_name_one, ofNat?_name_two, ofNat?_name_fail_closed,
 UNIT_DEEPEN_V1, SYSTEMS_LEAN_HOST, HOST-EMIT-MULT, HOST-PARITY-MULT,
-HOST-SELF-APPLY, SELF-HOST-SELF-APPLY, HOST-LLVM-HOLD, SELF-HOST-LLVM-HOLD
+PARITY-MULT-THEOREM, HOST-PARITY-MULT-THEOREM, multParityReady_true,
+gradeParityOk_true, ofNatRoundTripOk_true, HOST-SELF-APPLY,
+SELF-HOST-SELF-APPLY, HOST-LLVM-HOLD, SELF-HOST-LLVM-HOLD
 **PARTIAL inventory:** `host-partial-inventory.md` (CLOSABLE-MISS-COUNT-0)
 
 ## Lean host (SYSTEMS_LEAN_HOST)
@@ -22,6 +33,7 @@ HOST-SELF-APPLY, SELF-HOST-SELF-APPLY, HOST-LLVM-HOLD, SELF-HOST-LLVM-HOLD
 | `name` | Greppable MULT-0 / MULT-1 / MULT-OMEGA strings |
 | `isValid` / `multIsValid` | Typed Mult always true (constructor match) |
 | `ofNat?` / `isValidTag` | FAIL-CLOSED-UNKNOWN-GRADE on raw tags (0/1/2 only) |
+| MULT-THEOREM / HOST-MULT-THEOREM | Real theorems: ofNat?_zero/one/two, ofNat?_fail_closed, isValidTag_fail_closed, isValid_true, isValidTag_eq_ofNat?_isSome, name_mult0/1/Omega, ofNat?_some_implies_isValidTag, ofNat?_name_zero/one/two, ofNat?_name_fail_closed -- partial Mult only; not SpecProof complete |
 
 ## Grades (product surface)
 
@@ -68,13 +80,33 @@ in `LlvmHold.lean` (`llvmHoldReady` true; `llvmUnlocked` false) -- not residual-
 open llvm mill; not PROVABLY.
 
 **HOST-PARITY-MULT (SH3):** Mult closed-loop parity -- host `ParityMult.lean`
-(`multParityReady` / `gradeParityOk`) + product Mult behavioral checks in
+(`multParityReady` / `gradeParityOk`; `multParityOk` is definitional alias of
+`multParityReady`, not a stronger gate) + product Mult behavioral checks in
 `smoke/slake_behavioral_probe.c` (is_valid / is_known / name / enum tags 0/1/2
-+ fail-closed unknown). Mult grades only -- Linear kernel is KernelLinear (SH4).
++ fail-closed unknown). PARITY-MULT-SMOKE / HOST-PARITY-MULT-SMOKE behavioral
+examples; PARITY-MULT-THEOREM / HOST-PARITY-MULT-THEOREM real theorems
+(`multParityReady_true`, `multParityOk_true`, `multParityOk_eq_ready`,
+`gradeParityOk_true`, `ofNatRoundTripOk_true`, `isValidTagParityOk_true`,
+`nameParityOk_true`, `stageId_eq`, `hostParityMultId_eq`,
+`selfHostParityMultId_eq`; content equality: `ofNatRoundTrip_tag0` / `tag1` /
+`tagOmega` / `unknown3` / `unknown99`, `isValidTag_tag0` / `tag1` / `tagOmega` /
+`unknown3` / `unknown99`, `nameParity_mult0` / `mult1` / `multOmega`,
+`enumTag_multC0` / `C1` / `COmega`, `productIsValidApi_eq` /
+`productIsKnownApi_eq` / `productNameApi_eq`, `isValidParityOk_true` /
+`enumTagParityOk_true`). Strength: ofNatRoundTrip_tag* / isValidTag_tag* /
+nameParity_mult* are Mult function content; enumTag_multC* cross-module
+EmitMult strings; product*Api_eq are frozen-ABI local def-literal surface
+canaries only (not C/probe SSOT; weaker than ofNat depth).
+SpecProof.proofCompleteClaimed stays false. Mult grades only -- Linear kernel
+is KernelLinear (SH4). Still not residual free; not freestanding product
+self-host complete; not proof complete.
 
 ## Non-claims
 
 - No full mult checker body here
 - Not freestanding residual free
 - Not freestanding self-host complete / not PROVABLY
+- Mult theorems (MULT-THEOREM) and Mult closed-loop theorems
+  (PARITY-MULT-THEOREM) do not mean host proof complete
+  (SpecProof.proofCompleteClaimed stays false)
 - Labels may differ on sides (EDGE-NAME: omega vs unrestricted / RigW)

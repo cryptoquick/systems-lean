@@ -73,7 +73,7 @@ Idris 2 and Lean 4 map, primary emit runtimeless freestanding C under
 | `[##########] 100.0%` | 6 | systems | systems | Systems units for just build | src/systems *.lean or *.slake |
 | `[##########] 100.0%` | 4 | systems | systems | Min mult 0/1/omega host notes in systems | src/systems mult / QTT surface |
 | `[##########] 100.0%` | 12 | release | systems | out/freestanding-c product C | generated .c/.h under out/freestanding-c |
-| `[##########] 100.0%` | 4 | release | systems | just out-freestanding-c / build path | emit + build scripts present |
+| `[##########] 100.0%` | 4 | release | systems | just out-freestanding-c / build path | just build + just out-freestanding-c (Wave B); emit driver until Wave C |
 | `[----------] 0.0%` | 0* | release | systems | CompCert PROVABLY path (deferred weight 0) | needs real ccomp + matrix -- not claimed |
 | `[----------] 0.0%` | 0* | release | systems | out/llvm-ir (deferred until self-host, weight 0) | deferred -- recipe reserved |
 
@@ -98,3 +98,33 @@ Idris 2 and Lean 4 map, primary emit runtimeless freestanding C under
 - `doc/fork-guidance-systems.md`
 
 SPDX-License-Identifier: Unlicense
+
+## Code size (`scc` novel)
+
+Exit: 0 -- full snapshot: `doc/PROGRESS-scc.txt`
+Excludes: .git ref .lake .cache
+
+```
+
+Language            Files       Lines    Blanks  Comments       Code Complexity
+
+Markdown               56       7,020     1,506         0      5,514          0
+Lean                   39       9,134     1,142     3,833      4,159      1,350
+Nix                    20       4,666       146       284      4,236        282
+Shell                   4         346        31        47        268         88
+C                       3       3,737       296       450      2,991      1,668
+Idris                   3         266        42        43        181          4
+Plain Text              3         123        14         0        109          0
+Autoconf                2       1,604       178        13      1,413        374
+C Header                2       1,184       150       698        336          0
+JSON                    2          12         0         0         12          0
+TOML                    2          47         5        16         26          0
+BASH                    1           7         0         3          4          1
+YAML                    1          18         2         1         15          0
+
+Total                 138      28,164     3,512     5,388     19,264      3,767
+
+Estimated Cost to Develop (organic) $603,363
+Estimated Schedule Effort (organic) 11.35 months
+Estimated People Required (organic) 4.72
+```

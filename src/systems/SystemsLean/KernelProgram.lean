@@ -36,6 +36,17 @@
     compose contracts as IR. Not an AI/ML model. Not product C. Not
     self-host complete.
 
+  Theorems (KERNEL-PROGRAM-THEOREM / HOST-KERNEL-PROGRAM-THEOREM -- partial
+  KernelProgram):
+  - programKernelReady_true / programKernelOk_true
+  - programPathReady_true / programGraphPathReady_true / programComposePathReady_true
+  - lowerProgramKernel_isSome / programCompileReady_empty_false
+  - stageId_eq / kernelProgramId_eq / hostKernelProgramId_eq
+  - lowerProgramKernel_length_three / lowerProgramKernel_isWellTyped
+  - programKernelProgram_length_three / programKernelProgram_isWellTyped
+  These KernelProgram theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Program / graph / compose content != freestanding product self-host complete.
+
   Intentional non-claims / partial parity:
   - PARTIAL: program / graph / compose host kernel only; not full product C
     text SSoT for program/graph/compose; freestanding codegen host honesty is
@@ -43,6 +54,7 @@
   - Mult closed loop remains SH3 (ParityMult); Linear is KernelLinear;
     Types is KernelTypes; this module grows the program/compose rung of SH4.
   - Not freestanding residual free. Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Classic Lean elaborator residual remains (host residual != product wire).
   - Does not unlock llvm. Does not grow bash EMIT_* residual treadmill.
   - Product wire bulk still frozen at EMIT_BODY_V0; existing program/graph
@@ -54,7 +66,11 @@
   EMPTY-GRAPH-OK, IR-GRAPH-EDGES, HOST-COMPOSE, HOST-COMPILE-PATH,
   foldWellTyped, IR_PROGRAM_V0, IR_GRAPH_EDGES_V0, HOST_COMPOSE_V0,
   SLAKE_IR_PROGRAM_CAP, SLAKE_IR_EDGE_MAX, MULT-0, MULT-1, MULT-OMEGA,
-  slake_ir_program, slake_ir_graph, slake_host_compose
+  slake_ir_program, slake_ir_graph, slake_host_compose,
+  KERNEL-PROGRAM-THEOREM, HOST-KERNEL-PROGRAM-THEOREM,
+  programKernelReady_true, programKernelOk_true,
+  lowerProgramKernel_length_three, lowerProgramKernel_isWellTyped,
+  programKernelProgram_length_three, programKernelProgram_isWellTyped
   UNIT_SURFACE host surface. Module: SystemsLean.KernelProgram
   Red/green: just systems-host; lake build when toolchain installed.
   Module must stay ASCII.
@@ -335,6 +351,88 @@ def programKernelReady : Bool :=
 
 /-- Full SH4 program kernel inventory ok. -/
 def programKernelOk : Bool := programKernelReady
+
+/-! ### KERNEL-PROGRAM-THEOREM / HOST-KERNEL-PROGRAM-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is program /
+  graph / compose kernel readiness and empty-program sibling fail-closed only.
+  Does not complete SpecProof; does not claim residual free / freestanding
+  product self-host complete / PROVABLY / llvm unlock.
+-/
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_KERNEL_PROGRAM_V0.
+    Greppable: stageId_eq, KERNEL-PROGRAM-THEOREM, HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_KERNEL_PROGRAM_V0" := rfl
+
+/-- Short map id is greppable SELF-HOST-KERNEL-PROGRAM.
+    Greppable: kernelProgramId_eq, KERNEL-PROGRAM-THEOREM. -/
+theorem kernelProgramId_eq : kernelProgramId = "SELF-HOST-KERNEL-PROGRAM" := rfl
+
+/-- Host map id is greppable HOST-KERNEL-PROGRAM.
+    Greppable: hostKernelProgramId_eq, KERNEL-PROGRAM-THEOREM,
+    HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem hostKernelProgramId_eq : hostKernelProgramId = "HOST-KERNEL-PROGRAM" := rfl
+
+/-- Program kernel lowers to well-typed ordered IR + graph + compose ready.
+    Greppable: programKernelReady_true, SELF-HOST-KERNEL-PROGRAM,
+    HOST-KERNEL-PROGRAM, KERNEL-PROGRAM-THEOREM, HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem programKernelReady_true : programKernelReady = true := by decide
+
+/-- Full SH4 program kernel inventory ok holds.
+    Greppable: programKernelOk_true, KERNEL-PROGRAM-THEOREM,
+    HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem programKernelOk_true : programKernelOk = true := by decide
+
+/-- Ordered IR program path honesty holds.
+    Greppable: programPathReady_true, EMPTY-PROGRAM-FAIL-CLOSED,
+    KERNEL-PROGRAM-THEOREM. -/
+theorem programPathReady_true : programPathReady = true := by decide
+
+/-- Graph path honesty (edges + EMPTY-GRAPH-OK) holds.
+    Greppable: programGraphPathReady_true, EMPTY-GRAPH-OK,
+    KERNEL-PROGRAM-THEOREM. -/
+theorem programGraphPathReady_true : programGraphPathReady = true := by decide
+
+/-- HostCompose mult handles + edges path honesty holds.
+    Greppable: programComposePathReady_true, HOST-COMPOSE,
+    KERNEL-PROGRAM-THEOREM. -/
+theorem programComposePathReady_true : programComposePathReady = true := by decide
+
+/-- lowerProgramKernel succeeds (isSome).
+    Greppable: lowerProgramKernel_isSome, KERNEL-PROGRAM-THEOREM. -/
+theorem lowerProgramKernel_isSome : lowerProgramKernel.isSome = true := by decide
+
+/-- EMPTY-PROGRAM-FAIL-CLOSED sibling: empty program is not program-ready.
+    Greppable: programCompileReady_empty_false, EMPTY-PROGRAM-FAIL-CLOSED,
+    KERNEL-PROGRAM-THEOREM, HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem programCompileReady_empty_false :
+    programCompileReady IrProgram.empty = false := rfl
+
+/-- lowerProgramKernel yields a length-3 ordered IR program (content equality).
+    Greppable: lowerProgramKernel_length_three, KERNEL-PROGRAM-THEOREM,
+    HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem lowerProgramKernel_length_three :
+    (match lowerProgramKernel with
+     | some p => IrProgram.length p == 3
+     | none => false) = true := by decide
+
+/-- lowerProgramKernel yields a well-typed ordered IR program (content equality).
+    Greppable: lowerProgramKernel_isWellTyped, KERNEL-PROGRAM-THEOREM,
+    HOST-KERNEL-PROGRAM-THEOREM. -/
+theorem lowerProgramKernel_isWellTyped :
+    (match lowerProgramKernel with
+     | some p => IrProgram.isWellTyped p
+     | none => false) = true := by decide
+
+/-- programKernelProgram (fallback wrapper) has length 3 when lower succeeds.
+    Greppable: programKernelProgram_length_three, KERNEL-PROGRAM-THEOREM. -/
+theorem programKernelProgram_length_three :
+    IrProgram.length programKernelProgram = 3 := by decide
+
+/-- programKernelProgram is well-typed (lower success path content).
+    Greppable: programKernelProgram_isWellTyped, KERNEL-PROGRAM-THEOREM. -/
+theorem programKernelProgram_isWellTyped :
+    IrProgram.isWellTyped programKernelProgram = true := by decide
 
 /-! ### Program kernel smoke (behavioral; lake build fails if an example does not hold)
     Greppable: KERNEL-PROGRAM-SMOKE. -/

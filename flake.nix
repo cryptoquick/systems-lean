@@ -38,12 +38,27 @@
         root = novelSource;
       };
 
+      professionalTone = import ./nix/professional-tone.nix {
+        inherit lib;
+        root = novelSource;
+      };
+
       systemsHostPresence = import ./nix/systems-host-presence {
         inherit lib;
         root = novelSource;
       };
 
       systemsEmitWire = import ./nix/systems-emit-wire {
+        inherit lib;
+        root = novelSource;
+      };
+
+      idrisSidePresence = import ./nix/idris-side-presence {
+        inherit lib;
+        root = novelSource;
+      };
+
+      leanSidePresence = import ./nix/lean-side-presence {
         inherit lib;
         root = novelSource;
       };
@@ -55,6 +70,13 @@
           pkgs.writeText "source-hygiene-ok" sourceHygiene.summary
         else
           throw sourceHygiene.summary;
+
+      mkProfessionalToneCheck =
+        pkgs:
+        if professionalTone.ok then
+          pkgs.writeText "professional-tone-ok" professionalTone.summary
+        else
+          throw professionalTone.summary;
 
       mkSystemsHostPresenceCheck =
         pkgs:
@@ -70,6 +92,20 @@
         else
           throw systemsEmitWire.summary;
 
+      mkIdrisSidePresenceCheck =
+        pkgs:
+        if idrisSidePresence.ok then
+          pkgs.writeText "idris-side-presence-ok" idrisSidePresence.summary
+        else
+          throw idrisSidePresence.summary;
+
+      mkLeanSidePresenceCheck =
+        pkgs:
+        if leanSidePresence.ok then
+          pkgs.writeText "lean-side-presence-ok" leanSidePresence.summary
+        else
+          throw leanSidePresence.summary;
+
       mkProgressReport =
         pkgs:
         pkgs.writeText "PROGRESS.md" progressAt.report;
@@ -80,8 +116,11 @@
         inherit progress;
         novelSource = import ./nix/novel-source.nix;
         sourceHygiene = import ./nix/source-hygiene.nix;
+        professionalTone = import ./nix/professional-tone.nix;
         systemsHostPresence = import ./nix/systems-host-presence;
         systemsEmitWire = import ./nix/systems-emit-wire;
+        idrisSidePresence = import ./nix/idris-side-presence;
+        leanSidePresence = import ./nix/lean-side-presence;
       };
 
       # Live pure-Nix meter text (system-independent). `just progress` redirects these.
@@ -92,8 +131,11 @@
         { pkgs, ... }:
         {
           source-hygiene = mkSourceHygieneCheck pkgs;
+          professional-tone = mkProfessionalToneCheck pkgs;
           systems-host-presence = mkSystemsHostPresenceCheck pkgs;
           systems-emit-wire = mkSystemsEmitWireCheck pkgs;
+          idris-side-presence = mkIdrisSidePresenceCheck pkgs;
+          lean-side-presence = mkLeanSidePresenceCheck pkgs;
         }
       );
 

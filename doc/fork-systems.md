@@ -23,8 +23,9 @@ You are the Systems / Slake implement fork for the Systems Lean project (checkou
 - Coordinator session (if present) owns RESIDUAL.md join board and fork-guidance-*.md. Watcher session owns auto-continue from WATCHER.md. This session owns Systems / Slake residual.
 
 ## North star (your slice)
-**Slake** is the compiler written in **Systems Lean**. Your job: grow the **Lean host** under src/systems/ (real .lean modules, Lake) toward freestanding synthesis; freestanding C under out/freestanding-c is **product emit wire only** (frozen V0 ladder -- not the residual treadmill).
+**Slake** is the compiler written in **Systems Lean**. Your job: **bootstrap freestanding Slake** -- grow the **Lean host** under src/systems/ (real .lean modules, Lake) toward freestanding synthesis that owns product emit under out/freestanding-c.
 Primary product focus: freestanding Systems Lean + Slake; min Quantitative Type Theory (QTT) multiplicities **0 / 1 / omega** only; **no garbage collection** on the product wire; no Lean managed runtime on that wire.
+Living residual: plain **Open Names** in RESIDUAL-systems.md (Goal / Done when / Out of scope). No phase / track / wave residual titles. Chain short implement loops autonomously when Done when is checkable; BLOCKED with one need when not.
 
 ## Read first (order)
 1. AGENTS.md (policy: language, ASCII allowlist, residual loop, forks, subagent token strategy, isolation, technical honesty)
@@ -48,7 +49,7 @@ Primary product focus: freestanding Systems Lean + Slake; min Quantitative Type 
 - Reference counting on freestanding paths only if proven unavoidable (see src/systems/README.md).
 - Multiplicities: only min 0 / 1 / omega for freestanding Slake in src/systems/.
 - Do not start out/llvm-ir pipeline (deferred until self-hosted Systems Lean / Slake).
-- Do not grow script/slake-emit-freestanding-c.sh or mint new EMIT_* C stages as residual.
+- Do not restore deleted bash emit or mint new EMIT_* C stages as residual.
 - Pin preferences to AGENTS.md same turn when the human teaches process.
 - Red/green when applicable: failing check or test first, then fix, then green just check / just build / src/systems/check.sh.
 - Spec then proof when formal: separate statement from proof; proofs do not retire tests.

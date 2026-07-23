@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Unlicense
 # Systems Lean host: Mult + Linear + Types + ordered IR program + Erasure + Extract
 # + IrGraph + HostCompose + EmitPlan + EmitApply + EmitBody + CompilePath + JoinMap
-# + SelfHost + SurfaceMatrix + KernelMult + EmitMult + ParityMult + KernelLinear
-# + ParityLinear + KernelTypes + ParityTypes + KernelProgram + ParityProgram +
-# KernelEmit + ParityEmit + SelfApply + SelfApplyFs + LlvmHold + InventoryClose +
-# ProductPath (Mult..ProductPath, 31 modules)
-# under classic Lean elaborator.
+# + SelfHost + SurfaceMatrix + KernelMult + EmitMult + EmitLinear + ParityMult +
+# KernelLinear + ParityLinear + KernelTypes + ParityTypes + KernelProgram +
+# ParityProgram + KernelEmit + ParityEmit + SelfApply + SelfApplyFs + LlvmHold +
+# InventoryClose + ProductPath + DualResidual + ProbeWire + SpecProof +
+# SelfHostBody (Mult..SelfHostBody, 36 modules) under classic Lean elaborator.
 # Not freestanding residual free. Not product C. No remote dependencies.
 # Offline: lake-manifest.json has empty packages (mirror src/lean4 policy).
 name = "SystemsLean"
@@ -16,3 +16,11 @@ defaultTargets = ["SystemsLean"]
 name = "SystemsLean"
 srcDir = "."
 roots = ["SystemsLean"]
+
+# Lean-owned freestanding product C emit (SLAKE_EMIT_FREESTANDING_C_V0).
+# Writes src/systems/emit/slake_freestanding.{h,c}; never out/freestanding-c/.
+# Invoked by just out-freestanding-c. Not residual free; not PROVABLY.
+[[lean_exe]]
+name = "slake-emit-freestanding-c"
+root = "SystemsLean.FreestandingEmit"
+supportInterpreter = true

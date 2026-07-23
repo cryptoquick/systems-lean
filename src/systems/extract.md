@@ -4,19 +4,28 @@
 **Status:** SYSTEMS_LEAN_HOST partial -- `SystemsLean/Extract.lean` (RuntimeClaim
 RUNTIME-FS / RUNTIME-CLASSIC / EDGE-RUNTIME; EMIT-BOUNDARY; extractOk /
 checkFailClosed as PARTIAL FAIL_CLOSED_CHECKER_V1: MULT-0 + RUNTIME-FS; MULT-1
-pass-through without live token) + fuller **HostCompose** path in
+pass-through without live token; EXTRACT-THEOREM / HOST-EXTRACT-THEOREM real
+theorems on RUNTIME-FS-only / FAIL-CLOSED-UNKNOWN-RUNTIME +
+ofRuntimeTag?_some_implies_isValidRuntimeTag + extractOkFromTags? known-tag paths;
+SpecProof.proofCompleteClaimed stays false) + fuller **HostCompose** path in
 `SystemsLean/HostCompose.lean` (owns graph + linear host + erasure; MULT-1 live
-host required via mult pre-scan) + **EmitPlan** / **EmitApply** / **EmitBody**
-host honesty modules (`SystemsLean/EmitPlan.lean`, `EmitApply.lean`,
-`EmitBody.lean`: readiness inventory, fixed tag list, body fragment inventory;
+host required via mult pre-scan; COMPOSE-THEOREM / HOST-COMPOSE-THEOREM real
+theorems on multPreScan empty / mint-consume FAIL-CLOSED / RUNTIME-FS extract /
+nodeMultOk contracts + markErased_idempotent / multPreScan_omega_only_true /
+mint_consume_roundtrip; SpecProof.proofCompleteClaimed stays false) + **EmitPlan** /
+**EmitApply** / **EmitBody** host honesty modules (`SystemsLean/EmitPlan.lean`,
+`EmitApply.lean`, `EmitBody.lean`: readiness inventory, fixed tag list, body
+fragment inventory; EMIT-BODY-THEOREM / HOST-EMIT-BODY-THEOREM fragment honesty;
 PARTIAL vs full C EMIT_*_V0). UNIT_DEEPEN_V1 +
 **FAIL_CLOSED_CHECKER_V1** + **HOST_COMPOSE_V0** + **EMIT_PLAN_V0** +
 **EMIT_APPLY_V0** + **EMIT_BODY_V0** contract surface on Extract.slake remains for
 historical emit map. V0 emit path exists (`SLAKE_EMIT_FREESTANDING_C_V0` / frozen
 wire stages); still not residual free.
 **PARTIAL inventory:** `host-partial-inventory.md` (HOST-PARTIAL-INVENTORY;
-CLOSABLE-MISS-COUNT-0 -- Mult..ProductPath intentional PARTIAL only; no closable miss;
-HOST-INVENTORY-CLOSE readiness does not claim residual free).
+CLOSABLE-MISS-COUNT-0 -- Mult..SpecProof intentional PARTIAL only; no closable miss;
+HOST-INVENTORY-CLOSE readiness does not claim residual free;
+HOST-PRODUCT-PATH freestandingEmitProductPathReady reuses KernelEmit plan/apply/body
++ freestandingBodyPathReady and does not claim residual free).
 **SH4 emit kernel:** `SystemsLean/KernelEmit.lean` (**SELF-HOST-KERNEL-EMIT** /
 **HOST-KERNEL-EMIT** / `SLAKE_SELF_HOST_KERNEL_EMIT_V0`) composes EmitPlan /
 EmitApply / EmitBody + Mult emit over program kernel (KERNEL-EMIT-SMOKE); no new
@@ -36,7 +45,12 @@ HOST-EMIT-SSOT); freestandingProductSelfHostComplete stays false.
 **Anchors:** EMIT-BOUNDARY; EDGE-RUNTIME / RUNTIME-CLASSIC; product goal RUNTIME-FS;
 UNIT_DEEPEN_V1; FAIL_CLOSED_CHECKER_V1; HOST_COMPOSE_V0; EMIT_PLAN_V0; EMIT_APPLY_V0;
 EMIT_BODY_V0; SYSTEMS_LEAN_HOST; HOST-PARTIAL-INVENTORY; SELF-HOST-KERNEL-EMIT;
-HOST-KERNEL-EMIT; HOST-PARITY-EMIT; SELF-HOST-PARITY-EMIT; HOST-SELF-APPLY-FS
+HOST-KERNEL-EMIT; HOST-PARITY-EMIT; SELF-HOST-PARITY-EMIT; HOST-SELF-APPLY-FS;
+COMPOSE-THEOREM; HOST-COMPOSE-THEOREM; markErased_idempotent;
+multPreScan_omega_only_true; mint_consume_roundtrip; pushHostNode_bad_node;
+pushHostNode_value_one_ok; addHostEdge_empty_badEndpoints;
+addHostEdge_two_values_ok; addHostEdge_one_node_badEndpoints; EXTRACT-THEOREM;
+HOST-EXTRACT-THEOREM; EMIT-BODY-THEOREM; HOST-EMIT-BODY-THEOREM
 
 ## Lean host (SYSTEMS_LEAN_HOST)
 
@@ -47,14 +61,17 @@ HOST-KERNEL-EMIT; HOST-PARITY-EMIT; SELF-HOST-PARITY-EMIT; HOST-SELF-APPLY-FS
 | `ofRuntimeTag?` / `isValidRuntimeTag` | FAIL-CLOSED-UNKNOWN-RUNTIME on raw tags (0/1/2) |
 | `checkFailClosed` / `extractOk` | PARTIAL FAIL_CLOSED_CHECKER_V1: claim must be RUNTIME-FS; MULT-0 needs marked erased; MULT-1 / MULT-OMEGA under FS always pass (no live-token check) |
 | `extractOkFromTags?` | Raw mult + marked + runtime tag path (none on unknown tags; same MULT-1 gap) |
+| EXTRACT-THEOREM / HOST-EXTRACT-THEOREM | Real theorems: isFreestandingGoal_runtimeFs / classic/edge false, extractOk_classic_reject / extractOk_edge_reject, extractOk_mult1_fs_true / omega / mult0 unmarked/marked, ofRuntimeTag? known + fail_closed + ofRuntimeTag?_some_implies_isValidRuntimeTag + isValidRuntimeTag_zero/one/two, name honesty, extractOkFromTags? known-tag success/fail + unknown none -- partial Extract only; intentional MULT-1 thinning; not SpecProof complete |
 | `HostCompose.Host` | Graph + LinearHost (live/id) + Erased (HOST-COMPOSE host honesty) |
 | `HostCompose.checkFailClosed` / `extractOk` / `extractOkFs` | Graph well-typed + mult pre-scan (MULT-0 marked; MULT-1 live host; MULT-OMEGA free); extractOk needs RUNTIME-FS; extractOkFs = extract under runtimeFs |
+| COMPOSE-THEOREM / HOST-COMPOSE-THEOREM | Real theorems: multPreScan_empty_true, checkFailClosed_empty_true, extractOkFs_empty_true, extractOk_classic_empty_false / extractOk_edge_empty_false, extractOk_classic_mult1_minted_false / extractOk_edge_mult1_minted_false / extractOk_classic_mult0_marked_false / extractOk_edge_mult0_marked_false (EMIT-BOUNDARY: conjoins extractOkFs true + classic/edge false on checkFailClosed-true non-empty), mint_zero_badId, consume_empty_notLive, mint_empty_one_ok, consume_minted_one, mint_already_live_one, double_consume_notLive (conjoins first-ok + second-notLive; no match escape), nodeMultOk_omega / nodeMultOk_mult1_eq_live / nodeMultOk_mult0_eq_absent, multPreScan_mult1_unminted_false / extractOkFs_mult1_unminted_false / multPreScan_mult1_minted_true / extractOkFs_mult1_minted_true, multPreScan_mult0_unmarked_false / multPreScan_mult0_marked_true / extractOkFs_mult0_unmarked_false / extractOkFs_mult0_marked_true, extractOk_eq / extractOkFs_eq / checkFailClosed_eq, markErased_idempotent, multPreScan_omega_only_true / extractOkFs_omega_only_true, consume_live_payload / mint_nonzero_ok / mint_consume_roundtrip, pushHostNode_bad_node / pushHostNode_value_one_ok, addHostEdge_empty_badEndpoints / addHostEdge_two_values_ok / addHostEdge_one_node_badEndpoints -- partial HostCompose only; live-flag model; not SpecProof complete; not MULT-1 elaborator enforcement |
 | `mint` / `consume` / `markErased` | MULT-1 live evidence + MULT-0 mark (JOIN-ALG ConsumeToken shapes cited; Token axiom not stored) |
 | `pushHostNode` / `addHostEdge` | Call-through IrGraph (names distinct from IrGraph.pushNode / addEdge) |
 | `multPreScan` / `nodeMultOk` | MULT-1 needs `linear.live`; MULT-0 needs marked erased |
 | `EmitPlan.Plan` / `planFromCompose` / `fromCompose` / `isReady` / `planOk` | Readiness inventory (nodeCount/edgeCount/runtimeNodes/erasedNodes); fail-closed on HostCompose.checkFailClosed (not extractOk); empty compose ready OK; planOk convenience |
 | `EmitApply.Apply` / `packTag` / `applyFromCompose` / `fromCompose` / `applyIsValid` / `applyOk` | Fixed mult/kind tag list (applyCap 32); packing matches emit nibble layout; applyIsValid checks valid + count<=cap + count==tags.length; applyOk convenience |
 | `EmitBody.Body` / `bodyFromCompose` / `fromCompose` / `bodyIsValid` / `bodyOk` / `buildFragment` | Fragment readiness; markers derived from buf (EMIT_BODY_V0 / RUNTIME-FS); PARTIAL String vs C char buf; via plan+apply; bodyOk convenience |
+| EMIT-BODY-THEOREM / HOST-EMIT-BODY-THEOREM | Real theorems: bodyCap_eq_256, emptyComposeFragmentSsot_eq, bodyOk_empty_true, bodyFromCompose_empty_buf_ssot / empty markers, bodyIsValid_failClosed_false, bufHas* ssot markers, bodyOk_mult1_unminted_false / bodyOk_mult1_minted_true / bodyFromCompose_mult1_minted_buf / bodyFromCompose_mult0_marked_buf / bodyOk_omega_true / bodyFromCompose_linear_and_erased -- partial EmitBody only; HOST-EMIT-SSOT honesty; not SpecProof complete |
 
 **Extract intentional thinning vs HostCompose:** `Extract.checkFailClosed` /
 `extractOk` do **not** require live token for MULT-1 (PARTIAL path). Fuller host
@@ -145,9 +162,13 @@ EMIT_PLAN_V0, HOST_COMPOSE_V0, RUNTIME-FS, EMIT-BOUNDARY, slake_emit_plan.
 **Lean host:** `SystemsLean/EmitPlan.lean` (SYSTEMS_LEAN_HOST partial) -- `Plan`
 inventory from `HostCompose.checkFailClosed` only (not extractOk); `planFromCompose`
 fail-closed (alias `fromCompose`); `isReady` / `planOk`; empty compose ready with
-zero counts; edge + multi-node EMIT-PLAN-SMOKE. PARTIAL vs full C EMIT_PLAN_V0
-(no null pointers / exact -1 codes). Still not residual free. Greppable host:
-EMIT-PLAN, FAIL-CLOSED, HOST-COMPOSE, EMIT-BOUNDARY, planFromCompose.
+zero counts; edge + multi-node EMIT-PLAN-SMOKE; EMIT-PLAN-THEOREM /
+HOST-EMIT-PLAN-THEOREM real theorems (empty ready/counts, fail-closed MULT-1
+unminted, minted/marked ready counts, edgeCount, multi-node runtime+erased).
+PARTIAL vs full C EMIT_PLAN_V0 (no null pointers / exact -1 codes). Still not
+residual free. Not proof complete (SpecProof.proofCompleteClaimed stays false).
+Greppable host: EMIT-PLAN, FAIL-CLOSED, HOST-COMPOSE, EMIT-BOUNDARY,
+planFromCompose, EMIT-PLAN-THEOREM.
 
 ## EMIT_APPLY_V0 (apply plan tags from host compose)
 
@@ -180,9 +201,13 @@ EMIT_APPLY_V0, EMIT_PLAN_V0, HOST_COMPOSE_V0, RUNTIME-FS, slake_emit_apply.
 
 **Lean host:** `SystemsLean/EmitApply.lean` -- `Apply` tag list under `applyCap` 32
 (SLAKE_EMIT_APPLY_CAP honesty); `packTag` mult high nibble / kind low; fail-closed
-`applyFromCompose` (alias `fromCompose`); `applyIsValid`; multi-tag EMIT-APPLY-SMOKE.
-PARTIAL vs full C EMIT_APPLY_V0. Still not residual free. Greppable host:
-EMIT-APPLY, APPLY_CAP, FAIL-CLOSED, applyFromCompose.
+`applyFromCompose` (alias `fromCompose`); `applyIsValid`; multi-tag EMIT-APPLY-SMOKE;
+EMIT-APPLY-THEOREM / HOST-EMIT-APPLY-THEOREM real theorems (applyCap, empty valid,
+fail-closed MULT-1 unminted, packTag table, minted/marked/omega tags, multi-node
+program order, applyIsValid count/tags desync reject). PARTIAL vs full C
+EMIT_APPLY_V0. Still not residual free. Not proof complete
+(SpecProof.proofCompleteClaimed stays false). Greppable host: EMIT-APPLY,
+APPLY_CAP, FAIL-CLOSED, applyFromCompose, EMIT-APPLY-THEOREM.
 
 ## EMIT_BODY_V0 (freestanding C body fragment from host compose)
 

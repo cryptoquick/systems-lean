@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Unlicense
 # Pure Nix systems host presence: skeleton files, unit-surface tokens,
-# SYSTEMS_LEAN_HOST Lean modules (Mult..ProductPath), and tree-wide banned-jargon
+# SYSTEMS_LEAN_HOST Lean modules (Mult..SelfHostBody), and tree-wide banned-jargon
 # walk under src/systems. Fail-closed on missing paths, honesty tokens, or
 # forbidden jargon. No bash, no ripgrep, no Python.
 #
@@ -137,7 +137,7 @@ let
     if n > maxShow then "\n... and ${toString (n - maxShow)} more" else "";
   summary =
     if ok then
-      "systems-host-presence OK (${toString (builtins.length requiredFiles)} required paths; unit-surface + SYSTEMS_LEAN_HOST Mult..ProductPath tokens; tree-wide jargon ban files=${toString (builtins.length jargonPaths)})"
+      "systems-host-presence OK (${toString (builtins.length requiredFiles)} required paths; unit-surface + SYSTEMS_LEAN_HOST Mult..SelfHostBody tokens; tree-wide jargon ban files=${toString (builtins.length jargonPaths)})"
     else
       "systems-host-presence FAILED:\n" + lib.concatStringsSep "\n" shown + more;
 in

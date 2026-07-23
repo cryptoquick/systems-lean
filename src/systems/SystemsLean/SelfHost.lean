@@ -18,6 +18,16 @@
   - selfHostReady hc: alias of selfHostUnitReady (HOST-SELF-HOST unit bar).
   - Verdict records joinReady / unitReady / hostSurface / ok for inventory.
 
+  Theorems (SELF-HOST-THEOREM / HOST-SELF-HOST-THEOREM -- partial SelfHost only):
+  - hostSurfaceOk_true / stageId_eq / hostSelfHostId_eq
+  - selfHostUnitReady_empty_true / selfHostProgramReady_empty_false
+  - selfHostReady_eq_selfHostUnitReady
+  - empty_host_ok_ne_empty_program_ok (self-host sibling bars)
+  - selfHostUnitReady_mult1_unminted_false / selfHostUnitReady_mult1_minted_true
+  - selfHostProgramReady_single_value (path fixtures; JoinMap sibling pattern)
+  These SelfHost theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Direction readiness canaries != freestanding product self-host complete.
+
   Intentional non-claims / partial parity:
   - PARTIAL: host Bool readiness inventory vs freestanding product self-host
     (Slake compiling Systems Lean units to freestanding C without classic
@@ -28,6 +38,7 @@
     residual != product wire residual).
   - Freestanding product self-host is later (true self-host unlocks llvm track).
   - Not residual free. Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Not a full Slake compiler body. Does not emit product C.
   - Does not fold program bar into unit bar (sibling APIs; P3 residual lesson).
   - Does not unlock out/llvm-ir (still deferred until true self-host).
@@ -36,6 +47,9 @@
   HOST-JOIN-MAP, SLAKE_JOIN_MAP_V0, HOST-COMPILE-PATH, SLAKE_COMPILE_PATH_V1,
   selfHostUnitReady, selfHostProgramReady, selfHostReady, hostSurfaceOk,
   SELF-HOST-SMOKE, EMPTY-PROGRAM-FAIL-CLOSED, FAIL-CLOSED, joinUnitCompileReady,
+  SELF-HOST-THEOREM, HOST-SELF-HOST-THEOREM, selfHostUnitReady_empty_true,
+  selfHostProgramReady_empty_false, selfHostUnitReady_mult1_unminted_false,
+  selfHostUnitReady_mult1_minted_true, selfHostProgramReady_single_value
   UNIT_SURFACE host surface. Module: SystemsLean.SelfHost
   Red/green: just systems-host (nix/systems-host-presence/; flake checks.systems-host-presence); lake build when toolchain installed.
   Module must stay ASCII.
@@ -44,6 +58,7 @@
 import SystemsLean.Mult
 import SystemsLean.Types
 import SystemsLean.IrProgram
+import SystemsLean.Erasure
 import SystemsLean.HostCompose
 import SystemsLean.CompilePath
 import SystemsLean.JoinMap
@@ -141,6 +156,92 @@ def verdictOf (hc : Host) : Verdict :=
     hostSurface := hostSurface
     ok := joinReady && unitReady && hostSurface
   }
+
+/-! ### SELF-HOST-THEOREM / HOST-SELF-HOST-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is host surface
+  canaries, empty-host unit readiness, and empty-program fail-closed only. Does
+  not complete SpecProof; does not claim residual free / freestanding product
+  self-host complete / PROVABLY / llvm unlock.
+-/
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_V0.
+    Greppable: stageId_eq, SELF-HOST-THEOREM, HOST-SELF-HOST-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_V0" := rfl
+
+/-- Host alias id is greppable HOST-SELF-HOST.
+    Greppable: hostSelfHostId_eq, SELF-HOST-THEOREM. -/
+theorem hostSelfHostId_eq : hostSelfHostId = "HOST-SELF-HOST" := rfl
+
+/-- Package / stage-id surface canary holds.
+    Greppable: hostSurfaceOk_true, SELF-HOST-THEOREM, HOST-SELF-HOST-THEOREM. -/
+theorem hostSurfaceOk_true : hostSurfaceOk = true := by decide
+
+/-- selfHostReady is definitionally selfHostUnitReady.
+    Greppable: selfHostReady_eq_selfHostUnitReady, SELF-HOST-THEOREM. -/
+theorem selfHostReady_eq_selfHostUnitReady (hc : Host) :
+    selfHostReady hc = selfHostUnitReady hc := rfl
+
+/-- Empty HostCompose is self-host unit-ready (join + surface).
+    Greppable: selfHostUnitReady_empty_true, SELF-HOST-THEOREM,
+    HOST-SELF-HOST-THEOREM. -/
+theorem selfHostUnitReady_empty_true :
+    selfHostUnitReady HostCompose.empty = true := by decide
+
+/-- EMPTY-PROGRAM-FAIL-CLOSED on self-host program bar.
+    Greppable: selfHostProgramReady_empty_false, EMPTY-PROGRAM-FAIL-CLOSED,
+    SELF-HOST-THEOREM, HOST-SELF-HOST-THEOREM. -/
+theorem selfHostProgramReady_empty_false :
+    selfHostProgramReady IrProgram.empty = false := by decide
+
+/-- Honesty: empty host self-host unit OK is not empty program self-host OK.
+    Greppable: empty_host_ok_ne_empty_program_ok, SELF-HOST-THEOREM,
+    HOST-SELF-HOST-THEOREM. -/
+theorem empty_host_ok_ne_empty_program_ok :
+    (selfHostUnitReady HostCompose.empty = true)
+      /\ (selfHostProgramReady IrProgram.empty = false) :=
+  And.intro selfHostUnitReady_empty_true selfHostProgramReady_empty_false
+
+/-! ### Non-empty path fixtures (beyond empty host vs empty program canaries)
+    JoinMap / CompilePath sibling pattern: MULT-1 mint + single-value program. -/
+
+private def thmValueNode : IrNode :=
+  { ty := typeTagInit 2, mult := Mult.multOmega, kind := NodeKind.value }
+
+private def thmLinearNode : IrNode :=
+  { ty := typeTagInit 1, mult := Mult.mult1, kind := NodeKind.linear }
+
+private def thmSingleValueProg : Program := { nodes := [thmValueNode] }
+
+private def thmHostMult1Unminted : Host := {
+  graph := { prog := { nodes := [thmLinearNode] }, edges := [] }
+  linear := HostCompose.LinearHost.empty
+  erased := Erasure.unmarked
+}
+
+private def thmHostMult1Minted : Host := {
+  graph := { prog := { nodes := [thmLinearNode] }, edges := [] }
+  linear := { live := true, id := 4 }
+  erased := Erasure.unmarked
+}
+
+/-- MULT-1 host without mint fails self-host unit-ready (join unit fail-closed).
+    Greppable: selfHostUnitReady_mult1_unminted_false, MULT-1,
+    SELF-HOST-THEOREM, HOST-SELF-HOST-THEOREM. -/
+theorem selfHostUnitReady_mult1_unminted_false :
+    selfHostUnitReady thmHostMult1Unminted = false := by decide
+
+/-- MULT-1 host with mint is self-host unit-ready (join unit + host surface).
+    Greppable: selfHostUnitReady_mult1_minted_true, MULT-1,
+    SELF-HOST-THEOREM, HOST-SELF-HOST-THEOREM. -/
+theorem selfHostUnitReady_mult1_minted_true :
+    selfHostUnitReady thmHostMult1Minted = true := by decide
+
+/-- One well-typed VALUE node is self-host program-ready (sibling of empty fail).
+    Greppable: selfHostProgramReady_single_value, SELF-HOST-THEOREM,
+    HOST-SELF-HOST-THEOREM. -/
+theorem selfHostProgramReady_single_value :
+    selfHostProgramReady thmSingleValueProg = true := by decide
 
 /-! ### Self-host smoke (behavioral; lake build fails if an example does not hold)
     Greppable: SELF-HOST-SMOKE. Exercises surface canary, empty host OK,

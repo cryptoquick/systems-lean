@@ -1,0 +1,233 @@
+# HOST-EMIT-LINEAR -- Linear freestanding C product text (durable host artifact)
+# SSoT owner: SystemsLean.EmitLinear (src/systems/SystemsLean/EmitLinear.lean)
+#   linearHeaderFragment + linearBodyFragment
+# Lean FreestandingEmit embeds Linear product text from this artifact (no second dialect).
+# LINEAR_C_HEADER / LINEAR_C_BODY blocks must match linearHeaderFragment / linearBodyFragment.
+# Product API: slake_linear_token + init/consume/is_live; slake_consume_token +
+#   host_id/init/mint/consume/is_live/check_fail_closed.
+# Host stage ids only: HOST-EMIT-LINEAR / SELF-HOST-EMIT-LINEAR / SLAKE_SELF_HOST_EMIT_LINEAR_V0.
+# Do not mint EMIT_LINEAR_V0 residual C stage ladder as freestanding residual progress.
+HOST-EMIT-LINEAR
+NON-SSOT
+SELF-HOST-EMIT-LINEAR
+SLAKE_SELF_HOST_EMIT_LINEAR_V0
+LINEAR-EXACT-ONCE
+CONSUME_TOKEN_HOST_V0
+JOIN-ALG
+# LINEAR_C_HEADER_BEGIN
+/* ---- Linear (Linear.slake / LINEAR-EXACT-ONCE) ----
+ * JOIN-ALG ConsumeToken is the dual anchor on language sides (not reimplemented).
+ * live==1 means not yet consumed; consume fails closed if already spent.
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
+ */
+typedef struct slake_linear_token {
+  uint32_t id;
+  uint8_t live; /* 1 = live / exact-once remaining; 0 = consumed */
+} slake_linear_token;
+
+/* Init fails closed on null or id==0 (id 0 is the spent sentinel after consume). */
+int slake_linear_token_init(slake_linear_token *tok, uint32_t id);
+/* Exact-once consume: 0 on success; -1 null; -2 already consumed (fail closed).
+ * Canonical UNIT_DEEPEN_V1 map name: slake_linear_consume (alias linearConsume).
+ * live==0 means spent; id scrubbed to 0 on success. Init rejects id==0.
+ */
+int slake_linear_consume(slake_linear_token *tok);
+/* Alias: thin call-through to slake_linear_consume (same return codes). */
+int slake_linear_token_consume(slake_linear_token *tok);
+/* 1 if tok non-null and live (consumable); 0 otherwise. */
+int slake_linear_token_is_live(const slake_linear_token *tok);
+
+/* ---- CONSUME_TOKEN_HOST_V0 (JOIN-ALG ConsumeToken-class freestanding host) ----
+ * Models dual algorithm shape at C level: mint MULT-1 token, exact-once consume.
+ * Duals stay read-only under src/idris2 and src/lean4 (not reimplemented here).
+ * LINEAR-EXACT-ONCE / MULT-1; not residual free; not PROVABLY; no product GC.
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
+ *
+ * Host state:
+ *   0 = empty (not minted)
+ *   1 = live MULT-1 token held
+ *   2 = spent (second consume fails closed)
+ *
+ * Contract: use only host APIs (init/mint/consume/is_live/check). Direct
+ * mutation of the embedded token (e.g. slake_linear_consume(&ct->token)) is
+ * out of contract. Host consume heals state if token already spent while
+ * state believed live; mint keys off is_live so remint recovers desync.
+ */
+typedef struct slake_consume_token {
+  slake_linear_token token; /* MULT-1 linear resource */
+  uint8_t state;            /* 0 empty; 1 live; 2 spent */
+} slake_consume_token;
+
+/* Greppable host stage id: CONSUME_TOKEN_HOST_V0 */
+const char *slake_consume_token_host_id(void);
+
+/* Zero host state (empty). 0 ok; -1 null. */
+int slake_consume_token_init(slake_consume_token *ct);
+
+/* Mint MULT-1 token (JOIN-ALG mkToken shape). Composes slake_linear_token_init.
+ * 0 ok; -1 null or id==0; -2 already holds a live token (fail closed).
+ * Live check uses slake_consume_token_is_live (state and token.live).
+ * Remint allowed after spent or empty (and after healed desync).
+ */
+int slake_consume_token_mint(slake_consume_token *ct, uint32_t id);
+
+/* Exact-once consume (JOIN-ALG consume shape). Composes slake_linear_consume.
+ * 0 success; -1 null or empty; -2 already spent (LINEAR-EXACT-ONCE fail closed).
+ * On -2 while host believed live, heals state to spent (still returns -2).
+ */
+int slake_consume_token_consume(slake_consume_token *ct);
+
+/* 1 if host holds a live MULT-1 token (state live and token.live); 0 otherwise. */
+int slake_consume_token_is_live(const slake_consume_token *ct);
+
+/* FAIL_CLOSED_CHECKER_V1 integration: MULT-1 + live token + RUNTIME_FS.
+ * Check-only (does not consume). SLAKE_EXTRACT_OK (0) or FAIL_CLOSED (1).
+ * Greppable: MULT-1, LINEAR-EXACT-ONCE, JOIN-ALG, ConsumeToken
+ */
+int slake_consume_token_check_fail_closed(const slake_consume_token *ct);
+# LINEAR_C_HEADER_END
+# LINEAR_C_BODY_BEGIN
+/* ---- Linear (LINEAR-EXACT-ONCE; JOIN-ALG ConsumeToken dual anchor on sides) ----
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
+ */
+
+const char *slake_consume_token_host_id(void)
+{
+  return "CONSUME_TOKEN_HOST_V0";
+}
+
+int slake_linear_token_init(slake_linear_token *tok, uint32_t id)
+{
+  if (tok == 0) {
+    return -1;
+  }
+  /* id 0 is the spent sentinel; refuse so is_live matches consumability. */
+  if (id == 0) {
+    return -1;
+  }
+  tok->id = id;
+  tok->live = 1;
+  return 0;
+}
+
+int slake_linear_consume(slake_linear_token *tok)
+{
+  if (tok == 0) {
+    return -1;
+  }
+  /* Exact-once: live flag is the authority; scrub id after spend. */
+  if (tok->live == 0) {
+    return -2; /* already consumed -- fail closed */
+  }
+  tok->live = 0;
+  tok->id = 0;
+  return 0;
+}
+
+int slake_linear_token_consume(slake_linear_token *tok)
+{
+  /* Alias: single body via call-through (same return codes as canonical). */
+  return slake_linear_consume(tok);
+}
+
+int slake_linear_token_is_live(const slake_linear_token *tok)
+{
+  if (tok == 0) {
+    return 0;
+  }
+  return (tok->live != 0) ? 1 : 0;
+}
+
+/* ---- CONSUME_TOKEN_HOST_V0 (JOIN-ALG ConsumeToken-class freestanding host) ----
+ * mint + exact-once consume at C level; duals not reimplemented.
+ * LINEAR-EXACT-ONCE / MULT-1; not residual free; not PROVABLY.
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
+ */
+
+int slake_consume_token_init(slake_consume_token *ct)
+{
+  if (ct == 0) {
+    return -1;
+  }
+  ct->token.id = 0;
+  ct->token.live = 0;
+  ct->state = 0; /* empty */
+  return 0;
+}
+
+int slake_consume_token_mint(slake_consume_token *ct, uint32_t id)
+{
+  if (ct == 0) {
+    return -1;
+  }
+  if (id == 0) {
+    return -1; /* spent sentinel reserved; fail closed */
+  }
+  /* Key off is_live (state + token.live) so remint recovers desync. */
+  if (slake_consume_token_is_live(ct) == 1) {
+    return -2; /* already holds live MULT-1 token */
+  }
+  if (slake_linear_token_init(&ct->token, id) != 0) {
+    return -1;
+  }
+  ct->state = 1; /* live */
+  return 0;
+}
+
+int slake_consume_token_consume(slake_consume_token *ct)
+{
+  int rc;
+
+  if (ct == 0) {
+    return -1;
+  }
+  if (ct->state == 0) {
+    return -1; /* empty -- never minted */
+  }
+  if (ct->state == 2) {
+    return -2; /* already spent -- LINEAR-EXACT-ONCE fail closed */
+  }
+  /* state == 1 believed live: compose with linear exact-once consume */
+  rc = slake_linear_consume(&ct->token);
+  if (rc == 0) {
+    ct->state = 2; /* spent */
+  } else if (rc == -2) {
+    /* Heal desync if token already spent under host that believed live. */
+    ct->state = 2;
+  }
+  return rc;
+}
+
+int slake_consume_token_is_live(const slake_consume_token *ct)
+{
+  if (ct == 0) {
+    return 0;
+  }
+  if (ct->state != 1) {
+    return 0;
+  }
+  return (slake_linear_token_is_live(&ct->token) == 1) ? 1 : 0;
+}
+
+int slake_consume_token_check_fail_closed(const slake_consume_token *ct)
+{
+  slake_check_bundle b;
+
+  if (ct == 0) {
+    return (int)SLAKE_EXTRACT_FAIL_CLOSED;
+  }
+  /* Host must hold live MULT-1 (is_live); checker is check-only (no consume). */
+  if (slake_consume_token_is_live(ct) != 1) {
+    return (int)SLAKE_EXTRACT_FAIL_CLOSED;
+  }
+  b.mult = SLAKE_MULT_1;
+  b.linear = &ct->token;
+  b.erased = 0;
+  b.claimed_runtime = SLAKE_RUNTIME_FS;
+  return slake_check_fail_closed(&b);
+}
+# LINEAR_C_BODY_END

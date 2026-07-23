@@ -75,6 +75,7 @@ let
     "EMIT_BODY_V0"
     "HOST-EMIT-SSOT"
     "HOST-EMIT-MULT"
+    "HOST-EMIT-LINEAR"
     "SLAKE_IR_KIND_VALUE"
     "SLAKE_IR_KIND_LINEAR"
     "SLAKE_IR_KIND_ERASED"
@@ -132,18 +133,23 @@ in
     releaseNone
     ;
 
+  # Wave B: build + out-freestanding-c live in justfile (scripts deleted).
+  # Wave C: Lean FreestandingEmit owns product wire write; bash emit deleted.
   requiredDriverAndEmit = [
+    "justfile"
     "script/slake-compile-path.sh"
-    "script/build-systems.sh"
-    "script/slake-emit-freestanding-c.sh"
-    "script/out-freestanding-c.sh"
+    "src/systems/SystemsLean/FreestandingEmit.lean"
+    "src/systems/emit/template_slake_freestanding.h.in"
+    "src/systems/emit/template_slake_freestanding.c.in"
     emitH
     emitC
     behavioralProbe
-    # HOST-EMIT-SSOT durable fragment dialect (Lean buildFragment owner; bash NON-SSOT).
+    # HOST-EMIT-SSOT durable fragment dialect (Lean buildFragment owner).
     "src/systems/emit/host_emit_body_fragment.ssot.txt"
-    # HOST-EMIT-MULT durable Mult product text (Lean EmitMult owner; bash NON-SSOT).
+    # HOST-EMIT-MULT durable Mult product text (Lean EmitMult owner).
     "src/systems/emit/host_emit_mult.ssot.txt"
+    # HOST-EMIT-LINEAR durable Linear product text (Lean EmitLinear owner).
+    "src/systems/emit/host_emit_linear.ssot.txt"
   ];
 
   optionalFiles = [
@@ -163,23 +169,57 @@ in
       ];
     }
     {
-      rel = "script/build-systems.sh";
+      # Wave B/C: just build + just out-freestanding-c own process glue;
+      # Lean FreestandingEmit is the emit writer.
+      rel = "justfile";
       all = [
         "SLAKE_COMPILE_PATH_V0"
         "slake-compile-path"
+        "slake-emit"
+        "SLAKE_EMIT_FREESTANDING_C_V0"
+        "FreestandingEmit"
+        "not residual free"
+        "not PROVABLY"
       ];
     }
     {
-      rel = "script/slake-emit-freestanding-c.sh";
+      rel = "src/systems/SystemsLean/FreestandingEmit.lean";
       all = [
         "SLAKE_EMIT_FREESTANDING_C_V0"
         "not residual free"
         "no product GC"
         "HOST-EMIT-SSOT"
-        "NON-SSOT"
-        "host_emit_body_fragment.ssot.txt"
         "HOST-EMIT-MULT"
+        "HOST-EMIT-LINEAR"
+        "host_emit_body_fragment.ssot.txt"
         "host_emit_mult.ssot.txt"
+        "host_emit_linear.ssot.txt"
+        "template_slake_freestanding"
+      ];
+    }
+    {
+      rel = "src/systems/emit/template_slake_freestanding.h.in";
+      all = [
+        "SLAKE_EMIT_FREESTANDING_C_V0"
+        "HOST-EMIT-SSOT"
+        "HOST-EMIT-MULT"
+        "HOST-EMIT-LINEAR"
+        "__HOST_EMIT_MULT_HEADER__"
+        "__HOST_EMIT_LINEAR_HEADER__"
+        "not residual free"
+      ];
+    }
+    {
+      rel = "src/systems/emit/template_slake_freestanding.c.in";
+      all = [
+        "SLAKE_EMIT_FREESTANDING_C_V0"
+        "HOST-EMIT-SSOT"
+        "HOST-EMIT-MULT"
+        "HOST-EMIT-LINEAR"
+        "__HOST_EMIT_MULT_BODY__"
+        "__HOST_EMIT_LINEAR_BODY__"
+        "__SSOT_EMPTY_FRAGMENT__"
+        "not residual free"
       ];
     }
     {
@@ -208,10 +248,18 @@ in
       ];
     }
     {
-      rel = "script/out-freestanding-c.sh";
+      # HOST-EMIT-LINEAR: Linear product C text owned by Lean EmitLinear.
+      rel = "src/systems/emit/host_emit_linear.ssot.txt";
       all = [
-        "slake-emit"
-        "SLAKE_EMIT_FREESTANDING_C_V0"
+        "HOST-EMIT-LINEAR"
+        "NON-SSOT"
+        "LINEAR-EXACT-ONCE"
+        "CONSUME_TOKEN_HOST_V0"
+        "JOIN-ALG"
+        "slake_linear_consume"
+        "slake_consume_token_consume"
+        "LINEAR_C_HEADER_BEGIN"
+        "LINEAR_C_BODY_BEGIN"
       ];
     }
     {

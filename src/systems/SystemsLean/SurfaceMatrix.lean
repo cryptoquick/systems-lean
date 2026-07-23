@@ -21,6 +21,16 @@
   - matrixReady hc: alias of matrixUnitReady (HOST-SURFACE-MATRIX unit bar).
   - Verdict records selfHostUnit / pure unitReady / matrixSurface / ok.
 
+  Theorems (SURFACE-MATRIX-THEOREM / HOST-SURFACE-MATRIX-THEOREM -- partial
+  SurfaceMatrix):
+  - matrixSurfaceOk_true / matrixUnitReady_empty_true /
+    matrixProgramReady_empty_false / stageId_eq / hostSurfaceMatrixId_eq /
+    surfaceMatrixId_eq / empty_host_ok_ne_empty_program_ok
+  - matrixUnitReady_mult1_unminted_false / matrixUnitReady_mult1_minted_true
+  - matrixProgramReady_single_value (path fixtures; SelfHost sibling pattern)
+  These SurfaceMatrix theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Surface inventory readiness canaries != freestanding product self-host complete.
+
   Intentional non-claims / partial parity:
   - PARTIAL: inventory + progressive host gate, not day-one full Idris+Lean
     parity or "superset complete".
@@ -28,6 +38,7 @@
     product self-host, llvm, PROVABLY, full Idris parity, full Lean parity.
   - Duals cited only (three JOIN-ALG algorithm examples); no dual invent.
   - Not residual free. Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Does not fold program bar into unit bar (sibling APIs; P3 residual lesson).
   - Does not unlock out/llvm-ir (still deferred until true self-host).
 
@@ -36,7 +47,11 @@
   matrixSurfaceOk, SURFACE-MATRIX-SMOKE, HOST-SELF-HOST, SLAKE_SELF_HOST_V0,
   HOST-JOIN-MAP, HOST-COMPILE-PATH, MULT-0, MULT-1, MULT-OMEGA, JOIN-ALG,
   ConsumeToken, ErasedIndex, UnrestrictedShare, present-partial, open,
-  EMPTY-PROGRAM-FAIL-CLOSED, FAIL-CLOSED, UNIT_SURFACE host surface.
+  EMPTY-PROGRAM-FAIL-CLOSED, FAIL-CLOSED, SURFACE-MATRIX-THEOREM,
+  HOST-SURFACE-MATRIX-THEOREM, matrixUnitReady_empty_true,
+  matrixProgramReady_empty_false, matrixUnitReady_mult1_unminted_false,
+  matrixUnitReady_mult1_minted_true, matrixProgramReady_single_value,
+  UNIT_SURFACE host surface.
   Module: SystemsLean.SurfaceMatrix
   Red/green: just systems-host (nix/systems-host-presence/; flake checks.systems-host-presence); lake build when toolchain installed.
   Module must stay ASCII.
@@ -45,6 +60,7 @@
 import SystemsLean.Mult
 import SystemsLean.Types
 import SystemsLean.IrProgram
+import SystemsLean.Erasure
 import SystemsLean.HostCompose
 import SystemsLean.CompilePath
 import SystemsLean.JoinMap
@@ -247,6 +263,92 @@ def verdictOf (hc : Host) : Verdict :=
     matrixSurface := matrixSurface
     ok := selfHostUnit && matrixSurface
   }
+
+/-! ### SURFACE-MATRIX-THEOREM / HOST-SURFACE-MATRIX-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is surface-matrix
+  inventory readiness, empty host unit OK vs empty program fail-closed only.
+  Does not complete SpecProof; does not claim residual free / freestanding
+  product self-host complete / PROVABLY / llvm unlock / full superset parity.
+-/
+
+/-- Primary stage id is greppable SLAKE_SURFACE_MATRIX_V0.
+    Greppable: stageId_eq, SURFACE-MATRIX-THEOREM, HOST-SURFACE-MATRIX-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SURFACE_MATRIX_V0" := rfl
+
+/-- Host map id is greppable HOST-SURFACE-MATRIX.
+    Greppable: hostSurfaceMatrixId_eq, SURFACE-MATRIX-THEOREM. -/
+theorem hostSurfaceMatrixId_eq :
+    hostSurfaceMatrixId = "HOST-SURFACE-MATRIX" := rfl
+
+/-- Short map id is greppable SURFACE-MATRIX.
+    Greppable: surfaceMatrixId_eq, SURFACE-MATRIX-THEOREM. -/
+theorem surfaceMatrixId_eq : surfaceMatrixId = "SURFACE-MATRIX" := rfl
+
+/-- Matrix surface inventory canary holds (stage / dual / row status).
+    Greppable: matrixSurfaceOk_true, SURFACE-MATRIX-THEOREM,
+    HOST-SURFACE-MATRIX-THEOREM. -/
+theorem matrixSurfaceOk_true : matrixSurfaceOk = true := by decide
+
+/-- Empty HostCompose is matrix unit-ready (self-host + surface).
+    Greppable: matrixUnitReady_empty_true, HOST-SURFACE-MATRIX,
+    SURFACE-MATRIX-THEOREM, HOST-SURFACE-MATRIX-THEOREM. -/
+theorem matrixUnitReady_empty_true :
+    matrixUnitReady HostCompose.empty = true := by decide
+
+/-- EMPTY-PROGRAM-FAIL-CLOSED on matrix program bar.
+    Greppable: matrixProgramReady_empty_false, EMPTY-PROGRAM-FAIL-CLOSED,
+    SURFACE-MATRIX-THEOREM, HOST-SURFACE-MATRIX-THEOREM. -/
+theorem matrixProgramReady_empty_false :
+    matrixProgramReady IrProgram.empty = false := by decide
+
+/-- Honesty: empty host matrix unit OK is not empty program matrix OK.
+    Greppable: empty_host_ok_ne_empty_program_ok, SURFACE-MATRIX-THEOREM. -/
+theorem empty_host_ok_ne_empty_program_ok :
+    matrixUnitReady HostCompose.empty = true
+      /\ matrixProgramReady IrProgram.empty = false := by
+  exact And.intro matrixUnitReady_empty_true matrixProgramReady_empty_false
+
+/-! ### Non-empty path fixtures (beyond empty host vs empty program canaries)
+    SelfHost / JoinMap sibling pattern: MULT-1 mint + single-value program. -/
+
+private def thmValueNode : IrNode :=
+  { ty := typeTagInit 2, mult := Mult.multOmega, kind := NodeKind.value }
+
+private def thmLinearNode : IrNode :=
+  { ty := typeTagInit 1, mult := Mult.mult1, kind := NodeKind.linear }
+
+private def thmSingleValueProg : Program := { nodes := [thmValueNode] }
+
+private def thmHostMult1Unminted : Host := {
+  graph := { prog := { nodes := [thmLinearNode] }, edges := [] }
+  linear := HostCompose.LinearHost.empty
+  erased := Erasure.unmarked
+}
+
+private def thmHostMult1Minted : Host := {
+  graph := { prog := { nodes := [thmLinearNode] }, edges := [] }
+  linear := { live := true, id := 4 }
+  erased := Erasure.unmarked
+}
+
+/-- MULT-1 host without mint fails matrix unit-ready (self-host unit fail-closed).
+    Greppable: matrixUnitReady_mult1_unminted_false, MULT-1,
+    SURFACE-MATRIX-THEOREM, HOST-SURFACE-MATRIX-THEOREM. -/
+theorem matrixUnitReady_mult1_unminted_false :
+    matrixUnitReady thmHostMult1Unminted = false := by decide
+
+/-- MULT-1 host with mint is matrix unit-ready (self-host unit + matrix surface).
+    Greppable: matrixUnitReady_mult1_minted_true, MULT-1,
+    SURFACE-MATRIX-THEOREM, HOST-SURFACE-MATRIX-THEOREM. -/
+theorem matrixUnitReady_mult1_minted_true :
+    matrixUnitReady thmHostMult1Minted = true := by decide
+
+/-- One well-typed VALUE node is matrix program-ready (sibling of empty fail).
+    Greppable: matrixProgramReady_single_value, SURFACE-MATRIX-THEOREM,
+    HOST-SURFACE-MATRIX-THEOREM. -/
+theorem matrixProgramReady_single_value :
+    matrixProgramReady thmSingleValueProg = true := by decide
 
 /-! ### Surface-matrix smoke (behavioral; lake build fails if an example does not hold)
     Greppable: SURFACE-MATRIX-SMOKE. Exercises matrix surface canary, dual cites,

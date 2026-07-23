@@ -25,6 +25,15 @@
   - Host model = structural inventory close honesty. Not an AI/ML model.
     Not product C residual free.
 
+  Theorems (INVENTORY-CLOSE-THEOREM / HOST-INVENTORY-CLOSE-THEOREM -- partial
+  InventoryClose):
+  - inventoryCloseReady_true / residualFreeClaimed_false
+  - productSelfHostCompleteClaimed_false
+  - inventoryCloseDoesNotMeanResidualFree_true
+  - inventoryPartialCarryHonest_true / stageId_eq / hostInventoryCloseId_eq
+  These InventoryClose theorems do NOT set SpecProof.proofCompleteClaimed true.
+  residualFreeClaimed stays false (proved false, not set true).
+
   Intentional non-claims / close (not residual free):
   - Inventory close is a readiness gate after Mult..LlvmHold ladder + inventory
     CLOSABLE-MISS-COUNT-0. It is NOT freestanding residual free.
@@ -32,6 +41,7 @@
   - NOT PROVABLY. Does not unlock llvm / out/llvm-ir (LlvmHold still holds).
   - Intentional PARTIAL carry remains (List/String host vs C arrays; path honesty
     vs full product rebuild; join/self-host/matrix canaries vs formal duals).
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Does not mint phantom modules. Does not grow bash EMIT_* residual treadmill.
   - No new EMIT_* C stage. Does not grow check.sh.
 
@@ -44,11 +54,13 @@
   HOST-SELF-APPLY-FS, HOST-LLVM-HOLD, freestandingSelfApplyReady, llvmHoldReady,
   freestandingProductSelfHostComplete, llvmUnlocked, provablyUnlocked,
   HOST-SELF-APPLY, selfApplyReady, SELF-HOST, MULT-0, MULT-1, MULT-OMEGA,
-  JOIN-ALG, ConsumeToken, RUNTIME-FS, UNIT_SURFACE host surface.
+  JOIN-ALG, ConsumeToken, RUNTIME-FS, INVENTORY-CLOSE-THEOREM,
+  HOST-INVENTORY-CLOSE-THEOREM, inventoryCloseReady_true,
+  residualFreeClaimed_false, UNIT_SURFACE host surface.
   Module: SystemsLean.InventoryClose
   Not freestanding emit. Not freestanding residual free. Not PROVABLY.
   Not freestanding product self-host complete. Not freestanding emit residual free.
-  Not llvm unlocked.
+  Not llvm unlocked. Not proof complete.
   Red/green: just systems-host; lake build when toolchain installed.
   Module must stay ASCII.
 -/
@@ -159,11 +171,55 @@ def inventoryCloseDoesNotMeanResidualFree : Bool :=
 /-- Full inventory close ok (alias of inventoryCloseReady for inventory greps). -/
 def inventoryCloseOk : Bool := inventoryCloseReady
 
-/-! ### Inventory close smoke (behavioral; lake build fails if example fails)
-    Greppable: INVENTORY-CLOSE-SMOKE, HOST-INVENTORY-CLOSE-SMOKE.
-    maxRecDepth raised for freestandingSelfApplyReady / llvmHoldReady unfolds. -/
+/-! ### INVENTORY-CLOSE-THEOREM / HOST-INVENTORY-CLOSE-THEOREM (readable statements,
+    then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is inventory
+  close readiness and residual-free claim honesty only. Does not complete
+  SpecProof; residualFreeClaimed stays false (proved false).
+  maxRecDepth raised for freestandingSelfApplyReady / llvmHoldReady unfolds.
+-/
 
 set_option maxRecDepth 16384
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_INVENTORY_CLOSE_V0.
+    Greppable: stageId_eq, INVENTORY-CLOSE-THEOREM, HOST-INVENTORY-CLOSE-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_INVENTORY_CLOSE_V0" := rfl
+
+/-- Host map id is greppable HOST-INVENTORY-CLOSE.
+    Greppable: hostInventoryCloseId_eq, INVENTORY-CLOSE-THEOREM. -/
+theorem hostInventoryCloseId_eq :
+    hostInventoryCloseId = "HOST-INVENTORY-CLOSE" := rfl
+
+/-- residualFreeClaimed stays false (inventory close is not residual free).
+    Greppable: residualFreeClaimed_false, INVENTORY-CLOSE-THEOREM,
+    HOST-INVENTORY-CLOSE-THEOREM. -/
+theorem residualFreeClaimed_false : residualFreeClaimed = false := rfl
+
+/-- productSelfHostCompleteClaimed stays false (still open).
+    Greppable: productSelfHostCompleteClaimed_false, INVENTORY-CLOSE-THEOREM. -/
+theorem productSelfHostCompleteClaimed_false :
+    productSelfHostCompleteClaimed = false := rfl
+
+/-- Intentional PARTIAL carry honesty holds after inventory close.
+    Greppable: inventoryPartialCarryHonest_true, INVENTORY-CLOSE-THEOREM. -/
+theorem inventoryPartialCarryHonest_true :
+    inventoryPartialCarryHonest = true := by decide
+
+/-- Host inventory close readiness holds (not residual free).
+    Greppable: inventoryCloseReady_true, HOST-INVENTORY-CLOSE,
+    INVENTORY-CLOSE-THEOREM, HOST-INVENTORY-CLOSE-THEOREM. -/
+theorem inventoryCloseReady_true : inventoryCloseReady = true := by decide
+
+/-- Inventory close ready does NOT mean residual free.
+    Greppable: inventoryCloseDoesNotMeanResidualFree_true,
+    INVENTORY-CLOSE-THEOREM, HOST-INVENTORY-CLOSE-THEOREM. -/
+theorem inventoryCloseDoesNotMeanResidualFree_true :
+    inventoryCloseDoesNotMeanResidualFree = true := by decide
+
+/-! ### Inventory close smoke (behavioral; lake build fails if example fails)
+    Greppable: INVENTORY-CLOSE-SMOKE, HOST-INVENTORY-CLOSE-SMOKE.
+    maxRecDepth already raised above for inventoryCloseReady unfolds. -/
 
 /-- INVENTORY-CLOSE-SMOKE / HOST-INVENTORY-CLOSE-SMOKE: stage / map ids greppable. -/
 example : stageId = "SLAKE_SELF_HOST_INVENTORY_CLOSE_V0" := by decide

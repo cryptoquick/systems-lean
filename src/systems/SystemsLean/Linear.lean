@@ -15,6 +15,16 @@
   - Classic Lean cannot enforce multiplicity 1; names and module docs are the
     contract until freestanding checks and product wire enforce exact-once.
 
+  Theorems (LINEAR-THEOREM / HOST-LINEAR-THEOREM -- honest limited only):
+  - shareNat_eq: shareNat n = n + n (unrestricted Mult-omega class sketch).
+  - shareNat_zero / shareNat_succ: concrete Nat cases of shareNat_eq.
+  - polyId_id: polyId x = x (erased-parameter sketch identity).
+  - roundTrip_eq: roundTrip n is definitionally consume (mkToken n).
+  JOIN-ALG ConsumeToken remains dual-cite honesty; Token/mkToken/consume axioms
+  stay axioms. These do NOT claim MULT-1 / LINEAR-EXACT-ONCE enforcement.
+  These Linear theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Partial theorems on Linear != host proof complete != residual free.
+
   Intentional non-examples (do not add as theorems claiming LinearCheck):
   - double application of consume to the same resource
   - dropping a linear Token without use
@@ -28,8 +38,11 @@
     still no MULT-1 enforcement.
   - Not freestanding residual free. Not product C. Not PROVABLY.
   - Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
 
-  Greppable: SYSTEMS_LEAN_HOST, JOIN-ALG, ConsumeToken, MULT-1, LINEAR-EXACT-ONCE
+  Greppable: SYSTEMS_LEAN_HOST, JOIN-ALG, ConsumeToken, MULT-1, LINEAR-EXACT-ONCE,
+  LINEAR-THEOREM, HOST-LINEAR-THEOREM, shareNat_eq, shareNat_zero, shareNat_succ,
+  polyId_id, roundTrip_eq
   UNIT_SURFACE host surface. Module: SystemsLean.Linear
   linear resource contract; exact-once fail closed by contract only here.
   Red/green: just systems-host (nix/systems-host-presence/; flake checks.systems-host-presence); lake build when toolchain installed.
@@ -68,5 +81,38 @@ noncomputable def roundTrip (n : Nat) : Nat := consume (mkToken n)
 /-- Erased-parameter sketch (MULT-0 class): type parameter present for typing.
     Not identical to Idris `{0 a : Type}` (see ERASE-PROP / EDGE-PROP). -/
 def polyId {a : Type} (x : a) : a := x
+
+/-! ### LINEAR-THEOREM / HOST-LINEAR-THEOREM (readable statements, then proofs)
+
+  Honest limited surface theorems only. JOIN-ALG ConsumeToken dual-cite honesty
+  remains; Token / mkToken / consume stay axioms. Does NOT claim MULT-1 /
+  LINEAR-EXACT-ONCE enforcement (classic Lean cannot). Does not complete
+  SpecProof; does not claim residual free / freestanding product self-host
+  complete / PROVABLY.
+-/
+
+/-- Unrestricted share sketch is n + n.
+    Greppable: shareNat_eq, LINEAR-THEOREM, HOST-LINEAR-THEOREM. -/
+theorem shareNat_eq (n : Nat) : shareNat n = n + n := rfl
+
+/-- shareNat at zero is zero (greppable base case of shareNat_eq; not deeper
+    algebra than the general lemma). Future Linear depth prefers HostCompose
+    live-flag contracts over more shareNat rephrases.
+    Greppable: shareNat_zero, LINEAR-THEOREM, HOST-LINEAR-THEOREM. -/
+theorem shareNat_zero : shareNat 0 = 0 := rfl
+
+/-- shareNat at succ is (n+1)+(n+1) (greppable succ case of shareNat_eq).
+    Greppable: shareNat_succ, LINEAR-THEOREM, HOST-LINEAR-THEOREM. -/
+theorem shareNat_succ (n : Nat) : shareNat (n + 1) = (n + 1) + (n + 1) := rfl
+
+/-- Erased-parameter identity sketch is the identity.
+    Greppable: polyId_id, LINEAR-THEOREM, HOST-LINEAR-THEOREM. -/
+theorem polyId_id {a : Type} (x : a) : polyId x = x := rfl
+
+/-- roundTrip is definitionally consume (mkToken n) (JOIN-ALG compose shape).
+    Not a MULT-1 enforcement theorem; axioms remain axioms.
+    Greppable: roundTrip_eq, JOIN-ALG, LINEAR-THEOREM, HOST-LINEAR-THEOREM. -/
+theorem roundTrip_eq (n : Nat) :
+    roundTrip n = consume (mkToken n) := rfl
 
 end SystemsLean.Linear

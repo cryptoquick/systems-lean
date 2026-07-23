@@ -45,6 +45,14 @@
   - Host model = structural freestanding path honesty. Not an AI/ML model.
     Not product C residual free.
 
+  Theorems (SELF-APPLY-FS-THEOREM / HOST-SELF-APPLY-FS-THEOREM -- partial
+  SelfApplyFs only):
+  - freestandingSelfApplyReady_true / freestandingProductSelfHostComplete_false
+  - selfApplyFsDoesNotComplete_true / freestandingSelfApplyPathReady_true
+  - stageId_eq / hostSelfApplyFsId_eq
+  These SelfApplyFs theorems do NOT set SpecProof.proofCompleteClaimed true.
+  freestandingProductSelfHostComplete stays false (proved false, not set true).
+
   Intentional non-claims / partial parity:
   - PARTIAL: freestanding extract/body path on kernel compose + host self-apply
     + freestanding Mult..Emit parity ladder compose; not freestanding product
@@ -56,6 +64,7 @@
   - Classic Lean elaborator residual remains (host residual != product wire).
   - Does not grow bash EMIT_* residual treadmill. No new EMIT_* C stage.
   - Does not grow check.sh.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
 
   Greppable: SYSTEMS_LEAN_HOST, SLAKE_SELF_HOST_SELF_APPLY_FS_V0,
   HOST-SELF-APPLY-FS, SELF-HOST-SELF-APPLY-FS, SELF-APPLY-FS-SMOKE,
@@ -68,6 +77,8 @@
   emitParityReady, multLinearTypesProgramEmitParityReady,
   RUNTIME-FS, EMIT-BOUNDARY, HOST-EMIT-SSOT, EMIT_BODY_V0, HOST-EMIT-MULT,
   SELF-HOST-KERNEL-EMIT, lowerEmitCompose, extractOkFs, bodyOk, emitMultReady,
+  SELF-APPLY-FS-THEOREM, HOST-SELF-APPLY-FS-THEOREM,
+  freestandingSelfApplyReady_true, freestandingProductSelfHostComplete_false,
   UNIT_SURFACE host surface. Module: SystemsLean.SelfApplyFs
   Not freestanding residual free. Not PROVABLY. Not freestanding product
   self-host complete. Not freestanding emit residual free. Not llvm unlocked.
@@ -240,12 +251,50 @@ def selfApplyFsDoesNotComplete : Bool :=
 /-- Full SH5 freestanding deepen inventory ok. -/
 def selfApplyFsOk : Bool := freestandingSelfApplyReady
 
+/-! ### SELF-APPLY-FS-THEOREM / HOST-SELF-APPLY-FS-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is freestanding
+  self-apply deepen readiness and honesty non-claims only. Does not complete
+  SpecProof; freestandingProductSelfHostComplete stays false (proved false).
+-/
+
+set_option maxRecDepth 16384
+
+/-- Primary stage id is greppable SLAKE_SELF_HOST_SELF_APPLY_FS_V0.
+    Greppable: stageId_eq, SELF-APPLY-FS-THEOREM, HOST-SELF-APPLY-FS-THEOREM. -/
+theorem stageId_eq : stageId = "SLAKE_SELF_HOST_SELF_APPLY_FS_V0" := rfl
+
+/-- Host map id is greppable HOST-SELF-APPLY-FS.
+    Greppable: hostSelfApplyFsId_eq, SELF-APPLY-FS-THEOREM. -/
+theorem hostSelfApplyFsId_eq : hostSelfApplyFsId = "HOST-SELF-APPLY-FS" := rfl
+
+/-- freestandingProductSelfHostComplete stays false (still open).
+    Greppable: freestandingProductSelfHostComplete_false, SELF-APPLY-FS-THEOREM,
+    HOST-SELF-APPLY-FS-THEOREM. -/
+theorem freestandingProductSelfHostComplete_false :
+    freestandingProductSelfHostComplete = false := rfl
+
+/-- Freestanding extract + body path ready on kernel emit compose.
+    Greppable: freestandingSelfApplyPathReady_true, SELF-APPLY-FS-THEOREM. -/
+theorem freestandingSelfApplyPathReady_true :
+    freestandingSelfApplyPathReady = true := by decide
+
+/-- SH5 freestanding deepen readiness holds (not product complete).
+    Greppable: freestandingSelfApplyReady_true, HOST-SELF-APPLY-FS,
+    SELF-APPLY-FS-THEOREM, HOST-SELF-APPLY-FS-THEOREM. -/
+theorem freestandingSelfApplyReady_true :
+    freestandingSelfApplyReady = true := by decide
+
+/-- Deepen ready does NOT complete freestanding product self-host.
+    Greppable: selfApplyFsDoesNotComplete_true, SELF-APPLY-FS-THEOREM,
+    HOST-SELF-APPLY-FS-THEOREM. -/
+theorem selfApplyFsDoesNotComplete_true :
+    selfApplyFsDoesNotComplete = true := by decide
+
 /-! ### Freestanding self-apply smoke (behavioral; lake build fails if example fails)
     Greppable: SELF-APPLY-FS-SMOKE, HOST-SELF-APPLY-FS-SMOKE.
     maxRecDepth raised for selfApplyReady / freestandingSelfApplyReady /
     freestandingParityLadderReady / emitParityReady unfolds. -/
-
-set_option maxRecDepth 16384
 
 /-- SELF-APPLY-FS-SMOKE / HOST-SELF-APPLY-FS-SMOKE: stage / map ids greppable. -/
 example : stageId = "SLAKE_SELF_HOST_SELF_APPLY_FS_V0" := by decide

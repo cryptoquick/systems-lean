@@ -12,9 +12,11 @@
  * EMIT_APPLY_V0 -- apply plan tags into fixed buffer (not residual free; not full C body).
  * EMIT_BODY_V0 -- freestanding C body fragment (not residual free; not CFG/SSA).
  * HOST-EMIT-SSOT -- fragment dialect from SystemsLean.EmitBody + host_emit_body_fragment.ssot.txt
- * (generator bash is NON-SSOT for EMIT_BODY fragment text).
+ * (Lean freestanding emit embeds HOST-EMIT-SSOT dialect (no second format)).
  * HOST-EMIT-MULT -- Mult product text from SystemsLean.EmitMult + host_emit_mult.ssot.txt
- * (generator bash is NON-SSOT for Mult product text).
+ * (Lean freestanding emit embeds HOST-EMIT-MULT Mult product text).
+ * HOST-EMIT-LINEAR -- Linear/ConsumeToken product text from SystemsLean.EmitLinear +
+ * host_emit_linear.ssot.txt (Lean freestanding emit embeds HOST-EMIT-LINEAR text).
  *
  * RUNTIME-FS product surface goal: no Lean managed runtime on the wire.
  * not residual free; not freestanding residual free product claim.
@@ -35,11 +37,6 @@ const char *slake_emit_version(void)
 const char *slake_unit_translation_id(void)
 {
   return "UNIT_TRANSLATION_V0";
-}
-
-const char *slake_consume_token_host_id(void)
-{
-  return "CONSUME_TOKEN_HOST_V0";
 }
 
 /* ---- Types ---- */
@@ -63,7 +60,7 @@ uint32_t slake_type_tag_get(const slake_type_tag *t)
 
 /* ---- Mult (FAIL-CLOSED-UNKNOWN-GRADE) ----
  * HOST-EMIT-MULT: dialect from SystemsLean.EmitMult + host_emit_mult.ssot.txt
- * (generator bash is NON-SSOT for Mult product text).
+ * (Lean FreestandingEmit embeds this Mult product text).
  */
 
 int slake_mult_is_valid(enum slake_mult m)
@@ -93,7 +90,15 @@ const char *slake_mult_name(enum slake_mult m)
   return 0; /* unknown: fail closed; no silent coerce */
 }
 
-/* ---- Linear (LINEAR-EXACT-ONCE; JOIN-ALG ConsumeToken dual anchor on sides) ---- */
+/* ---- Linear (LINEAR-EXACT-ONCE; JOIN-ALG ConsumeToken dual anchor on sides) ----
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
+ */
+
+const char *slake_consume_token_host_id(void)
+{
+  return "CONSUME_TOKEN_HOST_V0";
+}
 
 int slake_linear_token_init(slake_linear_token *tok, uint32_t id)
 {
@@ -135,6 +140,96 @@ int slake_linear_token_is_live(const slake_linear_token *tok)
     return 0;
   }
   return (tok->live != 0) ? 1 : 0;
+}
+
+/* ---- CONSUME_TOKEN_HOST_V0 (JOIN-ALG ConsumeToken-class freestanding host) ----
+ * mint + exact-once consume at C level; duals not reimplemented.
+ * LINEAR-EXACT-ONCE / MULT-1; not residual free; not PROVABLY.
+ * HOST-EMIT-LINEAR: dialect from SystemsLean.EmitLinear + host_emit_linear.ssot.txt
+ * (Lean FreestandingEmit embeds this Linear product text).
+ */
+
+int slake_consume_token_init(slake_consume_token *ct)
+{
+  if (ct == 0) {
+    return -1;
+  }
+  ct->token.id = 0;
+  ct->token.live = 0;
+  ct->state = 0; /* empty */
+  return 0;
+}
+
+int slake_consume_token_mint(slake_consume_token *ct, uint32_t id)
+{
+  if (ct == 0) {
+    return -1;
+  }
+  if (id == 0) {
+    return -1; /* spent sentinel reserved; fail closed */
+  }
+  /* Key off is_live (state + token.live) so remint recovers desync. */
+  if (slake_consume_token_is_live(ct) == 1) {
+    return -2; /* already holds live MULT-1 token */
+  }
+  if (slake_linear_token_init(&ct->token, id) != 0) {
+    return -1;
+  }
+  ct->state = 1; /* live */
+  return 0;
+}
+
+int slake_consume_token_consume(slake_consume_token *ct)
+{
+  int rc;
+
+  if (ct == 0) {
+    return -1;
+  }
+  if (ct->state == 0) {
+    return -1; /* empty -- never minted */
+  }
+  if (ct->state == 2) {
+    return -2; /* already spent -- LINEAR-EXACT-ONCE fail closed */
+  }
+  /* state == 1 believed live: compose with linear exact-once consume */
+  rc = slake_linear_consume(&ct->token);
+  if (rc == 0) {
+    ct->state = 2; /* spent */
+  } else if (rc == -2) {
+    /* Heal desync if token already spent under host that believed live. */
+    ct->state = 2;
+  }
+  return rc;
+}
+
+int slake_consume_token_is_live(const slake_consume_token *ct)
+{
+  if (ct == 0) {
+    return 0;
+  }
+  if (ct->state != 1) {
+    return 0;
+  }
+  return (slake_linear_token_is_live(&ct->token) == 1) ? 1 : 0;
+}
+
+int slake_consume_token_check_fail_closed(const slake_consume_token *ct)
+{
+  slake_check_bundle b;
+
+  if (ct == 0) {
+    return (int)SLAKE_EXTRACT_FAIL_CLOSED;
+  }
+  /* Host must hold live MULT-1 (is_live); checker is check-only (no consume). */
+  if (slake_consume_token_is_live(ct) != 1) {
+    return (int)SLAKE_EXTRACT_FAIL_CLOSED;
+  }
+  b.mult = SLAKE_MULT_1;
+  b.linear = &ct->token;
+  b.erased = 0;
+  b.claimed_runtime = SLAKE_RUNTIME_FS;
+  return slake_check_fail_closed(&b);
 }
 
 /* ---- Erasure (ERASE-RULE-MULT-0 / ERASE-NO-RUNTIME) ---- */
@@ -224,94 +319,6 @@ int slake_extract_with_checks(const slake_check_bundle *b, enum slake_runtime_cl
   }
   *out_rt = SLAKE_RUNTIME_FS;
   return (int)SLAKE_EXTRACT_OK;
-}
-
-/* ---- CONSUME_TOKEN_HOST_V0 (JOIN-ALG ConsumeToken-class freestanding host) ----
- * mint + exact-once consume at C level; duals not reimplemented.
- * LINEAR-EXACT-ONCE / MULT-1; not residual free; not PROVABLY.
- */
-
-int slake_consume_token_init(slake_consume_token *ct)
-{
-  if (ct == 0) {
-    return -1;
-  }
-  ct->token.id = 0;
-  ct->token.live = 0;
-  ct->state = 0; /* empty */
-  return 0;
-}
-
-int slake_consume_token_mint(slake_consume_token *ct, uint32_t id)
-{
-  if (ct == 0) {
-    return -1;
-  }
-  if (id == 0) {
-    return -1; /* spent sentinel reserved; fail closed */
-  }
-  /* Key off is_live (state + token.live) so remint recovers desync. */
-  if (slake_consume_token_is_live(ct) == 1) {
-    return -2; /* already holds live MULT-1 token */
-  }
-  if (slake_linear_token_init(&ct->token, id) != 0) {
-    return -1;
-  }
-  ct->state = 1; /* live */
-  return 0;
-}
-
-int slake_consume_token_consume(slake_consume_token *ct)
-{
-  int rc;
-
-  if (ct == 0) {
-    return -1;
-  }
-  if (ct->state == 0) {
-    return -1; /* empty -- never minted */
-  }
-  if (ct->state == 2) {
-    return -2; /* already spent -- LINEAR-EXACT-ONCE fail closed */
-  }
-  /* state == 1 believed live: compose with linear exact-once consume */
-  rc = slake_linear_consume(&ct->token);
-  if (rc == 0) {
-    ct->state = 2; /* spent */
-  } else if (rc == -2) {
-    /* Heal desync if token already spent under host that believed live. */
-    ct->state = 2;
-  }
-  return rc;
-}
-
-int slake_consume_token_is_live(const slake_consume_token *ct)
-{
-  if (ct == 0) {
-    return 0;
-  }
-  if (ct->state != 1) {
-    return 0;
-  }
-  return (slake_linear_token_is_live(&ct->token) == 1) ? 1 : 0;
-}
-
-int slake_consume_token_check_fail_closed(const slake_consume_token *ct)
-{
-  slake_check_bundle b;
-
-  if (ct == 0) {
-    return (int)SLAKE_EXTRACT_FAIL_CLOSED;
-  }
-  /* Host must hold live MULT-1 (is_live); checker is check-only (no consume). */
-  if (slake_consume_token_is_live(ct) != 1) {
-    return (int)SLAKE_EXTRACT_FAIL_CLOSED;
-  }
-  b.mult = SLAKE_MULT_1;
-  b.linear = &ct->token;
-  b.erased = 0;
-  b.claimed_runtime = SLAKE_RUNTIME_FS;
-  return slake_check_fail_closed(&b);
 }
 
 /* ---- TYPED_IR_V0 (richer typed IR; not residual free; not full elaborator) ----
@@ -877,7 +884,7 @@ int slake_emit_apply_is_valid(const slake_emit_apply *a)
  * No snprintf/stdlib; manual digit write. Greppable: EMIT_BODY_V0, RUNTIME-FS,
  * EMIT_APPLY_V0, EMIT_PLAN_V0, EMIT-BOUNDARY, HOST-EMIT-SSOT.
  * Fragment dialect: HOST-EMIT-SSOT (SystemsLean.EmitBody.buildFragment +
- * host_emit_body_fragment.ssot.txt); generator bash is NON-SSOT for put_str text.
+ * host_emit_body_fragment.ssot.txt); Lean freestanding emit embeds HOST-EMIT-SSOT put_str text.
  */
 
 /* HOST-EMIT-SSOT empty-compose fragment (matches EmitBody.emptyComposeFragmentSsot).

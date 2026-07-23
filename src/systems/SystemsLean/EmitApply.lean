@@ -22,6 +22,19 @@
     is emit-map honesty only. Never open more than one SystemsLean.Emit* namespace
     at once; qualify when using several Emit* modules together.
 
+  Theorems (EMIT-APPLY-THEOREM / HOST-EMIT-APPLY-THEOREM -- partial EmitApply only):
+  - applyCap_eq_32 (SLAKE_EMIT_APPLY_CAP honesty)
+  - applyOk_empty_true / applyFromCompose_empty_zero
+  - applyOk_linear_without_mint_false / applyIsValid_failClosed_false
+  - packTag_linear / packTag_erased / packTag_value / tagMult_kind unpack
+  - applyOk_eq / fromCompose_eq_applyFromCompose
+  - applyFromCompose_mult1_minted_tags / applyFromCompose_mult0_marked_tag
+  - applyFromCompose_omega_tag / applyFromCompose_linear_and_erased_order
+  - applyIsValid_count_tags_desync_false (inventory consistency)
+  These EmitApply theorems do NOT set SpecProof.proofCompleteClaimed true.
+  Partial theorems on EmitApply != host proof complete != residual free.
+  Does not invent a second emit dialect; does not grow product C.
+
   Intentional non-claims / partial parity:
   - PARTIAL vs full C EMIT_APPLY_V0: host uses List Nat tags (no fixed C array,
     no null pointers, no exact -1 return codes).
@@ -29,11 +42,16 @@
     still caps at 8.
   - Not freestanding residual free. Not product C residual free.
   - Not PROVABLY. Not freestanding emit residual free.
+  - Not proof complete (SpecProof.proofCompleteClaimed stays false).
   - Not full product C body codegen. Not residual free.
 
   Greppable: SYSTEMS_LEAN_HOST, EMIT-APPLY, EMIT_APPLY_V0, APPLY_CAP,
   SLAKE_EMIT_APPLY_CAP, FAIL-CLOSED, HOST-COMPOSE, EMIT-PLAN, RUNTIME-FS,
-  slake_emit_apply, applyFromCompose, fromCompose, applyIsValid, checkFailClosed
+  slake_emit_apply, applyFromCompose, fromCompose, applyIsValid, checkFailClosed,
+  EMIT-APPLY-THEOREM, HOST-EMIT-APPLY-THEOREM, applyCap_eq_32, applyOk_empty_true,
+  applyOk_linear_without_mint_false, packTag_linear,
+  applyFromCompose_mult1_minted_tags, applyFromCompose_linear_and_erased_order,
+  applyIsValid_count_tags_desync_false
   UNIT_SURFACE host surface. Module: SystemsLean.EmitApply
   Red/green: just systems-host (nix/systems-host-presence/; flake checks.systems-host-presence); lake build when toolchain installed.
   Module must stay ASCII.
@@ -125,6 +143,170 @@ def applyIsValid (a : Apply) : Bool :=
 /-- applyOk hc -- applyFromCompose + applyIsValid convenience. -/
 def applyOk (hc : Host) : Bool :=
   applyIsValid (applyFromCompose hc)
+
+/-! ### EMIT-APPLY-THEOREM / HOST-EMIT-APPLY-THEOREM (readable statements, then proofs)
+
+  Real Lean theorems (not only `example` Bool canaries). Scope is applyCap,
+  empty-compose apply validity, fail-closed MULT-1 unminted, definitional tag
+  packing, minted/marked tag inventory, multi-node program order, and
+  applyIsValid count/tags consistency. Does not complete SpecProof; does not
+  claim residual free / freestanding product self-host complete / PROVABLY.
+  Does not invent a second emit dialect.
+-/
+
+/-- applyCap matches emit SLAKE_EMIT_APPLY_CAP (APPLY_CAP honesty).
+    Greppable: applyCap_eq_32, SLAKE_EMIT_APPLY_CAP, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyCap_eq_32 : applyCap = 32 := rfl
+
+/-- applyOk is definitionally applyIsValid (applyFromCompose hc).
+    Greppable: applyOk_eq, EMIT-APPLY-THEOREM. -/
+theorem applyOk_eq (hc : Host) :
+    applyOk hc = applyIsValid (applyFromCompose hc) := rfl
+
+/-- fromCompose is definitionally applyFromCompose (emit-map alias honesty).
+    Greppable: fromCompose_eq_applyFromCompose, EMIT-APPLY-THEOREM. -/
+theorem fromCompose_eq_applyFromCompose (hc : Host) :
+    fromCompose hc = applyFromCompose hc := rfl
+
+/-- Fail-closed empty apply is not applyIsValid.
+    Greppable: applyIsValid_failClosed_false, FAIL-CLOSED, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyIsValid_failClosed_false :
+    applyIsValid Apply.failClosed = false := by decide
+
+/-- Empty compose apply is valid with count 0.
+    Greppable: applyOk_empty_true, EMIT-APPLY-THEOREM, HOST-EMIT-APPLY-THEOREM. -/
+theorem applyOk_empty_true : applyOk HostCompose.empty = true := by decide
+
+/-- Empty compose apply inventory is zero tags / count 0 / valid.
+    Greppable: applyFromCompose_empty_zero, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyFromCompose_empty_zero :
+    (let a := applyFromCompose HostCompose.empty
+     a.valid && a.count == 0 && a.tags.isEmpty) = true := by decide
+
+/-- Tag packing: MULT-1 LINEAR -> mult=1 kind=1 -> 0x11 = 17.
+    Greppable: packTag_linear, EMIT-APPLY-THEOREM, HOST-EMIT-APPLY-THEOREM. -/
+theorem packTag_linear :
+    packTag { ty := Types.typeTagInit 1, mult := Mult.mult1, kind := NodeKind.linear }
+      = 17 := rfl
+
+/-- Tag packing: MULT-0 ERASED -> mult=0 kind=2 -> 0x02 = 2.
+    Greppable: packTag_erased, EMIT-APPLY-THEOREM. -/
+theorem packTag_erased :
+    packTag { ty := Types.typeTagInit 0, mult := Mult.mult0, kind := NodeKind.erased }
+      = 2 := rfl
+
+/-- Tag packing: MULT-OMEGA VALUE -> mult=2 kind=0 -> 0x20 = 32.
+    Greppable: packTag_value, EMIT-APPLY-THEOREM. -/
+theorem packTag_value :
+    packTag { ty := Types.typeTagInit 2, mult := Mult.multOmega, kind := NodeKind.value }
+      = 32 := rfl
+
+/-- Unpack mult nibble of packed linear tag 17.
+    Greppable: tagMult_linear_17, EMIT-APPLY-THEOREM. -/
+theorem tagMult_linear_17 : tagMult 17 = 1 := rfl
+
+/-- Unpack kind nibble of packed linear tag 17.
+    Greppable: tagKind_linear_17, EMIT-APPLY-THEOREM. -/
+theorem tagKind_linear_17 : tagKind 17 = 1 := rfl
+
+/-- Unpack mult/kind nibbles of packed erased tag 2.
+    Greppable: tagMult_erased_2, tagKind_erased_2, EMIT-APPLY-THEOREM. -/
+theorem tagMult_erased_2 : tagMult 2 = 0 := rfl
+theorem tagKind_erased_2 : tagKind 2 = 2 := rfl
+
+/-- Unpack mult/kind nibbles of packed value tag 32.
+    Greppable: tagMult_value_32, tagKind_value_32, EMIT-APPLY-THEOREM. -/
+theorem tagMult_value_32 : tagMult 32 = 2 := rfl
+theorem tagKind_value_32 : tagKind 32 = 0 := rfl
+
+/-! ### Non-empty apply fixtures (theorem surface, not only smoke)
+    Concrete hosts so tag inventory claims reduce without push/mint match escapes. -/
+
+private def thmLinearNode : IrNode :=
+  { ty := Types.typeTagInit 1, mult := Mult.mult1, kind := NodeKind.linear }
+
+private def thmErasedNode : IrNode :=
+  { ty := Types.typeTagInit 0, mult := Mult.mult0, kind := NodeKind.erased }
+
+private def thmValueNode : IrNode :=
+  { ty := Types.typeTagInit 2, mult := Mult.multOmega, kind := NodeKind.value }
+
+/-- One MULT-1 node, unminted linear host (checkFailClosed fails). -/
+private def thmHostMult1Unminted : Host :=
+  { HostCompose.empty with
+    graph := { prog := { nodes := [thmLinearNode] }, edges := [] } }
+
+/-- One MULT-1 node with live token (mint evidence). -/
+private def thmHostMult1Minted : Host :=
+  { HostCompose.empty with
+    graph := { prog := { nodes := [thmLinearNode] }, edges := [] }
+    linear := { live := true, id := 1 } }
+
+/-- One MULT-0 node with markErased. -/
+private def thmHostMult0Marked : Host :=
+  HostCompose.markErased
+    { HostCompose.empty with
+      graph := { prog := { nodes := [thmErasedNode] }, edges := [] } }
+
+/-- One MULT-OMEGA value node (no mint/mark required). -/
+private def thmHostOmega : Host :=
+  { HostCompose.empty with
+    graph := { prog := { nodes := [thmValueNode] }, edges := [] } }
+
+/-- MULT-1 (minted) then MULT-0 (marked): tags [17, 2] in program order. -/
+private def thmHostLinearAndErased : Host :=
+  HostCompose.markErased
+    { HostCompose.empty with
+      graph := { prog := { nodes := [thmLinearNode, thmErasedNode] }, edges := [] }
+      linear := { live := true, id := 9 } }
+
+/-- MULT-1 without mint fails apply (fail-closed).
+    Greppable: applyOk_linear_without_mint_false, MULT-1, FAIL-CLOSED,
+    EMIT-APPLY-THEOREM, HOST-EMIT-APPLY-THEOREM. -/
+theorem applyOk_linear_without_mint_false :
+    applyOk thmHostMult1Unminted = false := by decide
+
+/-- MULT-1 with mint packs tag mult=1 kind=1 -> 0x11 = 17.
+    Greppable: applyFromCompose_mult1_minted_tags, MULT-1, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyFromCompose_mult1_minted_tags :
+    (let a := applyFromCompose thmHostMult1Minted
+     a.valid && a.count == 1 && a.tags == [17]
+       && tagMult 17 == 1 && tagKind 17 == 1) = true := by decide
+
+/-- MULT-0 marked packs mult=0 kind=2 -> 0x02 = 2.
+    Greppable: applyFromCompose_mult0_marked_tag, MULT-0, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyFromCompose_mult0_marked_tag :
+    (let a := applyFromCompose thmHostMult0Marked
+     a.valid && a.count == 1 && a.tags == [2]
+       && tagMult 2 == 0 && tagKind 2 == 2) = true := by decide
+
+/-- MULT-OMEGA packs mult=2 kind=0 -> 0x20 = 32.
+    Greppable: applyFromCompose_omega_tag, MULT-OMEGA, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyFromCompose_omega_tag :
+    (let a := applyFromCompose thmHostOmega
+     a.valid && a.count == 1 && a.tags == [32]
+       && tagMult 32 == 2 && tagKind 32 == 0) = true := by decide
+
+/-- Multi-node program order tags [linear=17, erased=2].
+    Greppable: applyFromCompose_linear_and_erased_order, EMIT-APPLY-THEOREM,
+    HOST-EMIT-APPLY-THEOREM. -/
+theorem applyFromCompose_linear_and_erased_order :
+    (let a := applyFromCompose thmHostLinearAndErased
+     applyIsValid a && a.count == 2 && a.tags == [17, 2]) = true := by decide
+
+/-- Hand-built Apply with valid=true but count/tags desync fails closed.
+    Greppable: applyIsValid_count_tags_desync_false, FAIL-CLOSED,
+    EMIT-APPLY-THEOREM, HOST-EMIT-APPLY-THEOREM. -/
+theorem applyIsValid_count_tags_desync_false :
+    (let a1 : Apply := { tags := [17], count := 2, valid := true }
+     let a2 : Apply := { tags := [17, 2], count := 1, valid := true }
+     !applyIsValid a1 && !applyIsValid a2) = true := by decide
 
 /-! ### Emit apply smoke (behavioral; lake build fails if an example does not hold)
     Greppable: EMIT-APPLY-SMOKE. Exercises empty ok, tag packing, multi-node order. -/
