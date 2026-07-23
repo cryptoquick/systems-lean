@@ -29,22 +29,21 @@ UnrestrictedShare) + IR sketch + systems skeleton + unit surface + compile path
 100% is evidence-weighted milestones, not freestanding residual free.
 
 **Active product residual:** freestanding **Slake** bootstrap under
-`src/systems/` (Lean host + freestanding emit). Living Open Names (not phase
-labels): **Thin process glue** (next). Done (archive): **Self-host body**;
+`src/systems/` (Lean host + freestanding emit). Living Open queue: **empty**
+(done-for-now after **Thin process glue**). Done (archive): **Self-host body**;
 **Dual algorithms into Slake** -- stated map `src/systems/join-map.md`;
 `JoinMap.joinAlgUseOk` host use pins (ConsumeToken / ErasedIndex /
-UnrestrictedShare); dual trees read-only; freestandingProductSelfHostComplete
-and residual free stay false. Detail: **`RESIDUAL-systems.md`**. Join board:
-**`RESIDUAL.md`**. Watcher: **`WATCHER.md`**. Plan:
-`.agents/plans/plan-unambiguous-residual-work.md`.
+UnrestrictedShare); dual trees read-only; **Thin process glue** -- shell
+ownership note in `src/systems/README.md`; compile-path stamp only (no static
+greps); freestandingProductSelfHostComplete and residual free stay false.
+Detail: **`RESIDUAL-systems.md`**. Join board: **`RESIDUAL.md`**. Watcher:
+**`WATCHER.md`**. Plan: `.agents/plans/plan-unambiguous-residual-work.md`.
 Still **not** residual free, **not** freestanding product self-host complete,
 **not** PROVABLY, **not** proof complete; llvm deferred. Product wire / host
 model jargon: `doc/vocabulary.md`.
 
-**Next:** **Thin process glue** -- remaining shell only for Lake / cc / drivers;
-static presence pure Nix. Chain short implement loops autonomously when Done
-when is checkable. Do not invent readiness theorem canaries; do not forge
-residual free / proof complete / llvm unlock.
+**Next:** Open queue empty. Do not invent Open Names. Human names next residual
+when ready. Do not forge residual free / proof complete / llvm unlock.
 
 ---
 

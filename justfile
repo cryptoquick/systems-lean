@@ -118,7 +118,7 @@ check: hygiene systems-host systems-emit-wire idris-side lean-side
     echo "check OK"
 
 # Freestanding Systems Lean product under src/systems/ (Slake host synthesis).
-# Marker walk for UNIT_SURFACE is pure Nix (systems-emit-wire) + compile-path driver.
+# UNIT_SURFACE marker walk is pure Nix (systems-emit-wire). Compile-path driver is stamp only.
 # Not product C; product wire is just out-freestanding-c (SLAKE_EMIT_FREESTANDING_C_V0).
 build:
     #!/usr/bin/env bash
@@ -142,7 +142,8 @@ build:
 
 # Emit / refresh runtimeless freestanding C under out/freestanding-c.
 # Wave C: Lean-owned emit (SystemsLean.FreestandingEmit / lake exe
-# slake-emit-freestanding-c). Optional compile-path structure validation first.
+# slake-emit-freestanding-c). Optional compile-path process-glue stamp first
+# (static unit walk is pure Nix systems-emit-wire / systems-host).
 # Product emit requires host Lean pin (elan + lake); fail closed if missing.
 out-freestanding-c:
     #!/usr/bin/env bash
@@ -171,7 +172,7 @@ out-freestanding-c:
       echo "  install elan pin from $systems_dir/lean-toolchain then retry." >&2
       exit 1
     fi
-    # Structure validation before product emit (parity with former bash emit).
+    # Process-glue stamp before product emit (static unit walk is pure Nix).
     if [[ -f "$compile_driver" ]]; then
       if [[ -x "$compile_driver" ]]; then
         ./"$compile_driver"

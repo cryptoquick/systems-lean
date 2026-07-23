@@ -27,9 +27,9 @@ Language: **Idris side** / **Lean side** / **coordinator** -- never "pole".
 | Ordered IR program stage id | Greppable `IR_PROGRAM_V0`; product prose uses ordered IR program / node list; see `AGENTS.md` ban |
 | Greppable imperfect edges merged into divergence | `doc/divergence.md` section **Greppable imperfect edges (dual pair)** (EDGE-* / ERASE-* / RUNTIME-* + JOIN-ALG) |
 | Shared intermediate-representation (IR) sketch | `doc/shared-ir-sketch.md` (pointer from `doc/architecture.md`; thin note in `src/systems/README.md`) |
-| Slake skeleton under `src/systems/` | Layout stubs: `types.md`/`Types.slake`, `mult.md`/`Mult.slake`, `linear.md`/`Linear.slake`, `erasure.md`/`Erasure.slake`, `extract.md`/`Extract.slake`; pure Nix presence + process glue `src/systems/check.sh`; honest multi-tier path `just build` -> compile-path (SKELETON + UNIT_SURFACE). **Not freestanding residual free.** |
+| Slake skeleton under `src/systems/` | Layout stubs: `types.md`/`Types.slake`, `mult.md`/`Mult.slake`, `linear.md`/`Linear.slake`, `erasure.md`/`Erasure.slake`, `extract.md`/`Extract.slake`; pure Nix presence + process glue `src/systems/check.sh`; `just build` -> compile-path stamp; unit markers (SKELETON + UNIT_SURFACE) pure Nix. **Not freestanding residual free.** |
 | First freestanding unit surface | Five modules marked `UNIT_SURFACE` with thin abstract surface (grades / linear resource / erasure rule / extract boundary); check requires at least one + content bar; build unit-surface path prints count and refuses product C claim from build alone. |
-| Real freestanding compile path (structure stage) | `script/slake-compile-path.sh` stage id `SLAKE_COMPILE_PATH_V0`; wired from `just build`; `src/systems/check.sh` fails closed if driver missing/unwired; `.cache/slake-compile-path/` manifest is **not** product C. |
+| Real freestanding compile path (process-glue stamp) | `script/slake-compile-path.sh` stage id `SLAKE_COMPILE_PATH_V0` is process-glue stamp (no static greps); static unit walk pure Nix (`systems-emit-wire`); wired from `just build`; `.cache/slake-compile-path/` stamp is **not** product C. |
 | Real freestanding emit path V0 + out/freestanding-c populate | Lean `SystemsLean.FreestandingEmit` stage `SLAKE_EMIT_FREESTANDING_C_V0`; writes `src/systems/emit/slake_freestanding.{c,h}` from templates + SSOT; `just out-freestanding-c` re-emits + clean-installs into `out/freestanding-c/` (preserves README); bash emit deleted (Wave C); still **not residual free**; **not PROVABLY**. |
 | UNIT_DEEPEN_V1 abstract body + first unit translation | Mult/Linear/Erasure/Extract/Types `UNIT_DEEPEN_V1`; C APIs `slake_mult_is_valid`, `slake_linear_consume`, `slake_erasure_is_runtime_absent`; companion notes; still **not residual free**. |
 | FAIL_CLOSED_CHECKER_V1 composed checker + extract path | `slake_check_bundle`, `slake_check_fail_closed`, `slake_extract_with_checks`; Extract unit map; behavioral smoke; still **not residual free**. |
@@ -58,10 +58,10 @@ ccomp + matrix.
 
 | Priority | Work | Owner / notes |
 |----------|------|----------------|
-| P0 | Shell/C paydown | **done (2026-07-22, bulk):** plan `.agents/plans/plan-paydown-shell-c-surfaces.md` waves 0-E. Policy: pay down, not accumulate; scheduled deletion vs permanent roles. Dual pure Nix presence; process shells collapsed; **emit bash deleted** (Lean `FreestandingEmit`); release export + honest scc excludes; probe labeled behavioral tests. Remaining shell is process glue only (`slake-compile-path.sh` + thin check.sh). Novel scc Shell code ~268. Still **not residual free**. |
+| P0 | Shell/C paydown | **done (2026-07-22, bulk + thin glue):** plan `.agents/plans/plan-paydown-shell-c-surfaces.md` waves 0-E + Thin process glue. Dual pure Nix presence; emit bash deleted (Lean `FreestandingEmit`); compile-path shell is stamp only (no static greps); ownership note in `src/systems/README.md`. Still **not residual free**. |
 | P1 | Systems Lean host close PARTIAL | **done (2026-07-22):** `host-partial-inventory.md` CLOSABLE-MISS-COUNT-0; intentional PARTIAL carry |
 | P2 | Host drives emit | **done (2026-07-22, partial):** host Mult/body SSOT fragments; full C ladder still frozen wire |
-| P3 | Real Slake compile path | **done (2026-07-22, partial):** `SystemsLean/CompilePath.lean`; V0 structure shell remains |
+| P3 | Real Slake compile path | **done (2026-07-22, partial):** `SystemsLean/CompilePath.lean`; V0 stamp shell remains (no static greps; unit walk pure Nix) |
 | P4 | Join map into Slake | **done (2026-07-22, partial):** `SystemsLean/JoinMap.lean`; duals read-only; not formal full bridge theorems |
 | P5 | Self-host direction readiness | **done (2026-07-22, partial):** `SystemsLean/SelfHost.lean`; not freestanding product self-host complete; does **not** unlock llvm alone |
 | P6 | llvm-ir / PROVABLY | **held** (SH6 documented): `LlvmHold.lean` (HOST-LLVM-HOLD / HOST-PROVABLY-HOLD); unlock flags false; true freestanding product self-host required; real ccomp + matrix for PROVABLY; **not** residual-open mill |
@@ -118,14 +118,11 @@ companions.
 |------|--------|--------------|
 | Self-host body | **done** (partial) | `RESIDUAL-systems.md` -- SELF-HOST-BODY acceptance + SelfHostBody.lean; complete/free stay false |
 | Dual algorithms into Slake | **done** (partial) | `RESIDUAL-systems.md` -- join-map.md + JoinMap.joinAlgUseOk three dual host uses; dual trees read-only; free/complete stay false |
-| Thin process glue | **open** (next) | same |
+| Thin process glue | **done** | `RESIDUAL-systems.md` -- shell ownership note; compile-path stamp only; static pure Nix; free/complete stay false |
 
-**Highest-value next:** **Thin process glue** -- remaining shell only for Lake /
-cc / drivers; static presence pure Nix. Dual algorithms into Slake stated
-(`join-map.md` + `joinAlgUseOk`; ConsumeToken / ErasedIndex / UnrestrictedShare
-host use; not dual-cite alone). Still not residual free; freestanding product
-self-host complete still false; proof complete false; llvm / CompCert PROVABLY
-deferred. Watcher: `WATCHER.md`.
+**Open queue empty (done-for-now).** No invent Open Names. Still not residual
+free; freestanding product self-host complete still false; proof complete false;
+llvm / CompCert PROVABLY deferred. Watcher: `WATCHER.md` (blocked / done-for-now).
 
 ---
 

@@ -105,7 +105,7 @@ Plan (waves): `.agents/plans/plan-paydown-shell-c-surfaces.md`.
 | `src/lean4/check.sh` static presence | ~70 glue | **Met (Wave A):** static mill in `nix/lean-side-presence/` (`just lean-side`); shell is optional Lake only | pure Nix + thin glue |
 | `script/build-systems.sh` | gone | **Met (Wave B):** deleted; `just build` calls `script/slake-compile-path.sh` | just + compile-path driver |
 | `script/out-freestanding-c.sh` | gone | **Met (Wave B):** deleted; body is `just out-freestanding-c` (Wave C: Lean emit + copy) | just + Lean emit |
-| `script/slake-compile-path.sh` | ~150 | Lean/Nix readiness + tiny stamp or gone | Lean/Nix |
+| `script/slake-compile-path.sh` | ~51 stamp | **Met (thin stamp):** static UNIT_SURFACE greps removed (pure Nix `systems-emit-wire` unit walk + host presence); shell is process-glue stamp for `just build` / emit preflight only; may delete later if stamp unneeded | process glue + pure Nix |
 | Fat body of `src/systems/check.sh` | ~100 glue | **Met (Wave B):** process glue only (Lake + drivers + cc tests); static mills pure Nix | just + pure Nix gates |
 
 **Emit shell deleted (Wave C).** Do not restore `script/slake-emit-freestanding-c.sh`. Product wire comes from Lean `SystemsLean.FreestandingEmit` + emit templates + SSOT.
@@ -131,8 +131,8 @@ When `scc` counts Shell, C, headers, config, or plain text beyond Lean / Idris /
 
 | Surface | Paths (examples) | Classification |
 |---------|------------------|----------------|
-| **Shell (scheduled deletion)** | remaining thin drivers (`script/slake-compile-path.sh`); dual/static mills paid Wave A | Must leave per table above |
-| **Shell (process glue)** | thin just-invoked drivers, `script/git-hooks/*` | Keep tiny |
+| **Shell (scheduled deletion)** | none open for static mills (dual/static paid Wave A; compile-path greps paid thin-stamp) | Must leave if any mill returns |
+| **Shell (process glue)** | `src/systems/check.sh`, `script/slake-compile-path.sh` (stamp), dual optional elaborators, `script/git-hooks/*` | Keep tiny; no static greps |
 | **C (product wire)** | `src/systems/emit/slake_freestanding.c`, `out/freestanding-c/` | Generated; permanent role |
 | **C Header** | `*.h` beside emit | Same wire |
 | **C (behavioral tests)** | `src/systems/smoke/slake_behavioral_probe.c` | Tests; not product body |

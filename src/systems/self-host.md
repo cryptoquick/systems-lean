@@ -21,8 +21,8 @@ SLAKE_SELF_HOST_BODY_V0, HOST-SELF-HOST-BODY, SELF-HOST-BODY,
 SLAKE_EMIT_FREESTANDING_C_V0, defined freestanding compile step, RUNTIME-FS
 **ASCII only.** Living residual Open Names (plain English): see
 `RESIDUAL-systems.md`. **Self-host body** is defined (SELF-HOST-BODY); dual
-algorithms into Slake stated in `join-map.md` / `JoinMap.joinAlgUseOk`. Next Open
-is Thin process glue. Ownership map `emit/host-owned-emit.md`.
+algorithms into Slake stated in `join-map.md` / `JoinMap.joinAlgUseOk`. Thin
+process glue done (Open queue empty). Ownership map `emit/host-owned-emit.md`.
 
 **North star:** Systems Lean / Slake can compile a defined freestanding surface
 to runtimeless freestanding C with no classic Lean managed runtime on the
@@ -187,7 +187,7 @@ Canonical terms also live in `doc/vocabulary.md` (**Wire / product wire**,
 ## What does **not** count as self-host
 
 - `HOST-SELF-HOST` / `SLAKE_SELF_HOST_V0` alone (direction canary)
-- Structure-only `SLAKE_COMPILE_PATH_V0` shell greps
+- Process-glue `SLAKE_COMPILE_PATH_V0` stamp alone (static unit walk is pure Nix)
 - Host Bool readiness maps without IR for a named kernel unit
 - Growing bash `EMIT_*` stages as residual theater
 - Unlocking `out/llvm-ir` or CompCert PROVABLY from inventory alone

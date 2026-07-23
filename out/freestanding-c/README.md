@@ -21,7 +21,7 @@ Name emphasizes **runtimeless / freestanding**, not classic AOT (ahead-of-time) 
 
 ## Release process (minimum)
 
-1. `just build` -- freestanding systems product green (compile-path structure stage; not product C).
+1. `just build` -- freestanding systems product green (compile-path process-glue stamp; not product C).
 2. `just out-freestanding-c` -- Lean freestanding emit + populate this tree from `src/systems/emit/`.
 3. `just check` -- full suite green (human stages new `nix/` paths for flake match when needed).
 4. Publish **this directory** so consumers need not clone `ref/*` or the full host monorepo.

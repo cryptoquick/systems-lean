@@ -119,14 +119,27 @@ to implement Slake in. **Generated only** -- not hand-written Systems Lean.
 - **HOST-SELF-HOST-BODY / SELF-HOST-BODY (defined freestanding compile step):** acceptance-first body path in `self-host.md` + pin in `SelfHostBody.lean` (`selfHostBodyReady` = emitMultReady && emitLinearReady && surface && freestanding emit stage cite && free/complete/unlock false; freestandingProductSelfHostComplete false; residual free false; SELF-HOST-BODY-SMOKE + SELF-HOST-BODY-THEOREM). E2E under gates via FreestandingEmit + `just out-freestanding-c`. Not residual free; not freestanding product self-host complete; not full product compiler self-application; not llvm unlock.
 - Do **not** mint new `EMIT_*` C stages as the residual treadmill. Do not grow shell debt.
 
-**Static presence (pure Nix):** two modules; do not re-grow those greps in `check.sh`.
+**Static presence (pure Nix):** two modules; do not re-grow those greps in shell.
 
 | Gate | Module | Live recipe / flake check |
 |------|--------|---------------------------|
 | Host skeleton + unit-surface tokens + SYSTEMS_LEAN_HOST Mult..SelfHostBody + tree-wide banned-jargon walk | `nix/systems-host-presence/` | `just systems-host` / `systems-host-presence` |
 | Compile/emit drivers, UNIT_DEEPEN, emit product stages, unit-surface walk, optional release, hosted probe path (`smoke/slake_behavioral_probe.c`) | `nix/systems-emit-wire/` | `just systems-emit-wire` / `systems-emit-wire` |
 
-**Residual shell** (`check.sh`, ~228 lines): optional Lake elaborator, compile-path/emit/out-freestanding-c **driver runs**, freestanding-first compile smoke + `cc` link/run of hosted behavioral probe (`smoke/slake_behavioral_probe.c` -- smoke debt, not product emit residual). Tree-wide banned-jargon ban is pure Nix (host-presence). Pure Nix requires the probe path. Solo `check.sh` is incomplete without both pure Nix recipes.
+### Shell ownership (process glue only)
+
+Remaining novel shell is **process glue** (invoke Lake / cc / drivers / stamp). Static presence is pure Nix. Line counts via `wc -l` (honest; not residual free; not freestanding product self-host complete).
+
+| Path | ~Lines | Role |
+|------|--------|------|
+| `src/systems/check.sh` | ~99 | Process glue: optional Lake + compile-path + `just out-freestanding-c` + freestanding-first `cc` + behavioral probe link/run. **No static greps.** Solo run incomplete without pure Nix gates. |
+| `script/slake-compile-path.sh` | ~51 | Process glue stamp (`SLAKE_COMPILE_PATH_V0`) for `just build` / emit preflight. **No UNIT_SURFACE / SKELETON / honesty greps** (those live in `just systems-emit-wire` unit walk + host presence). Not product C. |
+| `src/idris2/check.sh` | ~30 | Process glue: optional `idris2 --check` only. Static: `just idris-side`. |
+| `src/lean4/check.sh` | ~67 | Process glue: optional Lake only. Static: `just lean-side`. |
+
+**Pure Nix (static mills):** `nix/systems-host-presence/`, `nix/systems-emit-wire/` (incl. unit walk), `nix/idris-side-presence/`, `nix/lean-side-presence/`.
+
+**Not claimed:** residual free stays false; freestanding product self-host complete stays false; proof complete false; PROVABLY false; llvm deferred.
 
 Legacy greppable id `IR_PROGRAM_V0` means multi-node **ordered IR program** (node list). Do not mint new `metaphor stage ids` names; rename when a deliberate honesty slice lands. Prefer: ordered IR program, node list, graph edges.
 
@@ -154,7 +167,7 @@ Every freestanding unit (`*.slake` / `*.lean` under this tree) must carry one of
 | `EMIT_PLAN_V0` | Emit plan readiness inventory (frozen wire) | Still **not residual free** |
 | `EMIT_APPLY_V0` | Apply plan tags into fixed buffer (frozen wire) | Still **not residual free** |
 | `EMIT_BODY_V0` | Freestanding C body fragment (frozen wire) | Still **not residual free** |
-| (stage) `SLAKE_COMPILE_PATH_V0` | Structure-validation compile path for `UNIT_SURFACE` | Driver: `script/slake-compile-path.sh`; still **not** product C |
+| (stage) `SLAKE_COMPILE_PATH_V0` | Process-glue stamp for compile path (static unit walk is pure Nix) | Driver: `script/slake-compile-path.sh`; still **not** product C |
 | (stage) `SLAKE_COMPILE_PATH_V1` / `HOST-COMPILE-PATH` | Host-informed compile-path readiness (Lean) | `SystemsLean/CompilePath.lean`; V0 structure remains; still **not** product C |
 | (stage) `SLAKE_JOIN_MAP_V0` / `HOST-JOIN-MAP` | Dual / JOIN-ALG map into compile-path readiness (Lean) | `SystemsLean/JoinMap.lean` + `join-map.md`; joinAlgUseOk host use; duals read-only; still **not residual free** |
 | (stage) `SLAKE_SELF_HOST_V0` / `HOST-SELF-HOST` | Self-host direction readiness (Lean) | `SystemsLean/SelfHost.lean`; not self-host complete; still **not residual free** |
@@ -163,9 +176,9 @@ Every freestanding unit (`*.slake` / `*.lean` under this tree) must carry one of
 
 Rules:
 
-- Unit with **neither** `SKELETON` nor `UNIT_SURFACE` -> build and check **fail** (`missing: path`).
+- Unit with **neither** `SKELETON` nor `UNIT_SURFACE` -> pure Nix unit walk **fail** (`just systems-emit-wire`).
 - Unit with `UNIT_SURFACE` counts as unit-surface (even if `SKELETON` text also appears).
-- When any `UNIT_SURFACE` unit exists, `just build` runs **SLAKE_COMPILE_PATH_V0** (structure bar).
+- `just build` runs **SLAKE_COMPILE_PATH_V0** process-glue stamp; static unit bar is pure Nix (`systems-emit-wire`).
 - Product C: **SLAKE_EMIT_FREESTANDING_C_V0** writes under `src/systems/emit/`; `just out-freestanding-c` copies into `out/freestanding-c/`. Still not residual free.
 - Presence gate requires Lean host files (lakefile, toolchain, Mult..SelfHostBody ladder + surface-matrix.md + self-host.md) plus frozen emit wire honesty. Never residual free.
 
@@ -184,7 +197,7 @@ Rules:
 | Emit plan | EMIT-PLAN; readiness counts; planFromCompose fail-closed; EMIT-PLAN-THEOREM | `SystemsLean/EmitPlan.lean` | `slake_emit_plan_*` (historical wire id `EMIT_PLAN_V0`) |
 | Emit apply | EMIT-APPLY; packTag mult/kind buffer; applyFromCompose; EMIT-APPLY-THEOREM | `SystemsLean/EmitApply.lean` | `slake_emit_apply_*` (historical wire id `EMIT_APPLY_V0`) |
 | Emit body | EMIT-BODY; **HOST-EMIT-SSOT** buildFragment + emptyComposeFragmentSsot; markers from buf | `SystemsLean/EmitBody.lean` + `emit/host_emit_body_fragment.ssot.txt` | `slake_emit_body_*` (historical wire id `EMIT_BODY_V0`; bash NON-SSOT) |
-| Compile path (host) | HOST-COMPILE-PATH; `SLAKE_COMPILE_PATH_V1`; compileReady / unitCompileReady | `SystemsLean/CompilePath.lean` | Structure driver remains `SLAKE_COMPILE_PATH_V0` (shell); not product C |
+| Compile path (host) | HOST-COMPILE-PATH; `SLAKE_COMPILE_PATH_V1`; compileReady / unitCompileReady | `SystemsLean/CompilePath.lean` | V0 process-glue stamp remains `SLAKE_COMPILE_PATH_V0` (shell); static unit walk pure Nix; not product C |
 | Join map (host) | HOST-JOIN-MAP; `SLAKE_JOIN_MAP_V0`; JOIN-ALG-USE three duals; joinUnitCompileReady | `SystemsLean/JoinMap.lean` + `join-map.md` | Duals read-only; use pins != formal bridge; not product C |
 | Self-host (host) | HOST-SELF-HOST; `SLAKE_SELF_HOST_V0`; selfHostUnitReady / selfHostProgramReady | `SystemsLean/SelfHost.lean` | Direction readiness only; not self-host complete; not product C; llvm still deferred |
 | Surface matrix (host) | HOST-SURFACE-MATRIX; `SLAKE_SURFACE_MATRIX_V0`; matrixUnitReady / matrixProgramReady | `SystemsLean/SurfaceMatrix.lean` + `surface-matrix.md` | Progressive inventory only; not full Idris/Lean parity; not product C; llvm still deferred |
@@ -228,8 +241,8 @@ hosted `cc -c` fallback documented in emit header comments.
 | `extract.md` / `Extract.slake` | Extract / emit boundary (Lean: Extract.lean) |
 | `emit/` | Frozen freestanding product C (`slake_freestanding.c` / `.h`) -- **generator outputs**; not hand-authored |
 | `smoke/` | Hosted behavioral tests (`slake_behavioral_probe.c`) linked against emit product; not freestanding residual progress |
-| `check.sh` | Process glue (~100 lines): optional Lake + compile-path + `just out-freestanding-c` + cc behavioral tests (static mills pure Nix; not residual free) |
-| `../../script/slake-compile-path.sh` | `SLAKE_COMPILE_PATH_V0` structure validation (not product C); invoked by `just build` |
+| `check.sh` | Process glue (~99 lines): optional Lake + compile-path + `just out-freestanding-c` + cc behavioral tests (static mills pure Nix; not residual free) |
+| `../../script/slake-compile-path.sh` | `SLAKE_COMPILE_PATH_V0` process-glue stamp (~51 lines; not product C; no static greps); invoked by `just build` |
 | `SystemsLean/FreestandingEmit.lean` | `SLAKE_EMIT_FREESTANDING_C_V0` Lean writer (templates + SSOT -> `emit/slake_freestanding.{h,c}`) |
 | `emit/template_slake_freestanding.*.in` | Frozen wire templates (Mult + body SSOT placeholders) |
 | `../../out/freestanding-c/` | Subtree/tarball release surface; generator outputs via `just out-freestanding-c` (not hand-authored) |

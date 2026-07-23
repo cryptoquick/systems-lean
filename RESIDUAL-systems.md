@@ -53,17 +53,11 @@ the work description; "human-directed product residual" without a Name.
 
 | Name | Goal (one line) | Status |
 |------|-----------------|--------|
-| Thin process glue | Shell only for Lake / cc / drivers; static presence stays pure Nix | **open** (next) |
+| *(empty)* | No open Systems residual Names. Deferred tracks stay deferred. | **done-for-now** |
 
-### Thin process glue
-
-- **Goal:** Remaining shell is only what must invoke Lake / cc / drivers.
-- **Done when:** ownership note updated (line counts or role list); no new
-  static greps in shell; gates green.
-- **Out of scope:** deleting behavioral tests without replacement.
-- **Primary paths:** `src/systems/check.sh`, `script/slake-compile-path.sh`,
-  pure Nix presence modules.
-- **Status:** open (next implement)
+Open queue empty after **Thin process glue**. Do not invent Open Names. Residual
+free still false; freestanding product self-host complete still false; proof
+complete false; PROVABLY false; llvm / CompCert still deferred.
 
 ---
 
@@ -100,6 +94,7 @@ Short capability list. Greppable stage ids live in Lean / Nix / companions.
 | Shared IR sketch | `doc/shared-ir-sketch.md` |
 | Self-host body (defined freestanding compile step) | plain-English acceptance in `self-host.md` (SELF-HOST-BODY); host pin `SystemsLean/SelfHostBody.lean` (selfHostBodyReady = emitMultReady && emitLinearReady + freestanding emit stage cite; freestandingProductSelfHostComplete false; residual free false); E2E under `just systems-host` / `systems-emit-wire` / `out-freestanding-c` / check.sh |
 | Dual algorithms into Slake (stated map + host use) | `join-map.md` stated map; `SystemsLean/JoinMap.lean` joinAlgUseOk (ConsumeToken = HostCompose mint/consume via consumeTokenHostUseOk / hostMintConsumeOnceOk -- not Linear Token axioms; ErasedIndex = erasedIndexHostUseOk; UnrestrictedShare = unrestrictedShareHostUseOk Mult multOmega + shareNat) + joinDualCiteOk inventory; dual trees read-only; residual free false; product self-host complete false |
+| Thin process glue | Shell ownership note in `src/systems/README.md` (role table + line counts); `script/slake-compile-path.sh` stamp only (~50 lines, no static greps); unit walk / honesty stay pure Nix (`systems-emit-wire` / `systems-host`); dual `check.sh` optional elaborators only; residual free false; product self-host complete false |
 
 Still **not residual free**. Still **not** freestanding product self-host complete.
 Still **not** proof complete. Still **not** PROVABLY. llvm still deferred.
@@ -109,23 +104,18 @@ Still **not** proof complete. Still **not** PROVABLY. llvm still deferred.
 ## Next residual implement prompt (Systems / Slake)
 
 ```
-/implement --effort 1 Thin process glue:
-Goal: Remaining shell is only what must invoke Lake / cc / drivers;
-static presence stays pure Nix.
-Done when:
-- ownership note updated (line counts or role list for remaining shell)
-- no new static greps in shell; gates green
-- residual free still false; product self-host complete still false
-Out of scope: deleting behavioral tests without replacement;
-racing dual residual; full formal bridge; llvm unlock; PROVABLY;
-residual free claim; grow probe C; git
-Paths: src/systems/check.sh, script/slake-compile-path.sh,
-pure Nix presence modules under nix/, RESIDUAL-systems.md,
-RESIDUAL.md, WATCHER.md
-Gates: just systems-host; just systems-emit-wire; just hygiene;
-just idris-side; just lean-side; ./src/systems/check.sh
-Autonomy: after this slice, write the next Open Name implement prompt into
-WATCHER (or BLOCKED with one need). Chain freestanding Slake bootstrap only.
-When Open queue is empty after this item, set WATCHER to a short blocked /
-done-for-now note without inventing work.
+DONE-FOR-NOW (Open queue empty)
+
+Thin process glue is done: remaining novel shell is process glue only
+(Lake / cc / drivers / compile-path stamp). Static presence is pure Nix.
+Ownership note: src/systems/README.md (Shell ownership table).
+
+Still false / deferred (do not forge):
+- residual free
+- freestanding product self-host complete
+- proof complete
+- PROVABLY
+- llvm IR emit / CompCert product seal
+
+Do not invent Open Names. Human names next residual when ready.
 ```

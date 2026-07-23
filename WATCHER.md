@@ -39,24 +39,21 @@ subagent token efficiency).
 
 WATCHER_BEGIN
 ```
-/implement --effort 1 Thin process glue:
-Goal: Remaining shell is only what must invoke Lake / cc / drivers;
-static presence stays pure Nix.
-Done when:
-- ownership note updated (line counts or role list for remaining shell)
-- no new static greps in shell; gates green
-- residual free still false; product self-host complete still false
-Out of scope: deleting behavioral tests without replacement;
-racing dual residual; full formal bridge; llvm unlock; PROVABLY;
-residual free claim; grow probe C; git
-Paths: src/systems/check.sh, script/slake-compile-path.sh,
-pure Nix presence modules under nix/, RESIDUAL-systems.md,
-RESIDUAL.md, WATCHER.md
-Gates: just systems-host; just systems-emit-wire; just hygiene;
-just idris-side; just lean-side; ./src/systems/check.sh
-Autonomy: after this slice, write the next Open Name implement prompt into
-WATCHER (or BLOCKED with one need). Chain freestanding Slake bootstrap only.
-When Open queue is empty after this item, set WATCHER to a short blocked /
-done-for-now note without inventing work.
+DONE-FOR-NOW (Open queue empty)
+
+Thin process glue complete:
+- Remaining novel shell is process glue only (Lake / cc / drivers /
+  compile-path stamp). Static presence is pure Nix.
+- Ownership note: src/systems/README.md (Shell ownership table + line counts).
+- script/slake-compile-path.sh is stamp only (no UNIT_SURFACE greps).
+
+Still false / deferred (do not forge):
+- residual free
+- freestanding product self-host complete
+- proof complete
+- PROVABLY
+- llvm IR emit / CompCert product seal
+
+Do not invent Open Names. Human names next residual when ready.
 ```
 WATCHER_END

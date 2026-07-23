@@ -2,14 +2,16 @@
   SYSTEMS_LEAN_HOST partial -- host-informed Slake compile-path readiness.
   Side: classic Lean elaborator under src/systems/ (not freestanding C).
   Pair map (read-only): script/slake-compile-path.sh SLAKE_COMPILE_PATH_V0
-    (structure-stage thin validation; shell greps remain V0 debt),
+    (process-glue stamp only; no static greps; unit/marker walk is pure Nix
+    just systems-emit-wire + just systems-host),
     HostCompose / IrProgram / Mult / Extract host surfaces.
 
   Spec (readable, separate from any future proof):
   - SLAKE_COMPILE_PATH_V1 / HOST-COMPILE-PATH: host-side readiness composition
     that Systems Lean units can be treated as compile-path inputs.
-  - V0 structure stage (shell greps of UNIT_SURFACE / markers) remains; this
-    module is the V1 host deepen -- not a second structure grep mill.
+  - V0 is process-glue stamp only (SLAKE_COMPILE_PATH_V0 shell file remains;
+    static UNIT_SURFACE / marker walk is pure Nix). This module is the V1
+    host deepen -- not a second content mill and not product C.
   - compileReady hc: fail-closed HostCompose.extractOkFs (implies multPreScan +
     hostIsWellTyped + RUNTIME-FS only). Does not re-emit product C.
   - programCompileReady p: IrProgram.isWellTyped (EMPTY-PROGRAM-FAIL-CLOSED on
@@ -73,7 +75,7 @@ open SystemsLean.IrProgram (Program)
 open SystemsLean.HostCompose (Host)
 open SystemsLean.Extract (RuntimeClaim)
 
-/-- Greppable stage id for host-informed compile path (beyond V0 structure). -/
+/-- Greppable stage id for host-informed compile path (beyond V0 process-glue stamp). -/
 def stageId : String := "SLAKE_COMPILE_PATH_V1"
 
 /-- Greppable alias for stage honesty (HOST-COMPILE-PATH). -/

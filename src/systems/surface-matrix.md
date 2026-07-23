@@ -70,7 +70,7 @@ Linear.shareNat (shareNat only on this dual). Duals are not reimplemented under
 | Erasure + extract | **present-partial** | Erasure + Extract + HostCompose.multPreScan | RUNTIME-FS extract; MULT-1 thinning intentional |
 | Host compose | **present-partial** | HostCompose.lean | graph + linear + erasure; HOST-SMOKE |
 | Emit plan / apply / body honesty | **present-partial** | EmitPlan + EmitApply + EmitBody + HOST-EMIT-SSOT | Frozen C wire; fragment dialect host SSoT |
-| Compile path | **present-partial** | CompilePath.lean HOST-COMPILE-PATH / SLAKE_COMPILE_PATH_V1 | V0 structure shell remains; not product C compile |
+| Compile path | **present-partial** | CompilePath.lean HOST-COMPILE-PATH / SLAKE_COMPILE_PATH_V1 | V0 process-glue stamp remains; unit walk pure Nix; not product C compile |
 | Join map | **present-partial** | JoinMap.lean HOST-JOIN-MAP / SLAKE_JOIN_MAP_V0 + joinAlgUseOk | Duals read-only; stated map in join-map.md; not formal full bridge |
 | Self-host direction | **present-partial** | SelfHost.lean HOST-SELF-HOST / SLAKE_SELF_HOST_V0 | Direction readiness only; not freestanding product self-host |
 | Full syntax surface (Idris + Lean cores) | **open** | -- | Progressive gates only; no day-one full syntax claim |
